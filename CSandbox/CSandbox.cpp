@@ -2,9 +2,12 @@
 #include <tchar.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <windowsx.h>
+#include <WinUser.h>
 
 const TCHAR czWinClass[] = _T("MyClassName");
 const TCHAR czWinName[] = _T("MyWindowName");
+UINT dim = 5;
 HWND hwnd;
 HBRUSH hBrush;
 
@@ -19,15 +22,83 @@ void RunNotepad(void)
 	CreateProcess(_T("C:\\Windows\\Notepad.exe"), NULL, NULL, NULL, FALSE, 0, NULL, NULL, &sInfo, &pInfo);
 }
 
-LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+void DrawGrid()
 {
-	switch (message)
+	PAINTSTRUCT ps;
+	auto hdc = BeginPaint(hwnd, &ps);
+
+	RECT rect;
+	GetClientRect(hwnd, &rect);
+	auto pen = CreatePen(0, 4, RGB(127, 0, 0));
+	auto prevBrush = SelectObject(hdc, pen);
+
+	for (auto i = 1; i < dim; ++i)
 	{
-		case WM_DESTROY:
+		auto x = rect.right * i / dim;
+		MoveToEx(hdc, x, 0, NULL);
+		LineTo(hdc, x, rect.bottom);
+
+		auto y = rect.bottom * i / dim;
+		MoveToEx(hdc, 0, y, NULL);
+		LineTo(hdc, rect.right, y);
+	}
+
+	SelectObject(hdc, prevBrush);
+	EndPaint(hwnd, &ps);
+	DeleteObject(pen);
+}
+
+void ChangeBG(HDC hdc)
+{
+	// TODO: Make random color.
+	HBRUSH brush = CreateSolidBrush(RGB(0, 127, 0));
+	SelectObject(hdc, brush);
+}
+
+void DrawCircle(UINT x, UINT y)
+{
+	PAINTSTRUCT ps;
+	auto hdc = BeginPaint(hwnd, &ps);
+
+	//RoundRect(hdc, 100, 100, 100, 100, 20, 20);
+	RECT rect = { 0, 20, 40, 60 };
+	HBRUSH brush = CreateSolidBrush(RGB(0, 127, 0));
+	FillRect(hdc, &rect, brush);
+
+	EndPaint(hwnd, &ps);
+	DeleteObject(brush);
+}
+
+LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch (uMsg)
+	{
+	case WM_KEYDOWN:
+		if (wParam == VK_ESCAPE
+			|| wParam == 'Q' && GetKeyState(VK_CONTROL) & 0x8000)
+		{
 			PostQuitMessage(0);
 			return 0;
+		}
+		else if (wParam == 'C')
+		{
+			if (GetKeyState(VK_SHIFT) & 0x8000)
+			{
+				RunNotepad();
+			}
+		}
+		break;
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		return 0;
+	case WM_SIZE:
+		DrawGrid();
+		break;
+	case WM_LBUTTONDOWN:
+		DrawCircle(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+		break;
 	}
-	return DefWindowProc(hwnd, message, wParam, lParam);
+	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
 int main(int argc, char** argv)
@@ -35,25 +106,25 @@ int main(int argc, char** argv)
 	BOOL bMessageOk;
 	MSG message;
 
-	WNDCLASSEX wincl = { 0 };
+	WNDCLASSEX wc = { 0 };
 
 	int nCmdShow = SW_SHOW;
 
 	HINSTANCE hThisInstance = GetModuleHandle(NULL);
 
-	wincl.cbSize = sizeof(wincl);
-	wincl.style = CS_HREDRAW | CS_VREDRAW;
-	wincl.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-	wincl.hCursor = LoadCursor(NULL, IDC_ARROW);
-	
-	wincl.hInstance = hThisInstance;
-	wincl.lpszClassName = czWinClass;
-	wincl.lpfnWndProc = WindowProcedure;
+	wc.cbSize = sizeof(wc);
+	wc.style = CS_HREDRAW | CS_VREDRAW;
+	wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 
-	hBrush = CreateSolidBrush(RGB(255,255,255));
-	wincl.hbrBackground = hBrush;
+	wc.hInstance = hThisInstance;
+	wc.lpszClassName = czWinClass;
+	wc.lpfnWndProc = WindowProcedure;
 
-	if (!RegisterClassEx(&wincl))
+	hBrush = CreateSolidBrush(RGB(0, 0, 127));
+	wc.hbrBackground = hBrush;
+
+	if (!RegisterClassEx(&wc))
 	{
 		MessageBox(NULL, L"Class registration has failed!", L"Error", MB_OK | MB_ICONERROR);
 		DWORD error = GetLastError();
@@ -84,8 +155,9 @@ int main(int argc, char** argv)
 		if (bMessageOk < 0)
 		{
 			puts("Suddenly, GetMessage failed! You can call GetLastError() to see what happened");
-            break;
+			break;
 		}
+		DrawGrid();
 		TranslateMessage(&message);
 		DispatchMessage(&message);
 	}
@@ -93,8 +165,6 @@ int main(int argc, char** argv)
 	DestroyWindow(hwnd);
 	UnregisterClass(czWinClass, hThisInstance);
 	DeleteObject(hBrush);
-
-	RunNotepad();
 
 	return 0;
 }
