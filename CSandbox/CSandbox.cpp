@@ -7,10 +7,12 @@
 
 const TCHAR czWinClass[] = _T("MyClassName");
 const TCHAR czWinName[] = _T("MyWindowName");
-UINT dim = 5;
+UINT dim = 20;
 HWND hwnd;
 HBRUSH hBrush;
 WNDCLASSEX wc;
+
+BOOL* circles;
 
 void RunNotepad()
 {
@@ -31,6 +33,19 @@ UINT Random(UINT max)
 COLORREF GetRandomColor()
 {
 	return RGB(Random(255), Random(255), Random(255));
+}
+
+void OnClicked(UINT x, UINT y)
+{
+	RECT rect;
+	GetClientRect(hwnd, &rect);
+	x = x * dim / rect.right;
+	y = y * dim / rect.bottom;
+	auto index = y * dim + x;
+	circles[index] = true;
+
+	InvalidateRect(hwnd, NULL, true);
+	UpdateWindow(hwnd);
 }
 
 LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -71,7 +86,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
 			RECT rect;
 			GetClientRect(hwnd, &rect);
-			HPEN pen = CreatePen(0, 4, RGB(127, 0, 0));
+			HPEN pen = CreatePen(0, 2, RGB(127, 0, 0));
 			HGDIOBJ brush = SelectObject(hdc, pen);
 
 			for (auto i = 1u; i < dim; ++i)
@@ -85,25 +100,53 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 				LineTo(hdc, rect.right, y);
 			}
 
+			for (auto i = 0u, len = dim * dim; i < len; ++i)
+			{
+				if (circles[i])
+				{
+					auto x = i % dim;
+					auto y = i / dim;
+					RECT rect;
+					GetClientRect(hwnd, &rect);
+					auto height = rect.bottom;
+					auto width = rect.right;
+					auto radius = min(height/dim, width/dim) / 3;
+					auto cellHeight = height / dim;
+					auto cellWidth = width / dim;
+					auto centerX = cellWidth * x + cellWidth / 2;
+					auto centerY = cellHeight * y + cellHeight / 2;
+					Ellipse(hdc, centerX - radius, centerY - radius, centerX + radius, centerY + radius);
+				}
+			}
+
 			SelectObject(hdc, brush);
 			EndPaint(hwnd, &ps);
 			DeleteObject(pen);
 		}
 		break;
 		case WM_LBUTTONDOWN:
-			break;
+		{
+			auto x = GET_X_LPARAM(lParam);
+			auto y = GET_Y_LPARAM(lParam);
+			OnClicked(x, y);
+		}
+		break;
 	}
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
 int main(int argc, char** argv)
 {
+	auto len = dim * dim;
+	circles = new BOOL[len];
+	ZeroMemory(circles, len * sizeof(BOOL));
+
 	BOOL bMessageOk;
 	MSG message;
 
 	wc = { 0 };
 
-	int nCmdShow = SW_SHOW;
+	UINT nCmdShow = SW_SHOW;
 
 	HINSTANCE hThisInstance = GetModuleHandle(NULL);
 
@@ -160,5 +203,6 @@ int main(int argc, char** argv)
 	UnregisterClass(czWinClass, hThisInstance);
 	DeleteObject(hBrush);
 
+	delete circles;
 	return 0;
 }
