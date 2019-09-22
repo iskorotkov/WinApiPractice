@@ -1,7 +1,7 @@
 #include <Windows.h>
 #include <tchar.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <windowsx.h>
 #include <WinUser.h>
 
@@ -10,8 +10,9 @@ const TCHAR czWinName[] = _T("MyWindowName");
 UINT dim = 5;
 HWND hwnd;
 HBRUSH hBrush;
+WNDCLASSEX wc;
 
-void RunNotepad(void)
+void RunNotepad()
 {
 	STARTUPINFO sInfo;
 	PROCESS_INFORMATION pInfo;
@@ -25,14 +26,15 @@ void RunNotepad(void)
 void DrawGrid()
 {
 	PAINTSTRUCT ps;
-	auto hdc = BeginPaint(hwnd, &ps);
+	//auto hdc = BeginPaint(hwnd, &ps);
+	auto hdc = GetDC(hwnd);
 
 	RECT rect;
 	GetClientRect(hwnd, &rect);
 	auto pen = CreatePen(0, 4, RGB(127, 0, 0));
 	auto prevBrush = SelectObject(hdc, pen);
 
-	for (auto i = 1; i < dim; ++i)
+	for (auto i = 1u; i < dim; ++i)
 	{
 		auto x = rect.right * i / dim;
 		MoveToEx(hdc, x, 0, NULL);
@@ -44,15 +46,27 @@ void DrawGrid()
 	}
 
 	SelectObject(hdc, prevBrush);
-	EndPaint(hwnd, &ps);
+	//EndPaint(hwnd, &ps);
 	DeleteObject(pen);
 }
 
-void ChangeBG(HDC hdc)
+UINT Random(UINT max)
 {
-	// TODO: Make random color.
-	HBRUSH brush = CreateSolidBrush(RGB(0, 127, 0));
-	SelectObject(hdc, brush);
+	return rand() % (max + 1);
+}
+
+void ChangeBG()
+{
+	auto hdc = GetDC(hwnd);
+	RECT rect;
+	GetClientRect(hwnd, &rect);
+	auto randomColor = RGB(Random(255), Random(255), Random(255));
+	auto brush = CreateSolidBrush(randomColor);
+	FillRect(hdc, &rect, brush);
+	DeleteObject(brush);
+	ReleaseDC(hwnd, hdc);
+
+	DrawGrid();
 }
 
 void DrawCircle(UINT x, UINT y)
@@ -73,30 +87,34 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 {
 	switch (uMsg)
 	{
-	case WM_KEYDOWN:
-		if (wParam == VK_ESCAPE
-			|| wParam == 'Q' && GetKeyState(VK_CONTROL) & 0x8000)
-		{
+		case WM_KEYDOWN:
+			if (wParam == VK_ESCAPE
+				|| wParam == 'Q' && GetKeyState(VK_CONTROL) & 0x8000)
+			{
+				PostQuitMessage(0);
+				return 0;
+			}
+			if (wParam == 'C')
+			{
+				if (GetKeyState(VK_SHIFT) & 0x8000)
+				{
+					RunNotepad();
+				}
+			}
+			else if (wParam == VK_RETURN)
+			{
+				ChangeBG();
+			}
+			break;
+		case WM_DESTROY:
 			PostQuitMessage(0);
 			return 0;
-		}
-		else if (wParam == 'C')
-		{
-			if (GetKeyState(VK_SHIFT) & 0x8000)
-			{
-				RunNotepad();
-			}
-		}
-		break;
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		return 0;
-	case WM_SIZE:
-		DrawGrid();
-		break;
-	case WM_LBUTTONDOWN:
-		DrawCircle(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-		break;
+		case WM_SIZE:
+			DrawGrid();
+			break;
+		case WM_LBUTTONDOWN:
+			//DrawCircle(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+			break;
 	}
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
@@ -106,7 +124,7 @@ int main(int argc, char** argv)
 	BOOL bMessageOk;
 	MSG message;
 
-	WNDCLASSEX wc = { 0 };
+	wc = { 0 };
 
 	int nCmdShow = SW_SHOW;
 
@@ -157,7 +175,6 @@ int main(int argc, char** argv)
 			puts("Suddenly, GetMessage failed! You can call GetLastError() to see what happened");
 			break;
 		}
-		DrawGrid();
 		TranslateMessage(&message);
 		DispatchMessage(&message);
 	}
