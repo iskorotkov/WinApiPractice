@@ -7,12 +7,12 @@
 
 const TCHAR czWinClass[] = _T("MyClassName");
 const TCHAR czWinName[] = _T("MyWindowName");
-UINT dim = 20;
+UINT dim = 3;
 HWND hwnd;
 HBRUSH hBrush;
 WNDCLASSEX wc;
 
-BOOL* circles;
+UINT* circles;
 
 void RunNotepad()
 {
@@ -35,14 +35,14 @@ COLORREF GetRandomColor()
 	return RGB(Random(255), Random(255), Random(255));
 }
 
-void OnClicked(UINT x, UINT y)
+void OnClicked(UINT x, UINT y, UINT value)
 {
 	RECT rect;
 	GetClientRect(hwnd, &rect);
 	x = x * dim / rect.right;
 	y = y * dim / rect.bottom;
 	auto index = y * dim + x;
-	circles[index] = true;
+	circles[index] = value;
 
 	InvalidateRect(hwnd, NULL, true);
 	UpdateWindow(hwnd);
@@ -113,7 +113,22 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 					auto radius = min(height/dim, width/dim) / 3;
 					auto centerX = width * (2 * row + 1) / (2 * dim);
 					auto centerY = height * (2 * col + 1) / (2 * dim);
-					Ellipse(hdc, centerX - radius, centerY - radius, centerX + radius, centerY + radius);
+					switch (circles[i])
+					{
+						case 1:
+							Ellipse(hdc, centerX - radius, centerY - radius, centerX + radius, centerY + radius);
+							break;
+						case 2:
+						{
+							// Draws '\'
+							MoveToEx(hdc, centerX - radius, centerY - radius, NULL);
+							LineTo(hdc, centerX + radius, centerY + radius);
+							// Draws '/'
+							MoveToEx(hdc, centerX + radius, centerY - radius, NULL);
+							LineTo(hdc, centerX - radius, centerY + radius);
+							break;
+						}
+					}
 				}
 			}
 
@@ -126,9 +141,16 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		{
 			auto x = GET_X_LPARAM(lParam);
 			auto y = GET_Y_LPARAM(lParam);
-			OnClicked(x, y);
+			OnClicked(x, y, 1);
+			break;
 		}
-		break;
+		case WM_RBUTTONDOWN:
+		{
+			auto x = GET_X_LPARAM(lParam);
+			auto y = GET_Y_LPARAM(lParam);
+			OnClicked(x, y, 2);
+			break;
+		}
 	}
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
@@ -136,7 +158,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 int main(int argc, char** argv)
 {
 	auto len = dim * dim;
-	circles = new BOOL[len];
+	circles = new UINT[len];
 	ZeroMemory(circles, len * sizeof(BOOL));
 
 	BOOL bMessageOk;
