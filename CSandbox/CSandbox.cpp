@@ -23,41 +23,9 @@ void RunNotepad()
 	CreateProcess(_T("C:\\Windows\\Notepad.exe"), NULL, NULL, NULL, FALSE, 0, NULL, NULL, &sInfo, &pInfo);
 }
 
-void DrawGrid()
-{
-}
-
 UINT Random(UINT max)
 {
 	return rand() % (max + 1);
-}
-
-void ChangeBG()
-{
-	auto hdc = GetDC(hwnd);
-	RECT rect;
-	GetClientRect(hwnd, &rect);
-	auto randomColor = RGB(Random(255), Random(255), Random(255));
-	auto brush = CreateSolidBrush(randomColor);
-	FillRect(hdc, &rect, brush);
-	DeleteObject(brush);
-	ReleaseDC(hwnd, hdc);
-
-	DrawGrid();
-}
-
-void DrawCircle(UINT x, UINT y)
-{
-	PAINTSTRUCT ps;
-	auto hdc = BeginPaint(hwnd, &ps);
-
-	//RoundRect(hdc, 100, 100, 100, 100, 20, 20);
-	RECT rect = { 0, 20, 40, 60 };
-	HBRUSH brush = CreateSolidBrush(RGB(0, 127, 0));
-	FillRect(hdc, &rect, brush);
-
-	EndPaint(hwnd, &ps);
-	DeleteObject(brush);
 }
 
 COLORREF GetRandomColor()
@@ -67,12 +35,6 @@ COLORREF GetRandomColor()
 
 LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	RECT rect;
-	PAINTSTRUCT ps;
-	HDC hdc;
-	UINT x, y;
-	HPEN pen;
-	HGDIOBJ brush;
 	switch (uMsg)
 	{
 		case WM_KEYDOWN:
@@ -104,19 +66,21 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		case WM_PAINT:
 			// Draw grid
 		{
-			hdc = BeginPaint(hwnd, &ps);
+			PAINTSTRUCT ps;
+			HDC hdc = BeginPaint(hwnd, &ps);
 
+			RECT rect;
 			GetClientRect(hwnd, &rect);
-			pen = CreatePen(0, 4, RGB(127, 0, 0));
-			brush = SelectObject(hdc, pen);
+			HPEN pen = CreatePen(0, 4, RGB(127, 0, 0));
+			HGDIOBJ brush = SelectObject(hdc, pen);
 
 			for (auto i = 1u; i < dim; ++i)
 			{
-				x = rect.right * i / dim;
+				auto x = rect.right * i / dim;
 				MoveToEx(hdc, x, 0, NULL);
 				LineTo(hdc, x, rect.bottom);
 
-				y = rect.bottom * i / dim;
+				auto y = rect.bottom * i / dim;
 				MoveToEx(hdc, 0, y, NULL);
 				LineTo(hdc, rect.right, y);
 			}
@@ -127,7 +91,6 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		}
 		break;
 		case WM_LBUTTONDOWN:
-			//DrawCircle(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 			break;
 	}
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
