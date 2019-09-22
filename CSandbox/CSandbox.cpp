@@ -25,29 +25,6 @@ void RunNotepad()
 
 void DrawGrid()
 {
-	PAINTSTRUCT ps;
-	//auto hdc = BeginPaint(hwnd, &ps);
-	auto hdc = GetDC(hwnd);
-
-	RECT rect;
-	GetClientRect(hwnd, &rect);
-	auto pen = CreatePen(0, 4, RGB(127, 0, 0));
-	auto prevBrush = SelectObject(hdc, pen);
-
-	for (auto i = 1u; i < dim; ++i)
-	{
-		auto x = rect.right * i / dim;
-		MoveToEx(hdc, x, 0, NULL);
-		LineTo(hdc, x, rect.bottom);
-
-		auto y = rect.bottom * i / dim;
-		MoveToEx(hdc, 0, y, NULL);
-		LineTo(hdc, rect.right, y);
-	}
-
-	SelectObject(hdc, prevBrush);
-	//EndPaint(hwnd, &ps);
-	DeleteObject(pen);
 }
 
 UINT Random(UINT max)
@@ -83,8 +60,19 @@ void DrawCircle(UINT x, UINT y)
 	DeleteObject(brush);
 }
 
+COLORREF GetRandomColor()
+{
+	return RGB(Random(255), Random(255), Random(255));
+}
+
 LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+	RECT rect;
+	PAINTSTRUCT ps;
+	HDC hdc;
+	UINT x, y;
+	HPEN pen;
+	HGDIOBJ brush;
 	switch (uMsg)
 	{
 		case WM_KEYDOWN:
@@ -103,15 +91,41 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			}
 			else if (wParam == VK_RETURN)
 			{
-				ChangeBG();
+				DeleteObject(hBrush);
+				hBrush = CreateSolidBrush(GetRandomColor());
+				SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG_PTR)hBrush);
+				InvalidateRect(hwnd, NULL, true);
+				UpdateWindow(hwnd);
 			}
 			break;
 		case WM_DESTROY:
 			PostQuitMessage(0);
 			return 0;
-		case WM_SIZE:
-			DrawGrid();
-			break;
+		case WM_PAINT:
+			// Draw grid
+		{
+			hdc = BeginPaint(hwnd, &ps);
+
+			GetClientRect(hwnd, &rect);
+			pen = CreatePen(0, 4, RGB(127, 0, 0));
+			brush = SelectObject(hdc, pen);
+
+			for (auto i = 1u; i < dim; ++i)
+			{
+				x = rect.right * i / dim;
+				MoveToEx(hdc, x, 0, NULL);
+				LineTo(hdc, x, rect.bottom);
+
+				y = rect.bottom * i / dim;
+				MoveToEx(hdc, 0, y, NULL);
+				LineTo(hdc, rect.right, y);
+			}
+
+			SelectObject(hdc, brush);
+			EndPaint(hwnd, &ps);
+			DeleteObject(pen);
+		}
+		break;
 		case WM_LBUTTONDOWN:
 			//DrawCircle(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 			break;
