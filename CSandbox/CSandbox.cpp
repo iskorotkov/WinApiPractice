@@ -87,7 +87,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			RECT rect;
 			GetClientRect(hwnd, &rect);
 			HPEN pen = CreatePen(0, 2, RGB(127, 0, 0));
-			HGDIOBJ brush = SelectObject(hdc, pen);
+			HGDIOBJ prevBrush = SelectObject(hdc, pen);
 
 			for (auto i = 1u; i < dim; ++i)
 			{
@@ -116,8 +116,16 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 					switch (circles[i])
 					{
 						case 1:
+						{
+							// Use transparent brush
+							auto brush = GetStockObject(NULL_BRUSH);
+							HGDIOBJ prevBrush = SelectObject(hdc, brush);
+
 							Ellipse(hdc, centerX - radius, centerY - radius, centerX + radius, centerY + radius);
+
+							SelectObject(hdc, prevBrush);
 							break;
+						}
 						case 2:
 						{
 							// Draws '\'
@@ -132,7 +140,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 				}
 			}
 
-			SelectObject(hdc, brush);
+			SelectObject(hdc, prevBrush);
 			EndPaint(hwnd, &ps);
 			DeleteObject(pen);
 		}
