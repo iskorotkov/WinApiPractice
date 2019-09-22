@@ -104,17 +104,15 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			{
 				if (circles[i])
 				{
-					auto x = i % dim;
-					auto y = i / dim;
+					auto row = i % dim;
+					auto col = i / dim;
 					RECT rect;
 					GetClientRect(hwnd, &rect);
 					auto height = rect.bottom;
 					auto width = rect.right;
 					auto radius = min(height/dim, width/dim) / 3;
-					auto cellHeight = height / dim;
-					auto cellWidth = width / dim;
-					auto centerX = cellWidth * x + cellWidth / 2;
-					auto centerY = cellHeight * y + cellHeight / 2;
+					auto centerX = width * (2 * row + 1) / (2 * dim);
+					auto centerY = height * (2 * col + 1) / (2 * dim);
 					Ellipse(hdc, centerX - radius, centerY - radius, centerX + radius, centerY + radius);
 				}
 			}
