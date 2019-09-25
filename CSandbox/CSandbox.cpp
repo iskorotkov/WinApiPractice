@@ -118,12 +118,14 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 						case 1:
 						{
 							// Use transparent brush
-							auto brush = GetStockObject(NULL_BRUSH);
+							// auto brush = GetStockObject(NULL_BRUSH);
+							auto brush = CreateSolidBrush(RGB(255, 255, 255));
 							HGDIOBJ prevBrush = SelectObject(hdc, brush);
 
 							Ellipse(hdc, centerX - radius, centerY - radius, centerX + radius, centerY + radius);
 
 							SelectObject(hdc, prevBrush);
+							DeleteObject(brush);
 							break;
 						}
 						case 2:
