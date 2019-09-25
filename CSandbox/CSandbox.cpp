@@ -7,10 +7,7 @@
 
 const TCHAR czWinClass[] = _T("MyClassName");
 const TCHAR czWinName[] = _T("MyWindowName");
-UINT dim = 3;
-HWND hwnd;
-HBRUSH hBrush;
-WNDCLASSEX wc;
+const UINT dim = 3;
 
 UINT* circles;
 
@@ -35,7 +32,7 @@ COLORREF GetRandomColor()
 	return RGB(Random(255), Random(255), Random(255));
 }
 
-void OnClicked(UINT x, UINT y, UINT value)
+void OnClicked(HWND hwnd, UINT x, UINT y, UINT value)
 {
 	RECT rect;
 	GetClientRect(hwnd, &rect);
@@ -68,8 +65,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			}
 			else if (wParam == VK_RETURN)
 			{
-				DeleteObject(hBrush);
-				hBrush = CreateSolidBrush(GetRandomColor());
+				HBRUSH hBrush = CreateSolidBrush(GetRandomColor());
 				SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG_PTR)hBrush);
 				InvalidateRect(hwnd, NULL, true);
 				UpdateWindow(hwnd);
@@ -151,14 +147,14 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		{
 			auto x = GET_X_LPARAM(lParam);
 			auto y = GET_Y_LPARAM(lParam);
-			OnClicked(x, y, 1);
+			OnClicked(hwnd, x, y, 1);
 			break;
 		}
 		case WM_RBUTTONDOWN:
 		{
 			auto x = GET_X_LPARAM(lParam);
 			auto y = GET_Y_LPARAM(lParam);
-			OnClicked(x, y, 2);
+			OnClicked(hwnd, x, y, 2);
 			break;
 		}
 	}
@@ -174,7 +170,7 @@ int main(int argc, char** argv)
 	BOOL bMessageOk;
 	MSG message;
 
-	wc = { 0 };
+	WNDCLASSEX wc = { 0 };
 
 	UINT nCmdShow = SW_SHOW;
 
@@ -189,7 +185,7 @@ int main(int argc, char** argv)
 	wc.lpszClassName = czWinClass;
 	wc.lpfnWndProc = WindowProcedure;
 
-	hBrush = CreateSolidBrush(RGB(0, 0, 127));
+	HBRUSH hBrush = CreateSolidBrush(RGB(0, 0, 127));
 	wc.hbrBackground = hBrush;
 
 	if (!RegisterClassEx(&wc))
@@ -200,7 +196,7 @@ int main(int argc, char** argv)
 		return error;
 	}
 
-	hwnd = CreateWindowEx(
+	HWND hwnd = CreateWindowEx(
 		0,
 		czWinClass,
 		czWinName,
