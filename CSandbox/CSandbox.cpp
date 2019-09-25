@@ -44,6 +44,91 @@ void OnClicked(HWND hwnd, UINT x, UINT y, UINT value)
 	UpdateWindow(hwnd);
 }
 
+void DrawCircle(HDC hdc, UINT radius, UINT centerX, UINT centerY)
+{
+	HBRUSH hBrush = CreateSolidBrush(RGB(255, 255, 255));
+	HGDIOBJ prevBrush = SelectObject(hdc, hBrush);
+
+	Ellipse(hdc, centerX - radius, centerY - radius, centerX + radius, centerY + radius);
+
+	SelectObject(hdc, prevBrush);
+	DeleteObject(hBrush);
+}
+
+void DrawCross(HDC hdc, UINT radius, UINT centerX, UINT centerY)
+{
+	// Draws '\'
+	MoveToEx(hdc, centerX - radius, centerY - radius, NULL);
+	LineTo(hdc, centerX + radius, centerY + radius);
+	// Draws '/'
+	MoveToEx(hdc, centerX + radius, centerY - radius, NULL);
+	LineTo(hdc, centerX - radius, centerY + radius);
+}
+
+void CalculateIconDimensions(HWND hwnd, UINT i, UINT& radius, UINT& centerX, UINT& centerY)
+{
+	UINT row = i % dim;
+	UINT col = i / dim;
+	RECT rect;
+	GetClientRect(hwnd, &rect);
+	UINT height = rect.bottom;
+	UINT width = rect.right;
+	radius = min(height/dim, width/dim) / 3;
+	centerX = width * (2 * row + 1) / (2 * dim);
+	centerY = height * (2 * col + 1) / (2 * dim);
+}
+
+void DrawIconsOnGrid(HWND hwnd, HDC hdc)
+{
+	for (UINT i = 0u, len = dim * dim; i < len; ++i)
+	{
+		if (circles[i])
+		{
+			UINT radius;
+			UINT centerX;
+			UINT centerY;
+			CalculateIconDimensions(hwnd, i, radius, centerX, centerY);
+			switch (circles[i])
+			{
+				case 1:
+				{
+					DrawCircle(hdc, radius, centerX, centerY);
+					break;
+				}
+				case 2:
+				{
+					DrawCross(hdc, radius, centerX, centerY);
+					break;
+				}
+			}
+		}
+	}
+}
+
+void DrawGrid(HWND hwnd, HDC hdc)
+{
+	RECT rect;
+	GetClientRect(hwnd, &rect);
+	HPEN pen = CreatePen(0, 2, RGB(127, 0, 0));
+	HGDIOBJ prevBrush = SelectObject(hdc, pen);
+
+	for (UINT i = 1u; i < dim; ++i)
+	{
+		UINT x = rect.right * i / dim;
+		MoveToEx(hdc, x, 0, NULL);
+		LineTo(hdc, x, rect.bottom);
+
+		UINT y = rect.bottom * i / dim;
+		MoveToEx(hdc, 0, y, NULL);
+		LineTo(hdc, rect.right, y);
+	}
+
+	DrawIconsOnGrid(hwnd, hdc);
+
+	SelectObject(hdc, prevBrush);
+	DeleteObject(pen);
+}
+
 LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
@@ -63,7 +148,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			{
 				HBRUSH hBrush = CreateSolidBrush(GetRandomColor());
 				SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG_PTR)hBrush);
-				
+
 				InvalidateRect(hwnd, NULL, true);
 				UpdateWindow(hwnd);
 			}
@@ -75,66 +160,8 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		{
 			PAINTSTRUCT ps;
 			HDC hdc = BeginPaint(hwnd, &ps);
-
-			RECT rect;
-			GetClientRect(hwnd, &rect);
-			HPEN pen = CreatePen(0, 2, RGB(127, 0, 0));
-			HGDIOBJ prevBrush = SelectObject(hdc, pen);
-
-			for (UINT i = 1u; i < dim; ++i)
-			{
-				UINT x = rect.right * i / dim;
-				MoveToEx(hdc, x, 0, NULL);
-				LineTo(hdc, x, rect.bottom);
-
-				UINT y = rect.bottom * i / dim;
-				MoveToEx(hdc, 0, y, NULL);
-				LineTo(hdc, rect.right, y);
-			}
-
-			for (UINT i = 0u, len = dim * dim; i < len; ++i)
-			{
-				if (circles[i])
-				{
-					UINT row = i % dim;
-					UINT col = i / dim;
-					RECT rect;
-					GetClientRect(hwnd, &rect);
-					UINT height = rect.bottom;
-					UINT width = rect.right;
-					UINT radius = min(height/dim, width/dim) / 3;
-					UINT centerX = width * (2 * row + 1) / (2 * dim);
-					UINT centerY = height * (2 * col + 1) / (2 * dim);
-					switch (circles[i])
-					{
-						case 1:
-						{
-							HBRUSH hBrush = CreateSolidBrush(RGB(255, 255, 255));
-							HGDIOBJ prevBrush = SelectObject(hdc, hBrush);
-
-							Ellipse(hdc, centerX - radius, centerY - radius, centerX + radius, centerY + radius);
-
-							SelectObject(hdc, prevBrush);
-							DeleteObject(hBrush);
-							break;
-						}
-						case 2:
-						{
-							// Draws '\'
-							MoveToEx(hdc, centerX - radius, centerY - radius, NULL);
-							LineTo(hdc, centerX + radius, centerY + radius);
-							// Draws '/'
-							MoveToEx(hdc, centerX + radius, centerY - radius, NULL);
-							LineTo(hdc, centerX - radius, centerY + radius);
-							break;
-						}
-					}
-				}
-			}
-
-			SelectObject(hdc, prevBrush);
+			DrawGrid(hwnd, hdc);
 			EndPaint(hwnd, &ps);
-			DeleteObject(pen);
 		}
 		break;
 		case WM_LBUTTONDOWN:
@@ -161,20 +188,13 @@ int main(int argc, char** argv)
 	circles = new UINT[len];
 	ZeroMemory(circles, len * sizeof circles);
 
-	BOOL bMessageOk;
-	MSG message;
-
-	WNDCLASSEX wc = { 0 };
-
-	UINT nCmdShow = SW_SHOW;
-
 	HINSTANCE hThisInstance = GetModuleHandle(NULL);
-
+	
+	WNDCLASSEX wc = { 0 };
 	wc.cbSize = sizeof(wc);
 	wc.style = CS_HREDRAW | CS_VREDRAW;
 	wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-
 	wc.hInstance = hThisInstance;
 	wc.lpszClassName = czWinClass;
 	wc.lpfnWndProc = WindowProcedure;
@@ -205,8 +225,11 @@ int main(int argc, char** argv)
 		NULL
 	);
 
+	UINT nCmdShow = SW_SHOW;
 	ShowWindow(hwnd, nCmdShow);
 
+	BOOL bMessageOk;
+	MSG message;
 	while ((bMessageOk = GetMessage(&message, NULL, 0, 0)) != 0)
 	{
 		if (bMessageOk < 0)
@@ -218,9 +241,9 @@ int main(int argc, char** argv)
 		DispatchMessage(&message);
 	}
 
+	DeleteObject(hBrush);
 	DestroyWindow(hwnd);
 	UnregisterClass(czWinClass, hThisInstance);
-	DeleteObject(hBrush);
 
 	delete circles;
 	return 0;
