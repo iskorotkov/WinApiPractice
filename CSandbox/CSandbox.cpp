@@ -18,7 +18,6 @@ void RunNotepad()
 
 	ZeroMemory(&sInfo, sizeof(STARTUPINFO));
 
-	puts("Starting Notepad...");
 	CreateProcess(_T("C:\\Windows\\Notepad.exe"), NULL, NULL, NULL, FALSE, 0, NULL, NULL, &sInfo, &pInfo);
 }
 
@@ -38,7 +37,7 @@ void OnClicked(HWND hwnd, UINT x, UINT y, UINT value)
 	GetClientRect(hwnd, &rect);
 	x = x * dim / rect.right;
 	y = y * dim / rect.bottom;
-	auto index = y * dim + x;
+	UINT index = y * dim + x;
 	circles[index] = value;
 
 	InvalidateRect(hwnd, NULL, true);
@@ -56,17 +55,15 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 				PostQuitMessage(0);
 				return 0;
 			}
-			if (wParam == 'C')
+			if (wParam == 'C' && GetKeyState(VK_SHIFT) & 0x8000)
 			{
-				if (GetKeyState(VK_SHIFT) & 0x8000)
-				{
-					RunNotepad();
-				}
+				RunNotepad();
 			}
 			else if (wParam == VK_RETURN)
 			{
 				HBRUSH hBrush = CreateSolidBrush(GetRandomColor());
 				SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG_PTR)hBrush);
+				
 				InvalidateRect(hwnd, NULL, true);
 				UpdateWindow(hwnd);
 			}
@@ -75,7 +72,6 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			PostQuitMessage(0);
 			return 0;
 		case WM_PAINT:
-			// Draw grid
 		{
 			PAINTSTRUCT ps;
 			HDC hdc = BeginPaint(hwnd, &ps);
@@ -85,43 +81,41 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			HPEN pen = CreatePen(0, 2, RGB(127, 0, 0));
 			HGDIOBJ prevBrush = SelectObject(hdc, pen);
 
-			for (auto i = 1u; i < dim; ++i)
+			for (UINT i = 1u; i < dim; ++i)
 			{
-				auto x = rect.right * i / dim;
+				UINT x = rect.right * i / dim;
 				MoveToEx(hdc, x, 0, NULL);
 				LineTo(hdc, x, rect.bottom);
 
-				auto y = rect.bottom * i / dim;
+				UINT y = rect.bottom * i / dim;
 				MoveToEx(hdc, 0, y, NULL);
 				LineTo(hdc, rect.right, y);
 			}
 
-			for (auto i = 0u, len = dim * dim; i < len; ++i)
+			for (UINT i = 0u, len = dim * dim; i < len; ++i)
 			{
 				if (circles[i])
 				{
-					auto row = i % dim;
-					auto col = i / dim;
+					UINT row = i % dim;
+					UINT col = i / dim;
 					RECT rect;
 					GetClientRect(hwnd, &rect);
-					auto height = rect.bottom;
-					auto width = rect.right;
-					auto radius = min(height/dim, width/dim) / 3;
-					auto centerX = width * (2 * row + 1) / (2 * dim);
-					auto centerY = height * (2 * col + 1) / (2 * dim);
+					UINT height = rect.bottom;
+					UINT width = rect.right;
+					UINT radius = min(height/dim, width/dim) / 3;
+					UINT centerX = width * (2 * row + 1) / (2 * dim);
+					UINT centerY = height * (2 * col + 1) / (2 * dim);
 					switch (circles[i])
 					{
 						case 1:
 						{
-							// Use transparent brush
-							// auto brush = GetStockObject(NULL_BRUSH);
-							auto brush = CreateSolidBrush(RGB(255, 255, 255));
-							HGDIOBJ prevBrush = SelectObject(hdc, brush);
+							HBRUSH hBrush = CreateSolidBrush(RGB(255, 255, 255));
+							HGDIOBJ prevBrush = SelectObject(hdc, hBrush);
 
 							Ellipse(hdc, centerX - radius, centerY - radius, centerX + radius, centerY + radius);
 
 							SelectObject(hdc, prevBrush);
-							DeleteObject(brush);
+							DeleteObject(hBrush);
 							break;
 						}
 						case 2:
@@ -145,15 +139,15 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		break;
 		case WM_LBUTTONDOWN:
 		{
-			auto x = GET_X_LPARAM(lParam);
-			auto y = GET_Y_LPARAM(lParam);
+			UINT x = GET_X_LPARAM(lParam);
+			UINT y = GET_Y_LPARAM(lParam);
 			OnClicked(hwnd, x, y, 1);
 			break;
 		}
 		case WM_RBUTTONDOWN:
 		{
-			auto x = GET_X_LPARAM(lParam);
-			auto y = GET_Y_LPARAM(lParam);
+			UINT x = GET_X_LPARAM(lParam);
+			UINT y = GET_Y_LPARAM(lParam);
 			OnClicked(hwnd, x, y, 2);
 			break;
 		}
@@ -163,9 +157,9 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
 int main(int argc, char** argv)
 {
-	auto len = dim * dim;
+	UINT len = dim * dim;
 	circles = new UINT[len];
-	ZeroMemory(circles, len * sizeof(BOOL));
+	ZeroMemory(circles, len * sizeof circles);
 
 	BOOL bMessageOk;
 	MSG message;
@@ -213,12 +207,11 @@ int main(int argc, char** argv)
 
 	ShowWindow(hwnd, nCmdShow);
 
-	// PeekMessage - async
 	while ((bMessageOk = GetMessage(&message, NULL, 0, 0)) != 0)
 	{
 		if (bMessageOk < 0)
 		{
-			puts("Suddenly, GetMessage failed! You can call GetLastError() to see what happened");
+			puts("Suddenly, GetMessage failed!");
 			break;
 		}
 		TranslateMessage(&message);
