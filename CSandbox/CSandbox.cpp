@@ -9,6 +9,8 @@ const TCHAR czWinClass[] = _T("MyClassName");
 const TCHAR czWinName[] = _T("MyWindowName");
 const UINT dim = 3;
 
+HBRUSH hCurrentBrush;
+
 UINT* circles;
 
 void RunNotepad()
@@ -148,6 +150,8 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			{
 				HBRUSH hBrush = CreateSolidBrush(GetRandomColor());
 				SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG_PTR)hBrush);
+				DeleteObject(hCurrentBrush);
+				hCurrentBrush = hBrush;
 
 				InvalidateRect(hwnd, NULL, true);
 				UpdateWindow(hwnd);
@@ -199,8 +203,8 @@ int main(int argc, char** argv)
 	wc.lpszClassName = czWinClass;
 	wc.lpfnWndProc = WindowProcedure;
 
-	HBRUSH hBrush = CreateSolidBrush(RGB(0, 0, 127));
-	wc.hbrBackground = hBrush;
+	hCurrentBrush = CreateSolidBrush(RGB(0, 0, 127));
+	wc.hbrBackground = hCurrentBrush;
 
 	if (!RegisterClassEx(&wc))
 	{
@@ -241,7 +245,7 @@ int main(int argc, char** argv)
 		DispatchMessage(&message);
 	}
 
-	DeleteObject(hBrush);
+	DeleteObject(hCurrentBrush);
 	DestroyWindow(hwnd);
 	UnregisterClass(czWinClass, hThisInstance);
 
