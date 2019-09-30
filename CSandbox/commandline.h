@@ -1,6 +1,6 @@
 #pragma once
 #include <Windows.h>
-#include "preferences.h"
+#include "files.h"
 
 inline ReadingMethod GetReadingMethod(int argc, char** argv)
 {

@@ -4,7 +4,8 @@
 #include <cstdlib>
 #include <windowsx.h>
 #include <WinUser.h>
-#include "cli.h"
+#include "files.h"
+#include "commandline.h"
 
 const TCHAR czWinClass[] = _T("MyClassName");
 const TCHAR czWinName[] = _T("MyWindowName");

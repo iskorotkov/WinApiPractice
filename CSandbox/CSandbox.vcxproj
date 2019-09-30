@@ -154,8 +154,8 @@
     <ClCompile Include="CSandbox.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cli.h" />
-    <ClInclude Include="preferences.h" />
+    <ClInclude Include="commandline.h" />
+    <ClInclude Include="files.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="config.ini" />
