@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <windowsx.h>
 #include <WinUser.h>
+#include "cli.h"
 
 const TCHAR czWinClass[] = _T("MyClassName");
 const TCHAR czWinName[] = _T("MyWindowName");
@@ -188,6 +189,9 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
 int main(int argc, char** argv)
 {
+	ReadingMethod method = GetReadingMethod(argc, argv);
+	INT result = ReadConfigFile(method);
+	
 	UINT len = dim * dim;
 	circles = new UINT[len];
 	ZeroMemory(circles, len * sizeof circles);
