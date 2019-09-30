@@ -67,6 +67,9 @@ int FileMapping()
 	_tprintf(TEXT("The data is %d bytes into the view.\n"),
 		iViewDelta);
 
+	dwFileSize = GetFileSize(hFile, NULL);
+	_tprintf(TEXT("hFile size: %10d\n"), dwFileSize);
+
 	hMapFile = CreateFileMapping(hFile,
 		NULL,
 		PAGE_READWRITE,
@@ -91,11 +94,13 @@ int FileMapping()
 		return 3;
 	}
 
-	char* content;
 	__try
 	{
-		content = (char*)lpMapAddress;
-		puts(content);
+		for (UINT i = 0; i < 3; ++i)
+		{
+			INT32* num = (INT32*)lpMapAddress + i;
+			_tprintf(L"%d ", *num);
+		}
 	}
 	__except (GetExceptionCode() == EXCEPTION_IN_PAGE_ERROR ? EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
 	{
