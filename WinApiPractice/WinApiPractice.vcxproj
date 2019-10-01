@@ -152,10 +152,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="commandline.cpp" />
+    <ClCompile Include="filemapping.cpp" />
+    <ClCompile Include="files.cpp" />
+    <ClCompile Include="preferences.cpp" />
     <ClCompile Include="WinApiPractice.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="commandline.h" />
+    <ClInclude Include="filemapping.h" />
     <ClInclude Include="files.h" />
     <ClInclude Include="preferences.h" />
   </ItemGroup>

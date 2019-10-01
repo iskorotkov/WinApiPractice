@@ -6,6 +6,8 @@
 #include <WinUser.h>
 #include "files.h"
 #include "commandline.h"
+#include "preferences.h"
+#include "filemapping.h"
 
 const TCHAR czWinClass[] = _T("MyClassName");
 const TCHAR czWinName[] = _T("MyWindowName");
@@ -276,7 +278,7 @@ int main(int argc, char** argv)
 	DestroyWindow(hwnd);
 	UnregisterClass(czWinClass, hThisInstance);
 
-	WriteConfigToFileMapping(prefs);
+	WriteConfigFile(method, prefs);
 	prefs->Cleanup();
 	delete prefs;
 	delete circles;
