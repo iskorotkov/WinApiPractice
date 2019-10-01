@@ -77,7 +77,7 @@ Preferences* ReadConfigFromFileMapping()
 	lpMapAddress = MapViewOfFile(hMapFile,
 		FILE_MAP_ALL_ACCESS,
 		0,
-		0,
+		dwFileMapStart,
 		dwMapViewSize);
 	if (lpMapAddress == NULL)
 	{
@@ -108,7 +108,6 @@ void WriteConfigToFileMapping(Preferences* prefs)
 
 	wcscpy_s((TCHAR*)lpMapAddress, BUFFSIZE, content);
 
-	// FlushViewOfFile(lpMapAddress, wcslen(content));
 	UnmapViewOfFile(lpMapAddress);
 	CloseHandle(hMapFile);
 	CloseHandle(hFile);
