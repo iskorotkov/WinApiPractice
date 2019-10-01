@@ -12,53 +12,21 @@ enum class ReadingMethod
 	WinApi,
 };
 
-enum FileOffset : UINT
-{
-	WindowWidthOffset = 0,
-	WindowHeightOffset = 4,
-	GridSizeOffset = 8,
-
-	BackgroundColorOffset = 12,
-	GridColorOffset = 16,
-
-	IconFileOffset = 128,
-	CursorFileOffset = 192,
-};
-
 const TCHAR* configFile = _T("C:\\Projects\\WinApiPractice\\WinApiPractice\\config.ini");
 
-const UINT BUFFSIZE = 256;
+const UINT BUFFSIZE = 1024;
 const UINT FILE_MAP_START = 0;
-
-template <typename T>
-T* ReadMappingValue(LPVOID Mapping, FileOffset Offset)
-{
-	return (T*)((char*)Mapping + Offset);
-}
 
 inline Preferences* ReadPreferencesFromMapping(LPVOID Mapping)
 {
-	Preferences* prefs = new Preferences;
-	
-	prefs->WindowWidth = *ReadMappingValue<UINT>(Mapping, WindowWidthOffset);
-	prefs->WindowHeight = *ReadMappingValue<UINT>(Mapping, WindowHeightOffset);
-	prefs->GridSize = *ReadMappingValue<UINT>(Mapping, GridSizeOffset);
-
-	prefs->BackgroundColor = *ReadMappingValue<COLORREF>(Mapping, BackgroundColorOffset);
-	prefs->GridColor = *ReadMappingValue<COLORREF>(Mapping, GridColorOffset);
-	
-	prefs->IconFile = ReadMappingValue<TCHAR>(Mapping, IconFileOffset);
-	prefs->CursorFile = ReadMappingValue<TCHAR>(Mapping, CursorFileOffset);
-	
-	return prefs;
+	TCHAR* content = (TCHAR*) Mapping;
+	return StringToPreferences(content);
 }
 
 Preferences* ReadConfigFromFileMapping()
 {
 	HANDLE hMapFile;      // handle for the file's memory-mapped region
 	HANDLE hFile;         // the file handle
-	BOOL bFlag;           // a result holder
-	DWORD dBytesWritten;  // number of bytes written
 	DWORD dwFileSize;     // temporary storage for file sizes
 	DWORD dwFileMapSize;  // size of the file mapping
 	DWORD dwMapViewSize;  // the size of the view
@@ -66,8 +34,6 @@ Preferences* ReadConfigFromFileMapping()
 	DWORD dwSysGran;      // system allocation granularity
 	SYSTEM_INFO SysInfo;  // system information; used to get granularity
 	LPVOID lpMapAddress;  // pointer to the base address of the memory-mapped region
-	char* pData;          // pointer to the data
-	int iData;            // on success contains the first int of data
 	int iViewDelta;       // the offset into the view where the data shows up
 
 	hFile = CreateFile(configFile,
@@ -112,7 +78,7 @@ Preferences* ReadConfigFromFileMapping()
 		NULL,
 		PAGE_READWRITE,
 		0,
-		BUFFSIZE,
+		dwFileMapSize,
 		NULL);
 	if (hMapFile == NULL)
 	{
