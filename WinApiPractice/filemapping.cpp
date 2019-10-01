@@ -5,9 +5,6 @@
 
 Preferences* ReadConfigFromFileMapping(const TCHAR* configFile)
 {
-	const UINT BUFFSIZE = 1024;
-	const UINT FILE_MAP_START = 0;
-
 	HANDLE hFile = CreateFile(configFile,
 		GENERIC_READ | GENERIC_WRITE,
 		0,
@@ -23,6 +20,9 @@ Preferences* ReadConfigFromFileMapping(const TCHAR* configFile)
 			configFile);
 		return NULL;
 	}
+
+	const UINT BUFFSIZE = GetFileSize(hFile, NULL);
+	const UINT FILE_MAP_START = 0;
 
 	SYSTEM_INFO SysInfo; // system information; used to get granularity
 	GetSystemInfo(&SysInfo);
@@ -49,7 +49,7 @@ Preferences* ReadConfigFromFileMapping(const TCHAR* configFile)
 
 	HANDLE hMapFile = CreateFileMapping(hFile,
 		NULL,
-		PAGE_READWRITE,
+		PAGE_READONLY,
 		0,
 		dwFileMapSize,
 		NULL);
@@ -60,7 +60,7 @@ Preferences* ReadConfigFromFileMapping(const TCHAR* configFile)
 	}
 
 	LPVOID lpMapAddress = MapViewOfFile(hMapFile,
-		FILE_MAP_ALL_ACCESS,
+		FILE_MAP_READ,
 		0,
 		dwFileMapStart,
 		dwMapViewSize);
