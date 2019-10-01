@@ -9,7 +9,7 @@
 
 const TCHAR czWinClass[] = _T("MyClassName");
 const TCHAR czWinName[] = _T("MyWindowName");
-const UINT dim = 3;
+UINT dim = 3;
 
 HBRUSH hCurrentBrush;
 
@@ -191,14 +191,20 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 int main(int argc, char** argv)
 {
 	ReadingMethod method = GetReadingMethod(argc, argv);
-	INT result = ReadConfigFile(method);
-	
+	Preferences* prefs = ReadConfigFile(method);
+	if (prefs == NULL)
+	{
+		MessageBox(NULL, L"Failed to read config file!", L"Error", MB_OK | MB_ICONERROR);
+		return -1;
+	}
+	dim = prefs->GridSize;
+
 	UINT len = dim * dim;
 	circles = new UINT[len];
 	ZeroMemory(circles, len * sizeof circles);
 
 	HINSTANCE hThisInstance = GetModuleHandle(NULL);
-	
+
 	WNDCLASSEX wc = { 0 };
 	wc.cbSize = sizeof(wc);
 	wc.style = CS_HREDRAW | CS_VREDRAW;
@@ -226,8 +232,8 @@ int main(int argc, char** argv)
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
-		320,
-		240,
+		prefs->WindowWidth,
+		prefs->WindowHeight,
 		HWND_DESKTOP,
 		NULL,
 		hThisInstance,
@@ -254,6 +260,8 @@ int main(int argc, char** argv)
 	DestroyWindow(hwnd);
 	UnregisterClass(czWinClass, hThisInstance);
 
+	prefs->Cleanup();
+	delete prefs;
 	delete circles;
 	return 0;
 }

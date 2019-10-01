@@ -1,6 +1,7 @@
 #pragma once
 #include <Windows.h>
 #include <tchar.h>
+#include "preferences.h"
 
 enum class ReadingMethod
 {
@@ -11,11 +12,47 @@ enum class ReadingMethod
 	WinApi,
 };
 
+enum FileOffset : UINT
+{
+	WindowWidthOffset = 0,
+	WindowHeightOffset = 4,
+	GridSizeOffset = 8,
+
+	BackgroundColorOffset = 12,
+	GridColorOffset = 16,
+
+	IconFileOffset = 128,
+	CursorFileOffset = 192,
+};
+
 const TCHAR* configFile = _T("C:\\Projects\\WinApiPractice\\WinApiPractice\\config.ini");
 const UINT BUFFSIZE = 256;
 const UINT FILE_MAP_START = 0;
 
-int FileMapping()
+template <typename T>
+T* ReadMappingValue(LPVOID Mapping, FileOffset Offset)
+{
+	return (T*)((char*)Mapping + Offset);
+}
+
+inline Preferences* ReadPreferencesFromMapping(LPVOID Mapping)
+{
+	Preferences* prefs = new Preferences;
+	
+	prefs->WindowWidth = *ReadMappingValue<UINT>(Mapping, WindowWidthOffset);
+	prefs->WindowHeight = *ReadMappingValue<UINT>(Mapping, WindowHeightOffset);
+	prefs->GridSize = *ReadMappingValue<UINT>(Mapping, GridSizeOffset);
+
+	prefs->BackgroundColor = *ReadMappingValue<COLORREF>(Mapping, BackgroundColorOffset);
+	prefs->GridColor = *ReadMappingValue<COLORREF>(Mapping, GridColorOffset);
+	
+	prefs->IconFile = ReadMappingValue<TCHAR>(Mapping, IconFileOffset);
+	prefs->CursorFile = ReadMappingValue<TCHAR>(Mapping, CursorFileOffset);
+	
+	return prefs;
+}
+
+Preferences* ReadConfigFromFileMapping()
 {
 	HANDLE hMapFile;      // handle for the file's memory-mapped region
 	HANDLE hFile;         // the file handle
@@ -45,7 +82,7 @@ int FileMapping()
 		_tprintf(TEXT("hFile is NULL\n"));
 		_tprintf(TEXT("Target file is %s\n"),
 			configFile);
-		return 4;
+		return NULL;
 	}
 
 	GetSystemInfo(&SysInfo);
@@ -79,10 +116,9 @@ int FileMapping()
 	if (hMapFile == NULL)
 	{
 		_tprintf(TEXT("hMapFile is NULL: last error: %d\n"), GetLastError());
-		return 2;
+		return NULL;
 	}
 
-	// TODO: Provide real values.
 	lpMapAddress = MapViewOfFile(hMapFile,
 		FILE_MAP_ALL_ACCESS,
 		0,
@@ -91,16 +127,14 @@ int FileMapping()
 	if (lpMapAddress == NULL)
 	{
 		_tprintf(TEXT("lpMapAddress is NULL: last error: %d\n"), GetLastError());
-		return 3;
+		return NULL;
 	}
 
+	// TODO: Do not forget to delete this!
+	Preferences* prefs = NULL;
 	__try
 	{
-		for (UINT i = 0; i < 3; ++i)
-		{
-			INT32* num = (INT32*)lpMapAddress + i;
-			_tprintf(L"%d ", *num);
-		}
+		prefs = ReadPreferencesFromMapping(lpMapAddress);
 	}
 	__except (GetExceptionCode() == EXCEPTION_IN_PAGE_ERROR ? EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
 	{
@@ -110,16 +144,17 @@ int FileMapping()
 	UnmapViewOfFile(lpMapAddress);
 	CloseHandle(hMapFile);
 	CloseHandle(hFile);
+	return prefs;
 }
 
-inline int ReadConfigFile(ReadingMethod Method)
+inline Preferences* ReadConfigFile(ReadingMethod Method)
 {
 	switch (Method)
 	{
 		case ReadingMethod::FileMapping:
-			return FileMapping();
+			return ReadConfigFromFileMapping();
 	}
-	return 0;
+	return NULL;
 }
 
 UINT GetDimension();
