@@ -26,6 +26,7 @@ enum FileOffset : UINT
 };
 
 const TCHAR* configFile = _T("C:\\Projects\\WinApiPractice\\WinApiPractice\\config.ini");
+
 const UINT BUFFSIZE = 256;
 const UINT FILE_MAP_START = 0;
 

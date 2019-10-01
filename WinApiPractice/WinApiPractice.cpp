@@ -9,6 +9,7 @@
 
 const TCHAR czWinClass[] = _T("MyClassName");
 const TCHAR czWinName[] = _T("MyWindowName");
+Preferences* prefs;
 UINT dim = 3;
 
 HBRUSH hCurrentBrush;
@@ -113,7 +114,7 @@ void DrawGrid(HWND hwnd, HDC hdc)
 {
 	RECT rect;
 	GetClientRect(hwnd, &rect);
-	HPEN pen = CreatePen(0, 2, RGB(127, 0, 0));
+	HPEN pen = CreatePen(0, 2, prefs->GridColor);
 	HGDIOBJ prevBrush = SelectObject(hdc, pen);
 
 	for (UINT i = 1u; i < dim; ++i)
@@ -191,7 +192,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 int main(int argc, char** argv)
 {
 	ReadingMethod method = GetReadingMethod(argc, argv);
-	Preferences* prefs = ReadConfigFile(method);
+	prefs = ReadConfigFile(method);
 	if (prefs == NULL)
 	{
 		MessageBox(NULL, L"Failed to read config file!", L"Error", MB_OK | MB_ICONERROR);
@@ -206,7 +207,7 @@ int main(int argc, char** argv)
 	HINSTANCE hThisInstance = GetModuleHandle(NULL);
 
 	WNDCLASSEX wc = { 0 };
-	wc.cbSize = sizeof(wc);
+	wc.cbSize = sizeof wc;
 	wc.style = CS_HREDRAW | CS_VREDRAW;
 	wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
@@ -214,7 +215,7 @@ int main(int argc, char** argv)
 	wc.lpszClassName = czWinClass;
 	wc.lpfnWndProc = WindowProcedure;
 
-	hCurrentBrush = CreateSolidBrush(RGB(0, 0, 127));
+	hCurrentBrush = CreateSolidBrush(prefs->BackgroundColor);
 	wc.hbrBackground = hCurrentBrush;
 
 	if (!RegisterClassEx(&wc))
