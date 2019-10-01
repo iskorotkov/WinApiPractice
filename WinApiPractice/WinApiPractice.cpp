@@ -151,7 +151,12 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			}
 			else if (wParam == VK_RETURN)
 			{
-				HBRUSH hBrush = CreateSolidBrush(GetRandomColor());
+				COLORREF NewColor = GetRandomColor();
+				if (prefs)
+				{
+					prefs->BackgroundColor = NewColor;
+				}
+				HBRUSH hBrush = CreateSolidBrush(NewColor);
 				SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG_PTR)hBrush);
 				DeleteObject(hCurrentBrush);
 				hCurrentBrush = hBrush;
@@ -163,6 +168,14 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		case WM_DESTROY:
 			PostQuitMessage(0);
 			return 0;
+		case WM_SIZE:
+		{
+			if (prefs)
+			{
+				prefs->WindowWidth = GET_X_LPARAM(lParam);
+				prefs->WindowHeight = GET_Y_LPARAM(lParam);
+			}
+		}
 		case WM_PAINT:
 		{
 			PAINTSTRUCT ps;
@@ -261,6 +274,7 @@ int main(int argc, char** argv)
 	DestroyWindow(hwnd);
 	UnregisterClass(czWinClass, hThisInstance);
 
+	WriteConfigToFileMapping(prefs);
 	prefs->Cleanup();
 	delete prefs;
 	delete circles;

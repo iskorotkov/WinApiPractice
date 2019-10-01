@@ -3,6 +3,7 @@
 #include <sstream>
 #include <ios>
 #include <iostream>
+#include <iomanip>
 
 struct Preferences
 {
@@ -46,6 +47,7 @@ inline Preferences* StringToPreferences(TCHAR* content)
 {
 	Preferences* prefs = new Preferences;
 	std::wstringstream is(content);
+	std::ios_base::fmtflags f(is.flags());
 
 	is >> prefs->WindowWidth
 	>> prefs->WindowHeight
@@ -53,26 +55,34 @@ inline Preferences* StringToPreferences(TCHAR* content)
 	>> std::hex >> prefs->BackgroundColor
 	>> std::hex >> prefs->GridColor;
 
+	is.flags(f);
+
 	InvertColor(prefs->BackgroundColor);
 	InvertColor(prefs->GridColor);
 	return prefs;
 }
 
-inline TCHAR* PreferencesToString(Preferences* prefs, UINT size)
+inline const TCHAR* PreferencesToString(Preferences* prefs)
 {
-	TCHAR* content = new TCHAR[size];
-	std::wstringstream os(content);
+	std::wstringstream os;
+	std::ios_base::fmtflags f(os.flags());
 
 	InvertColor(prefs->BackgroundColor);
 	InvertColor(prefs->GridColor);
-	
+
 	os << prefs->WindowWidth << ' '
 	<< prefs->WindowHeight << '\n'
 	<< prefs->GridSize << '\n'
-	<< std::hex << prefs->BackgroundColor << '\n'
-	<< std::hex << prefs->GridColor << '\n'
+	<< std::hex << std::setfill(L'0') << std::setw(6)
+	<< prefs->BackgroundColor << '\n'
+	<< prefs->GridColor << '\n'
 	// TODO: Can I really append \0 here?
 	<< '\0';
-	
-	return content;
+
+	os.flags(f);
+
+	UINT len = os.tellp();
+	TCHAR* buffer = new TCHAR[len];
+	os.read(buffer, len);
+	return buffer;
 }
