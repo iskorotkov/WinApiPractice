@@ -168,12 +168,14 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		case WM_DESTROY:
 			PostQuitMessage(0);
 			return 0;
-		case WM_SIZE:
+		case WM_SIZING:
 		{
 			if (prefs)
 			{
-				prefs->WindowWidth = GET_X_LPARAM(lParam);
-				prefs->WindowHeight = GET_Y_LPARAM(lParam);
+				RECT rect;
+				GetClientRect(hwnd, &rect);
+				prefs->WindowWidth = rect.right;
+				prefs->WindowHeight = rect.bottom;
 			}
 		}
 		case WM_PAINT:

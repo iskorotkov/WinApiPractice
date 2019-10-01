@@ -66,7 +66,7 @@ Preferences* ReadConfigFromFileMapping()
 		NULL,
 		PAGE_READWRITE,
 		0,
-		dwFileSize,
+		dwFileMapSize,
 		NULL);
 	if (hMapFile == NULL)
 	{
@@ -77,8 +77,8 @@ Preferences* ReadConfigFromFileMapping()
 	lpMapAddress = MapViewOfFile(hMapFile,
 		FILE_MAP_ALL_ACCESS,
 		0,
-		dwFileMapStart,
-		dwFileSize);
+		0,
+		dwMapViewSize);
 	if (lpMapAddress == NULL)
 	{
 		_tprintf(TEXT("lpMapAddress is NULL: last error: %d\n"), GetLastError());
@@ -107,7 +107,8 @@ void WriteConfigToFileMapping(Preferences* prefs)
 	const TCHAR* content = PreferencesToString(prefs);
 
 	wcscpy_s((TCHAR*)lpMapAddress, BUFFSIZE, content);
-	
+
+	// FlushViewOfFile(lpMapAddress, wcslen(content));
 	UnmapViewOfFile(lpMapAddress);
 	CloseHandle(hMapFile);
 	CloseHandle(hFile);
