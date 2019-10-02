@@ -9,7 +9,7 @@
 
 const TCHAR* configFile = _T("C:\\Projects\\WinApiPractice\\WinApiPractice\\config.ini");
 
-void WriteConfigFile(ReadingMethod method, Preferences* prefs)
+void WriteConfigFile(const ReadingMethod method, Preferences* prefs)
 {
 	switch (method)
 	{
@@ -30,7 +30,7 @@ void WriteConfigFile(ReadingMethod method, Preferences* prefs)
 	}
 }
 
-Preferences* ReadConfigFile(ReadingMethod method)
+Preferences* ReadConfigFile(const ReadingMethod method)
 {
 	switch (method)
 	{
@@ -45,5 +45,5 @@ Preferences* ReadConfigFile(ReadingMethod method)
 		default:
 			_tprintf(L"Please specify config file reading method");
 	}
-	return NULL;
+	return nullptr;
 }

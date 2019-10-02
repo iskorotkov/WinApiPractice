@@ -11,8 +11,8 @@ struct Preferences
 	COLORREF BackgroundColor;
 	COLORREF GridColor;
 
-	TCHAR* IconFile = NULL;
-	TCHAR* CursorFile = NULL;
+	TCHAR* IconFile = nullptr;
+	TCHAR* CursorFile = nullptr;
 
 	void Cleanup();
 };

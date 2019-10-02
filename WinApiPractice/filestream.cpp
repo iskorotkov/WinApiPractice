@@ -1,16 +1,19 @@
+#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
+
 #include "filestream.h"
 #include <fstream>
 #include "preferences.h"
 #include <sstream>
 #include <codecvt>
 
-const UINT BufferSize = 1024;
 
 Preferences* ReadConfigUsingStream(const TCHAR* configFile)
 {
 	std::wifstream ifs(configFile);
+
+	// TODO: std::little_endian is deprecated.
 	ifs.imbue(std::locale(ifs.getloc(), new std::codecvt_utf16<wchar_t, 0x10ffff, std::little_endian>));
-	
+
 	std::wostringstream oss;
 	oss << ifs.rdbuf();
 
@@ -26,3 +29,5 @@ void WriteConfigUsingStream(const TCHAR* configFile, const Preferences* prefs)
 
 	delete content;
 }
+
+#undef _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING

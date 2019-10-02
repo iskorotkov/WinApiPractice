@@ -5,73 +5,58 @@
 
 Preferences* ReadConfigFromFileMapping(const TCHAR* configFile)
 {
-	HANDLE hFile = CreateFile(configFile,
+	const HANDLE hFile = CreateFile(configFile,
 		GENERIC_READ,
 		0,
-		NULL,
+		nullptr,
 		OPEN_EXISTING,
 		FILE_ATTRIBUTE_NORMAL,
-		NULL);
+		nullptr);
 
 	if (hFile == INVALID_HANDLE_VALUE)
 	{
 		_tprintf(TEXT("hFile is NULL\n"));
 		_tprintf(TEXT("Target file is %s\n"),
 			configFile);
-		return NULL;
+		return nullptr;
 	}
 
-	const UINT BUFFSIZE = GetFileSize(hFile, NULL);
-	const UINT FILE_MAP_START = 0;
+	const UINT bufferSize = GetFileSize(hFile, nullptr);
+	const UINT fileMapStart = 0;
 
 	SYSTEM_INFO SysInfo; // system information; used to get granularity
 	GetSystemInfo(&SysInfo);
-	DWORD dwSysGran = SysInfo.dwAllocationGranularity;
+	const DWORD dwSysGran = SysInfo.dwAllocationGranularity;
 
-	DWORD dwFileMapStart = (FILE_MAP_START / dwSysGran) * dwSysGran;
-	_tprintf(TEXT("The file map view starts at %ld bytes into the file.\n"),
-		dwFileMapStart);
+	const DWORD dwFileMapStart = fileMapStart / dwSysGran * dwSysGran;
+	const DWORD dwMapViewSize = fileMapStart % dwSysGran + bufferSize;
+	const DWORD dwFileMapSize = fileMapStart + bufferSize;
 
-	DWORD dwMapViewSize = (FILE_MAP_START % dwSysGran) + BUFFSIZE;
-	_tprintf(TEXT("The file map view is %ld bytes large.\n"),
-		dwMapViewSize);
-
-	DWORD dwFileMapSize = FILE_MAP_START + BUFFSIZE;
-	_tprintf(TEXT("The file mapping object is %ld bytes large.\n"),
-		dwFileMapSize);
-
-	int iViewDelta = FILE_MAP_START - dwFileMapStart;
-	_tprintf(TEXT("The data is %d bytes into the view.\n"),
-		iViewDelta);
-
-	DWORD dwFileSize = GetFileSize(hFile, NULL);
-	_tprintf(TEXT("hFile size: %10d\n"), dwFileSize);
-
-	HANDLE hMapFile = CreateFileMapping(hFile,
-		NULL,
+	const HANDLE hMapFile = CreateFileMapping(hFile,
+		nullptr,
 		PAGE_READONLY,
 		0,
 		dwFileMapSize,
-		NULL);
-	if (hMapFile == NULL)
+		nullptr);
+	if (hMapFile == nullptr)
 	{
 		_tprintf(TEXT("hMapFile is NULL: last error: %d\n"), GetLastError());
-		return NULL;
+		return nullptr;
 	}
 
-	LPVOID lpMapAddress = MapViewOfFile(hMapFile,
+	const LPVOID lpMapAddress = MapViewOfFile(hMapFile,
 		FILE_MAP_READ,
 		0,
 		dwFileMapStart,
 		dwMapViewSize);
-	if (lpMapAddress == NULL)
+	if (lpMapAddress == nullptr)
 	{
 		_tprintf(TEXT("lpMapAddress is NULL: last error: %d\n"), GetLastError());
-		return NULL;
+		return nullptr;
 	}
 
 	// TODO: Do not forget to delete this!
-	Preferences* prefs = NULL;
+	Preferences* prefs = nullptr;
 	__try
 	{
 		prefs = StringToPreferences((TCHAR*)lpMapAddress);
@@ -90,7 +75,7 @@ Preferences* ReadConfigFromFileMapping(const TCHAR* configFile)
 
 void WriteConfigToFileMapping(const TCHAR* configFile, Preferences* prefs)
 {
-	if (prefs == NULL)
+	if (prefs == nullptr)
 	{
 		_tprintf(L"Preferences are NULL.");
 		return;
@@ -98,16 +83,16 @@ void WriteConfigToFileMapping(const TCHAR* configFile, Preferences* prefs)
 
 	const TCHAR* content = PreferencesToString(prefs);
 
-	const UINT BUFFSIZE = wcslen(content) * sizeof TCHAR;
-	const UINT FILE_MAP_START = 0;
+	const UINT bufferSize = wcslen(content) * sizeof TCHAR;
+	const UINT fileMapStart = 0;
 
-	HANDLE hFile = CreateFile(configFile,
+	const HANDLE hFile = CreateFile(configFile,
 		GENERIC_READ | GENERIC_WRITE,
 		0,
-		NULL,
+		nullptr,
 		CREATE_ALWAYS,
 		FILE_ATTRIBUTE_NORMAL,
-		NULL);
+		nullptr);
 
 	if (hFile == INVALID_HANDLE_VALUE)
 	{
@@ -119,52 +104,37 @@ void WriteConfigToFileMapping(const TCHAR* configFile, Preferences* prefs)
 
 	SYSTEM_INFO SysInfo; // system information; used to get granularity
 	GetSystemInfo(&SysInfo);
-	DWORD dwSysGran = SysInfo.dwAllocationGranularity;
+	const DWORD dwSysGran = SysInfo.dwAllocationGranularity;
 
-	DWORD dwFileMapStart = (FILE_MAP_START / dwSysGran) * dwSysGran;
-	_tprintf(TEXT("The file map view starts at %ld bytes into the file.\n"),
-		dwFileMapStart);
+	const DWORD dwFileMapStart = fileMapStart / dwSysGran * dwSysGran;
+	const DWORD dwMapViewSize = fileMapStart % dwSysGran + bufferSize;
+	const DWORD dwFileMapSize = fileMapStart + bufferSize;
 
-	DWORD dwMapViewSize = (FILE_MAP_START % dwSysGran) + BUFFSIZE;
-	_tprintf(TEXT("The file map view is %ld bytes large.\n"),
-		dwMapViewSize);
-
-	DWORD dwFileMapSize = FILE_MAP_START + BUFFSIZE;
-	_tprintf(TEXT("The file mapping object is %ld bytes large.\n"),
-		dwFileMapSize);
-
-	int iViewDelta = FILE_MAP_START - dwFileMapStart;
-	_tprintf(TEXT("The data is %d bytes into the view.\n"),
-		iViewDelta);
-
-	DWORD dwFileSize = GetFileSize(hFile, NULL);
-	_tprintf(TEXT("hFile size: %10d\n"), dwFileSize);
-
-	HANDLE hMapFile = CreateFileMapping(hFile,
-		NULL,
+	const HANDLE hMapFile = CreateFileMapping(hFile,
+		nullptr,
 		PAGE_READWRITE,
 		0,
 		dwFileMapSize,
-		NULL);
-	if (hMapFile == NULL)
+		nullptr);
+	if (hMapFile == nullptr)
 	{
 		_tprintf(TEXT("hMapFile is NULL: last error: %d\n"), GetLastError());
 		return;
 	}
 
-	LPVOID lpMapAddress = MapViewOfFile(hMapFile,
+	const LPVOID lpMapAddress = MapViewOfFile(hMapFile,
 		FILE_MAP_ALL_ACCESS,
 		0,
 		dwFileMapStart,
 		dwMapViewSize);
-	if (lpMapAddress == NULL)
+	if (lpMapAddress == nullptr)
 	{
 		_tprintf(TEXT("lpMapAddress is NULL: last error: %d\n"), GetLastError());
 		return;
 	}
 
-	wcscpy_s((TCHAR*)lpMapAddress, BUFFSIZE, content);
-	delete content;
+	wcscpy_s((TCHAR*)lpMapAddress, bufferSize, content);
+	delete[] content;
 	
 	UnmapViewOfFile(lpMapAddress);
 	CloseHandle(hMapFile);

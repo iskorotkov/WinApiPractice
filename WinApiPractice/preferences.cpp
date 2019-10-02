@@ -6,8 +6,6 @@
 #include "preferences.h"
 #include <tchar.h>
 
-const UINT BufferSize = 1024;
-
 Preferences::~Preferences()
 {
 	Cleanup();
@@ -18,20 +16,20 @@ void Preferences::Cleanup()
 	if (IconFile)
 	{
 		delete[] IconFile;
-		IconFile = NULL;
+		IconFile = nullptr;
 	}
 	if (CursorFile)
 	{
 		delete[] CursorFile;
-		CursorFile = NULL;
+		CursorFile = nullptr;
 	}
 }
 
 void InvertColor(COLORREF& color)
 {
 	COLORREF copy = color;
-	char* originalColor = (char*)&copy;
-	char* invertedColor = (char*)&color;
+	std::byte* originalColor = (std::byte*)&copy;
+	std::byte* invertedColor = (std::byte*)&color;
 	invertedColor[0] = originalColor[2];
 	invertedColor[2] = originalColor[0];
 }
@@ -40,7 +38,7 @@ Preferences* StringToPreferences(const TCHAR* content)
 {
 	Preferences* prefs = new Preferences;
 	std::wistringstream is(content);
-	std::ios_base::fmtflags f(is.flags());
+	const std::ios_base::fmtflags f(is.flags());
 
 	is >> prefs->WindowWidth
 	>> prefs->WindowHeight
@@ -56,11 +54,14 @@ Preferences* StringToPreferences(const TCHAR* content)
 	{
 		is.ignore();
 	}
-	
-	prefs->IconFile = new TCHAR[BufferSize];
-	prefs->CursorFile = new TCHAR[BufferSize];
-	is.getline(prefs->IconFile, BufferSize);
-	is.getline(prefs->CursorFile, BufferSize);
+
+	const UINT bufferSize = 1024;
+
+	// TODO: Fixed size buffer array.
+	prefs->IconFile = new TCHAR[bufferSize];
+	prefs->CursorFile = new TCHAR[bufferSize];
+	is.getline(prefs->IconFile, bufferSize);
+	is.getline(prefs->CursorFile, bufferSize);
 
 	return prefs;
 }
@@ -68,7 +69,7 @@ Preferences* StringToPreferences(const TCHAR* content)
 const TCHAR* PreferencesToString(const Preferences* prefs)
 {
 	std::wostringstream os;
-	std::ios_base::fmtflags f(os.flags());
+	const std::ios_base::fmtflags f(os.flags());
 
 	// TODO: Add method that return inverted copy of color.
 	COLORREF BgColor = prefs->BackgroundColor;
@@ -82,7 +83,6 @@ const TCHAR* PreferencesToString(const Preferences* prefs)
 	<< std::hex << std::setfill(L'0') << std::setw(6)
 	<< BgColor << '\n'
 	<< GrColor << '\n';
-	// TODO: Can I really append \0 here?
 
 	os.flags(f);
 
@@ -90,7 +90,7 @@ const TCHAR* PreferencesToString(const Preferences* prefs)
 	<< prefs->CursorFile << '\n';
 
 	os << '\0';
-	UINT len = os.tellp();
+	const UINT len = os.tellp();
 	TCHAR* buffer = new TCHAR[len];
 	wcscpy_s(buffer, len, os.str().c_str());
 	return buffer;

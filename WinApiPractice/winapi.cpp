@@ -1,20 +1,19 @@
 #include "winapi.h"
 #include "preferences.h"
 
-const UINT BufferSize = 1024;
-
 Preferences* ReadConfigUsingWinApi(const TCHAR* configFile)
 {
-	HANDLE hFile = CreateFile(configFile,
+	const HANDLE hFile = CreateFile(configFile,
 		GENERIC_READ,
 		0,
-		NULL,
+		nullptr,
 		OPEN_EXISTING,
 		FILE_ATTRIBUTE_NORMAL,
-		NULL);
+		nullptr);
 
-	TCHAR* buffer = new TCHAR[BufferSize];
-	ReadFile(hFile, buffer, BufferSize, NULL, NULL);
+	const UINT bufferSize = GetFileSize(hFile, nullptr);
+	TCHAR* buffer = new TCHAR[bufferSize];
+	ReadFile(hFile, buffer, bufferSize, nullptr, nullptr);
 
 	CloseHandle(hFile);
 
@@ -26,17 +25,17 @@ Preferences* ReadConfigUsingWinApi(const TCHAR* configFile)
 
 void WriteConfigUsingWinApi(const TCHAR* configFile, const Preferences* prefs)
 {
-	HANDLE hFile = CreateFile(configFile,
+	const HANDLE hFile = CreateFile(configFile,
 		GENERIC_READ | GENERIC_WRITE,
 		0,
-		NULL,
+		nullptr,
 		CREATE_ALWAYS,
 		FILE_ATTRIBUTE_NORMAL,
-		NULL);
+		nullptr);
 
 	const TCHAR* buffer = PreferencesToString(prefs);
 	const UINT len = wcslen(buffer) * sizeof(wchar_t);
-	WriteFile(hFile, buffer, len, NULL, NULL);
+	WriteFile(hFile, buffer, len, nullptr, nullptr);
 
 	CloseHandle(hFile);
 	delete[] buffer;
