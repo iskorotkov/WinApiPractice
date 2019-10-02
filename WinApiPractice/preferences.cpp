@@ -88,6 +88,6 @@ const TCHAR* PreferencesToString(const Preferences* prefs)
 	os << '\0';
 	UINT len = os.tellp();
 	TCHAR* buffer = new TCHAR[len];
-	wcscpy_s(buffer, len, 	os.str().c_str());
+	wcscpy_s(buffer, len, os.str().c_str());
 	return buffer;
 }
