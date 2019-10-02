@@ -13,53 +13,65 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\io">
+      <UniqueIdentifier>{c65bba0f-2887-484b-9d4c-cf64103a1473}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\io">
+      <UniqueIdentifier>{448dbbdf-f04e-4f3e-b0e0-022152683870}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\cli">
+      <UniqueIdentifier>{bc0a04ab-4c1e-4eea-aea8-fc7f23cbfa6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\cli">
+      <UniqueIdentifier>{f6d50498-dbd3-4411-8fb3-075f11e1a615}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApiPractice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="commandline.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="filemapping.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\io</Filter>
     </ClCompile>
     <ClCompile Include="files.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\io</Filter>
+    </ClCompile>
+    <ClCompile Include="filestream.cpp">
+      <Filter>Source Files\io</Filter>
+    </ClCompile>
+    <ClCompile Include="variables.cpp">
+      <Filter>Source Files\io</Filter>
+    </ClCompile>
+    <ClCompile Include="winapi.cpp">
+      <Filter>Source Files\io</Filter>
+    </ClCompile>
+    <ClCompile Include="commandline.cpp">
+      <Filter>Source Files\cli</Filter>
     </ClCompile>
     <ClCompile Include="preferences.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="filestream.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="winapi.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="variables.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="files.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="commandline.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="preferences.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="filemapping.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\io</Filter>
+    </ClInclude>
+    <ClInclude Include="files.h">
+      <Filter>Header Files\io</Filter>
     </ClInclude>
     <ClInclude Include="filestream.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="winapi.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\io</Filter>
     </ClInclude>
     <ClInclude Include="variables.h">
+      <Filter>Header Files\io</Filter>
+    </ClInclude>
+    <ClInclude Include="winapi.h">
+      <Filter>Header Files\io</Filter>
+    </ClInclude>
+    <ClInclude Include="commandline.h">
+      <Filter>Header Files\cli</Filter>
+    </ClInclude>
+    <ClInclude Include="preferences.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
