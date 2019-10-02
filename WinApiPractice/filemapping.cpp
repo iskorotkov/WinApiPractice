@@ -164,7 +164,8 @@ void WriteConfigToFileMapping(const TCHAR* configFile, Preferences* prefs)
 	}
 
 	wcscpy_s((TCHAR*)lpMapAddress, BUFFSIZE, content);
-
+	delete content;
+	
 	UnmapViewOfFile(lpMapAddress);
 	CloseHandle(hMapFile);
 	CloseHandle(hFile);
