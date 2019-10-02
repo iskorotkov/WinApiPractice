@@ -6,7 +6,7 @@
 Preferences* ReadConfigFromFileMapping(const TCHAR* configFile)
 {
 	HANDLE hFile = CreateFile(configFile,
-		GENERIC_READ | GENERIC_WRITE,
+		GENERIC_READ,
 		0,
 		NULL,
 		OPEN_EXISTING,
