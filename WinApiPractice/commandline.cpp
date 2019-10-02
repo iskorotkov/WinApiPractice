@@ -7,7 +7,6 @@ ReadingMethod GetReadingMethod(int argc, char** argv)
 	ReadingMethod Method = ReadingMethod::Unknown;
 	for (UINT i = 1; i < argc; ++i)
 	{
-		// TODO: Compare wide strings.
 		// TODO: Ignore strings case.
 		const char* command = argv[i];
 		if (strcmp(command, "-filemapping") == 0)

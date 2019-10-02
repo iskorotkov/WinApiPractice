@@ -55,7 +55,6 @@ Preferences* ReadConfigFromFileMapping(const TCHAR* configFile)
 		return nullptr;
 	}
 
-	// TODO: Do not forget to delete this!
 	Preferences* prefs = nullptr;
 	__try
 	{

@@ -6,18 +6,21 @@
 #include <sstream>
 #include <codecvt>
 
-
 Preferences* ReadConfigUsingStream(const TCHAR* configFile)
 {
-	std::wifstream ifs(configFile);
+	std::ifstream ifs(configFile, std::ios::binary);
 
-	// TODO: std::little_endian is deprecated.
-	ifs.imbue(std::locale(ifs.getloc(), new std::codecvt_utf16<wchar_t, 0x10ffff, std::little_endian>));
+	ifs.seekg(0, std::ios::end);
+	const UINT size = ifs.tellg();
+	ifs.seekg(0, std::ios::beg);
+	const UINT bufferSize = (size % 2 == 1 ? size + 1 : size) / sizeof(wchar_t);
+	
+	TCHAR* buffer = new TCHAR[bufferSize + 1];
+	buffer[bufferSize] = L'\0';
 
-	std::wostringstream oss;
-	oss << ifs.rdbuf();
+	ifs.read((char*)buffer, size);
 
-	return StringToPreferences(oss.str().c_str());
+	return StringToPreferences(buffer);
 }
 
 void WriteConfigUsingStream(const TCHAR* configFile, const Preferences* prefs)
