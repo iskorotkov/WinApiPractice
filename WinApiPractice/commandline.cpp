@@ -20,7 +20,7 @@ ReadingMethod GetReadingMethod(int argc, char** argv)
 		}
 		else if (strcmp(command, "-streams") == 0)
 		{
-			Method = ReadingMethod::Variables;
+			Method = ReadingMethod::Streams;
 		}
 		else if (strcmp(command, "-winapi") == 0)
 		{

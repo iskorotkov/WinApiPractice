@@ -155,6 +155,7 @@
     <ClCompile Include="commandline.cpp" />
     <ClCompile Include="filemapping.cpp" />
     <ClCompile Include="files.cpp" />
+    <ClCompile Include="filestream.cpp" />
     <ClCompile Include="preferences.cpp" />
     <ClCompile Include="WinApiPractice.cpp" />
   </ItemGroup>
@@ -162,6 +163,7 @@
     <ClInclude Include="commandline.h" />
     <ClInclude Include="filemapping.h" />
     <ClInclude Include="files.h" />
+    <ClInclude Include="filestream.h" />
     <ClInclude Include="preferences.h" />
   </ItemGroup>
   <ItemGroup>

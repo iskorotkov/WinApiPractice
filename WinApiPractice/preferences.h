@@ -19,5 +19,5 @@ struct Preferences
 
 void InvertColor(COLORREF& color);
 
-Preferences* StringToPreferences(TCHAR* content);
-const TCHAR* PreferencesToString(Preferences* prefs);
+Preferences* StringToPreferences(const TCHAR* content);
+const TCHAR* PreferencesToString(const Preferences* prefs);

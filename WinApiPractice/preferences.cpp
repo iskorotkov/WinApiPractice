@@ -36,7 +36,7 @@ void InvertColor(COLORREF& color)
 	invertedColor[2] = originalColor[0];
 }
 
-Preferences* StringToPreferences(TCHAR* content)
+Preferences* StringToPreferences(const TCHAR* content)
 {
 	Preferences* prefs = new Preferences;
 	std::wistringstream is(content);
@@ -61,20 +61,23 @@ Preferences* StringToPreferences(TCHAR* content)
 	return prefs;
 }
 
-const TCHAR* PreferencesToString(Preferences* prefs)
+const TCHAR* PreferencesToString(const Preferences* prefs)
 {
 	std::wostringstream os;
 	std::ios_base::fmtflags f(os.flags());
 
-	InvertColor(prefs->BackgroundColor);
-	InvertColor(prefs->GridColor);
+	// TODO: Add method that return inverted copy of color.
+	COLORREF BgColor = prefs->BackgroundColor;
+	COLORREF GrColor = prefs->GridColor;
+	InvertColor(BgColor);
+	InvertColor(GrColor);
 
 	os << prefs->WindowWidth << ' '
 	<< prefs->WindowHeight << '\n'
 	<< prefs->GridSize << '\n'
 	<< std::hex << std::setfill(L'0') << std::setw(6)
-	<< prefs->BackgroundColor << '\n'
-	<< prefs->GridColor << '\n';
+	<< BgColor << '\n'
+	<< GrColor << '\n';
 	// TODO: Can I really append \0 here?
 
 	os.flags(f);
@@ -85,6 +88,6 @@ const TCHAR* PreferencesToString(Preferences* prefs)
 	os << '\0';
 	UINT len = os.tellp();
 	TCHAR* buffer = new TCHAR[len];
-	wcscpy_s(buffer, len, os.str().c_str());
+	wcscpy_s(buffer, len, 	os.str().c_str());
 	return buffer;
 }
