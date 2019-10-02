@@ -2,6 +2,8 @@
 
 struct Preferences
 {
+	~Preferences();
+	
 	UINT WindowHeight;
 	UINT WindowWidth;
 	UINT GridSize;

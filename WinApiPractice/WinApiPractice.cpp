@@ -231,7 +231,7 @@ int main(int argc, char** argv)
 	wc.hInstance = hThisInstance;
 	wc.lpszClassName = czWinClass;
 	wc.lpfnWndProc = WindowProcedure;
-
+	
 	hCurrentBrush = CreateSolidBrush(prefs->BackgroundColor);
 	wc.hbrBackground = hCurrentBrush;
 
@@ -279,7 +279,6 @@ int main(int argc, char** argv)
 	UnregisterClass(czWinClass, hThisInstance);
 
 	WriteConfigFile(method, prefs);
-	prefs->Cleanup();
 	delete prefs;
 	delete circles;
 	return 0;

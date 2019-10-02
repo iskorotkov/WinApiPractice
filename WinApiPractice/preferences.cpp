@@ -4,6 +4,14 @@
 #include <iostream>
 #include <iomanip>
 #include "preferences.h"
+#include <tchar.h>
+
+const UINT BufferSize = 1024;
+
+Preferences::~Preferences()
+{
+	Cleanup();
+}
 
 void Preferences::Cleanup()
 {
@@ -31,7 +39,7 @@ void InvertColor(COLORREF& color)
 Preferences* StringToPreferences(TCHAR* content)
 {
 	Preferences* prefs = new Preferences;
-	std::wstringstream is(content);
+	std::wistringstream is(content);
 	std::ios_base::fmtflags f(is.flags());
 
 	is >> prefs->WindowWidth
@@ -40,16 +48,22 @@ Preferences* StringToPreferences(TCHAR* content)
 	>> std::hex >> prefs->BackgroundColor
 	>> std::hex >> prefs->GridColor;
 
-	is.flags(f);
-
 	InvertColor(prefs->BackgroundColor);
 	InvertColor(prefs->GridColor);
+	is.flags(f);
+
+	is.ignore();
+	prefs->IconFile = new TCHAR[BufferSize];
+	prefs->CursorFile = new TCHAR[BufferSize];
+	is.getline(prefs->IconFile, BufferSize);
+	is.getline(prefs->CursorFile, BufferSize);
+
 	return prefs;
 }
 
 const TCHAR* PreferencesToString(Preferences* prefs)
 {
-	std::wstringstream os;
+	std::wostringstream os;
 	std::ios_base::fmtflags f(os.flags());
 
 	InvertColor(prefs->BackgroundColor);
@@ -60,14 +74,17 @@ const TCHAR* PreferencesToString(Preferences* prefs)
 	<< prefs->GridSize << '\n'
 	<< std::hex << std::setfill(L'0') << std::setw(6)
 	<< prefs->BackgroundColor << '\n'
-	<< prefs->GridColor << '\n'
+	<< prefs->GridColor << '\n';
 	// TODO: Can I really append \0 here?
-	<< '\0';
 
 	os.flags(f);
 
+	os << prefs->IconFile << '\n'
+	<< prefs->CursorFile << '\n';
+
+	os << '\0';
 	UINT len = os.tellp();
 	TCHAR* buffer = new TCHAR[len];
-	os.read(buffer, len);
+	wcscpy_s(buffer, len, os.str().c_str());
 	return buffer;
 }
