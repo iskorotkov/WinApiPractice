@@ -1,7 +1,7 @@
 #include "winapi.h"
 #include "preferences.h"
 
-UINT BufferSize = 1024;
+const UINT BufferSize = 1024;
 
 Preferences* ReadConfigUsingWinApi(const TCHAR* configFile)
 {
@@ -38,6 +38,6 @@ void WriteConfigUsingWinApi(const TCHAR* configFile, const Preferences* prefs)
 	const UINT len = wcslen(buffer) * sizeof(wchar_t);
 	WriteFile(hFile, buffer, len, NULL, NULL);
 
-	delete[] buffer;
 	CloseHandle(hFile);
+	delete[] buffer;
 }

@@ -52,7 +52,11 @@ Preferences* StringToPreferences(const TCHAR* content)
 	InvertColor(prefs->GridColor);
 	is.flags(f);
 
-	is.ignore();
+	while (is.peek() == '\r' || is.peek() == '\n')
+	{
+		is.ignore();
+	}
+	
 	prefs->IconFile = new TCHAR[BufferSize];
 	prefs->CursorFile = new TCHAR[BufferSize];
 	is.getline(prefs->IconFile, BufferSize);

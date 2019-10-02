@@ -5,6 +5,7 @@
 #include <tchar.h>
 #include "filestream.h"
 #include "winapi.h"
+#include "variables.h"
 
 const TCHAR* configFile = _T("C:\\Projects\\WinApiPractice\\WinApiPractice\\config.ini");
 
@@ -15,7 +16,9 @@ void WriteConfigFile(ReadingMethod method, Preferences* prefs)
 		case ReadingMethod::FileMapping:
 			WriteConfigToFileMapping(configFile, prefs);
 			break;
-		case ReadingMethod::Variables: break;
+		case ReadingMethod::Variables:
+			WriteConfigUsingVariables(configFile, prefs);
+			break;
 		case ReadingMethod::Streams:
 			WriteConfigUsingStream(configFile, prefs);
 			break;
@@ -33,7 +36,8 @@ Preferences* ReadConfigFile(ReadingMethod method)
 	{
 		case ReadingMethod::FileMapping:
 			return ReadConfigFromFileMapping(configFile);
-		case ReadingMethod::Variables: break;
+		case ReadingMethod::Variables:
+			return ReadConfigUsingVariables(configFile);
 		case ReadingMethod::Streams:
 			return ReadConfigUsingStream(configFile);
 		case ReadingMethod::WinApi:

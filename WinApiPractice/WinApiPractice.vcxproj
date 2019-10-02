@@ -157,6 +157,7 @@
     <ClCompile Include="files.cpp" />
     <ClCompile Include="filestream.cpp" />
     <ClCompile Include="preferences.cpp" />
+    <ClCompile Include="variables.cpp" />
     <ClCompile Include="winapi.cpp" />
     <ClCompile Include="WinApiPractice.cpp" />
   </ItemGroup>
@@ -166,6 +167,7 @@
     <ClInclude Include="files.h" />
     <ClInclude Include="filestream.h" />
     <ClInclude Include="preferences.h" />
+    <ClInclude Include="variables.h" />
     <ClInclude Include="winapi.h" />
   </ItemGroup>
   <ItemGroup>
