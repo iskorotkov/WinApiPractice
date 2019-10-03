@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.29311.281
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WinApiPractice", "WinApiPractice\WinApiPractice.vcxproj", "{DB1C3851-0800-4F21-A225-1D6A243CBC58}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libpic", "libpic\libpic.vcxproj", "{531DFCCC-6214-4A89-BCEE-D017F771F59A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{DB1C3851-0800-4F21-A225-1D6A243CBC58}.Release|x64.Build.0 = Release|x64
 		{DB1C3851-0800-4F21-A225-1D6A243CBC58}.Release|x86.ActiveCfg = Release|Win32
 		{DB1C3851-0800-4F21-A225-1D6A243CBC58}.Release|x86.Build.0 = Release|Win32
+		{531DFCCC-6214-4A89-BCEE-D017F771F59A}.Debug|x64.ActiveCfg = Debug|x64
+		{531DFCCC-6214-4A89-BCEE-D017F771F59A}.Debug|x64.Build.0 = Debug|x64
+		{531DFCCC-6214-4A89-BCEE-D017F771F59A}.Debug|x86.ActiveCfg = Debug|Win32
+		{531DFCCC-6214-4A89-BCEE-D017F771F59A}.Debug|x86.Build.0 = Debug|Win32
+		{531DFCCC-6214-4A89-BCEE-D017F771F59A}.Release|x64.ActiveCfg = Release|x64
+		{531DFCCC-6214-4A89-BCEE-D017F771F59A}.Release|x64.Build.0 = Release|x64
+		{531DFCCC-6214-4A89-BCEE-D017F771F59A}.Release|x86.ActiveCfg = Release|Win32
+		{531DFCCC-6214-4A89-BCEE-D017F771F59A}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
