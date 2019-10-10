@@ -7,6 +7,7 @@
 #include "files.h"
 #include "commandline.h"
 #include "preferences.h"
+#include <string>
 
 const TCHAR CZ_WIN_CLASS[] = _T("MyClassName");
 const TCHAR CZ_WIN_NAME[] = _T("MyWindowName");
@@ -226,6 +227,12 @@ int main(int argc, char** argv)
 		return -1;
 	}
 
+	using LoadImageSignature = char*(const char* filename, int* width, int* height);
+	const auto libpic = LoadLibrary(L"libpic.dll");
+	const auto procAddress = (LoadImageSignature*)GetProcAddress(libpic, "load_image");
+	int width, height;
+	const auto img = (*procAddress)("C:\\Users\\korot\\OneDrive\\Pictures\\Wallpapers\\Uplay.png", &width, &height);
+	
 	const UINT len = GRID_DIMENSION * GRID_DIMENSION;
 	circles = new UINT[len];
 	ZeroMemory(circles, len * sizeof circles);
