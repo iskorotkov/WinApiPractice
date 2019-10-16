@@ -1,18 +1,14 @@
 #include "pch.h"
 #include "framework.h"
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 
 // Libs
 #include "png.h"
 #include "jpeglib.h"
 
-auto read_png_file(const char* filename, int* width, int* height)
+image read_png_file(const char* filename)
 {
-	png_byte color_type;
-	png_byte bit_depth;
-	png_bytep* row_pointers = NULL;
-
 	FILE* fp;
 	fopen_s(&fp, filename, "rb");
 
@@ -28,47 +24,56 @@ auto read_png_file(const char* filename, int* width, int* height)
 
 	png_read_info(png, info);
 
-	*width = png_get_image_width(png, info);
-	*height = png_get_image_height(png, info);
-	color_type = png_get_color_type(png, info);
-	bit_depth = png_get_bit_depth(png, info);
+	image img{};
+	img.width = png_get_image_width(png, info);
+	img.height = png_get_image_height(png, info);
+	img.color_type = png_get_color_type(png, info);
+	img.bit_depth = png_get_bit_depth(png, info);
 
 	// Read any color_type into 8bit depth, RGBA format.
 	// See http://www.libpng.org/pub/png/libpng-manual.txt
 
-	if (bit_depth == 16)
+	if (img.bit_depth == 16)
 		png_set_strip_16(png);
 
-	if (color_type == PNG_COLOR_TYPE_PALETTE)
+	if (img.bit_depth == PNG_COLOR_TYPE_PALETTE)
 		png_set_palette_to_rgb(png);
 
 	// PNG_COLOR_TYPE_GRAY_ALPHA is always 8 or 16bit depth.
-	if (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8)
+	if (img.color_type == PNG_COLOR_TYPE_GRAY && img.bit_depth < 8)
 		png_set_expand_gray_1_2_4_to_8(png);
 
 	if (png_get_valid(png, info, PNG_INFO_tRNS))
 		png_set_tRNS_to_alpha(png);
 
 	// These color_type don't have an alpha channel then fill it with 0xff.
-	if (color_type == PNG_COLOR_TYPE_RGB ||
-		color_type == PNG_COLOR_TYPE_GRAY ||
-		color_type == PNG_COLOR_TYPE_PALETTE)
+	if (img.color_type == PNG_COLOR_TYPE_RGB ||
+		img.color_type == PNG_COLOR_TYPE_GRAY ||
+		img.color_type == PNG_COLOR_TYPE_PALETTE)
 		png_set_filler(png, 0xFF, PNG_FILLER_AFTER);
 
-	if (color_type == PNG_COLOR_TYPE_GRAY ||
-		color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
+	if (img.color_type == PNG_COLOR_TYPE_GRAY ||
+		img.color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
 		png_set_gray_to_rgb(png);
 
 	png_read_update_info(png, info);
 
-	if (row_pointers) abort();
+	//row_pointers = (png_bytep*)malloc(sizeof(png_bytep) * *height);
+	//for (int y = 0; y < *height; y++)
+	//{
+	//	row_pointers[y] = (png_byte*)malloc(png_get_rowbytes(png, info));
+	//}
 
-	// TODO: Redo this. Write to large single buffer.
-	row_pointers = (png_bytep*)malloc(sizeof(png_bytep) * *height);
-	for (int y = 0; y < *height; y++)
+	// ======================
+
+	img.buffer = new image_byte[sizeof(png_byte) * dimension(&img)];
+
+	png_bytep* row_pointers = new png_bytep[img.height];
+	for (auto i = 0u; i < img.height; ++i)
 	{
-		row_pointers[y] = (png_byte*)malloc(png_get_rowbytes(png, info));
+		row_pointers[i] = img.buffer + sizeof(png_byte) * i;
 	}
+	// ======================
 
 	png_read_image(png, row_pointers);
 
@@ -76,11 +81,15 @@ auto read_png_file(const char* filename, int* width, int* height)
 
 	png_destroy_read_struct(&png, &info, NULL);
 
-	return row_pointers;
+	return img;
 }
 
-char* load_image(const char* filename, int* width, int* height)
+image_dimension dimension(image* img)
 {
-	const auto img = read_png_file(filename, width, height);
-	return nullptr;
+	return img ? img->width * img->height : 0;
+}
+
+image load_image(const char* filename)
+{
+	return read_png_file(filename);
 }
