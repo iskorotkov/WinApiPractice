@@ -9,10 +9,30 @@
 #include "preferences.h"
 #include <string>
 
+using image_byte = unsigned char;
+using image_buffer = image_byte*;
+using image_height = unsigned int;
+using image_width = unsigned int;
+using image_dimension = unsigned int;
+using image_color_type = unsigned char;
+using image_bit_depth = unsigned char;
+
+struct image
+{
+	image_width width;
+	image_height height;
+
+	image_color_type color_type;
+	image_bit_depth bit_depth;
+	
+	image_buffer buffer;
+};
+
 const TCHAR CZ_WIN_CLASS[] = _T("MyClassName");
 const TCHAR CZ_WIN_NAME[] = _T("MyWindowName");
 
 Preferences* prefs;
+image img;
 
 UINT GetDimension()
 {
@@ -196,6 +216,21 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			PAINTSTRUCT ps;
 			const HDC hdc = BeginPaint(hwnd, &ps);
 			DrawGrid(hwnd, hdc);
+			// ============================
+			// TODO: Delete this bitmap
+			// HBITMAP hBitmap = CreateBitmap(img.width, img.height, 1, img.bit_depth, img.buffer);
+			auto hBitmap = (HBITMAP)LoadImage(GetModuleHandle(nullptr), L"C:\\Users\\korot\\Downloads\\winapi.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+			BITMAP bitmap;
+			GetObject(hBitmap, sizeof(BITMAP), &bitmap);
+
+			auto hdcMem = CreateCompatibleDC(hdc);
+			auto oldBitmap = SelectObject(hdcMem, hBitmap);
+			
+			BitBlt(hdc, 0, 0, img.width, img.height, hdcMem, 0, 0, SRCCOPY);
+
+			SelectObject(hdcMem, oldBitmap);
+			DeleteDC(hdcMem);
+			// ============================
 			EndPaint(hwnd, &ps);
 		}
 		break;
@@ -227,12 +262,13 @@ int main(int argc, char** argv)
 		return -1;
 	}
 
-	using LoadImageSignature = char*(const char* filename, int* width, int* height);
+	// ===============================
+	using LoadImageSignature = image(const char* filename);
 	const auto libpic = LoadLibrary(L"libpic.dll");
-	const auto procAddress = (LoadImageSignature*)GetProcAddress(libpic, "load_image");
-	int width, height;
-	const auto img = (*procAddress)("C:\\Users\\korot\\OneDrive\\Pictures\\Wallpapers\\Uplay.png", &width, &height);
-	
+	auto procAddress = (LoadImageSignature*)GetProcAddress(libpic, "load_image");
+	img = procAddress("C:\\Users\\korot\\OneDrive\\Pictures\\Wallpapers\\Uplay.png");
+	// ===============================
+
 	const UINT len = GRID_DIMENSION * GRID_DIMENSION;
 	circles = new UINT[len];
 	ZeroMemory(circles, len * sizeof circles);
