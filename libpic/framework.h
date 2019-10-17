@@ -23,6 +23,4 @@ struct image
 	image_buffer buffer;
 };
 
-image_dimension dimension(image* img);
-
 extern "C" __declspec(dllexport) image load_image(const char* filename);

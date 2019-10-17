@@ -24,7 +24,7 @@ struct image
 
 	image_color_type color_type;
 	image_bit_depth bit_depth;
-	
+
 	image_buffer buffer;
 };
 
@@ -217,19 +217,30 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			const HDC hdc = BeginPaint(hwnd, &ps);
 			DrawGrid(hwnd, hdc);
 			// ============================
-			// TODO: Delete this bitmap
-			// HBITMAP hBitmap = CreateBitmap(img.width, img.height, 1, img.bit_depth, img.buffer);
-			auto hBitmap = (HBITMAP)LoadImage(GetModuleHandle(nullptr), L"C:\\Users\\korot\\Downloads\\winapi.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+			//image img;
+			//img.height = 10;
+			//img.width = 10;
+			//img.bit_depth = 8;
+			//auto size = img.width*img.height*4;
+			//img.buffer = new image_byte[size];
+			//for (auto i = 0u; i < size; ++i)
+			//{
+			//	img.buffer[i] = 128;
+			//}
+			// TODO: Remove magic 4.
+			HBITMAP hBitmap = CreateBitmap(img.width, img.height, 1, img.bit_depth * 4, img.buffer);
+			//auto hBitmap = (HBITMAP)LoadImage(GetModuleHandle(nullptr), L"C:\\Users\\korot\\Downloads\\winapi.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 			BITMAP bitmap;
 			GetObject(hBitmap, sizeof(BITMAP), &bitmap);
 
 			auto hdcMem = CreateCompatibleDC(hdc);
 			auto oldBitmap = SelectObject(hdcMem, hBitmap);
-			
-			BitBlt(hdc, 0, 0, img.width, img.height, hdcMem, 0, 0, SRCCOPY);
+
+			BitBlt(hdc, 0, 0, bitmap.bmWidth, bitmap.bmHeight, hdcMem, 0, 0, SRCCOPY);
 
 			SelectObject(hdcMem, oldBitmap);
 			DeleteDC(hdcMem);
+			DeleteObject(hBitmap);
 			// ============================
 			EndPaint(hwnd, &ps);
 		}
@@ -266,7 +277,9 @@ int main(int argc, char** argv)
 	using LoadImageSignature = image(const char* filename);
 	const auto libpic = LoadLibrary(L"libpic.dll");
 	auto procAddress = (LoadImageSignature*)GetProcAddress(libpic, "load_image");
-	img = procAddress("C:\\Users\\korot\\OneDrive\\Pictures\\Wallpapers\\Uplay.png");
+	const auto winApiImage = R"(C:\Users\korot\Downloads\winapi.png)";
+	const auto wallpaperImage = R"(C:\Users\korot\OneDrive\Pictures\Wallpapers\Uplay.png)"; 
+	img = procAddress(wallpaperImage);
 	// ===============================
 
 	const UINT len = GRID_DIMENSION * GRID_DIMENSION;

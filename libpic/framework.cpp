@@ -66,12 +66,16 @@ image read_png_file(const char* filename)
 
 	// ======================
 
-	img.buffer = new image_byte[sizeof(png_byte) * dimension(&img)];
+	const auto size = sizeof(png_byte) * img.height * png_get_rowbytes(png, info);
+	img.buffer = new image_byte[size];
+
+	wprintf_s(L"Required buffer size: %d\n", sizeof(png_byte) * img.height * png_get_rowbytes(png, info));
+	wprintf_s(L"Buffer size for allocation: %d\n", size);
 
 	png_bytep* row_pointers = new png_bytep[img.height];
 	for (auto i = 0u; i < img.height; ++i)
 	{
-		row_pointers[i] = img.buffer + sizeof(png_byte) * i;
+		row_pointers[i] = img.buffer + png_get_rowbytes(png, info) * i;
 	}
 	// ======================
 
@@ -82,11 +86,6 @@ image read_png_file(const char* filename)
 	png_destroy_read_struct(&png, &info, NULL);
 
 	return img;
-}
-
-image_dimension dimension(image* img)
-{
-	return img ? img->width * img->height : 0;
 }
 
 image load_image(const char* filename)
