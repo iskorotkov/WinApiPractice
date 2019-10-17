@@ -32,7 +32,10 @@ const TCHAR CZ_WIN_CLASS[] = _T("MyClassName");
 const TCHAR CZ_WIN_NAME[] = _T("MyWindowName");
 
 Preferences* prefs;
-image img;
+image crossImage;
+image circleImage;
+image icon;
+image cursor;
 
 UINT GetDimension()
 {
@@ -217,26 +220,18 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			const HDC hdc = BeginPaint(hwnd, &ps);
 			DrawGrid(hwnd, hdc);
 			// ============================
-			//image img;
-			//img.height = 10;
-			//img.width = 10;
-			//img.bit_depth = 8;
-			//auto size = img.width*img.height*4;
-			//img.buffer = new image_byte[size];
-			//for (auto i = 0u; i < size; ++i)
-			//{
-			//	img.buffer[i] = 128;
-			//}
 			// TODO: Remove magic 4.
-			HBITMAP hBitmap = CreateBitmap(img.width, img.height, 1, img.bit_depth * 4, img.buffer);
-			//auto hBitmap = (HBITMAP)LoadImage(GetModuleHandle(nullptr), L"C:\\Users\\korot\\Downloads\\winapi.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+			HBITMAP hBitmap = CreateBitmap(crossImage.width, crossImage.height, 1, crossImage.bit_depth * 4, crossImage.buffer);
 			BITMAP bitmap;
 			GetObject(hBitmap, sizeof(BITMAP), &bitmap);
 
 			auto hdcMem = CreateCompatibleDC(hdc);
 			auto oldBitmap = SelectObject(hdcMem, hBitmap);
 
-			BitBlt(hdc, 0, 0, bitmap.bmWidth, bitmap.bmHeight, hdcMem, 0, 0, SRCCOPY);
+			// BitBlt(hdc, 0, 0, bitmap.bmWidth, bitmap.bmHeight, hdcMem, 0, 0, SRCCOPY);
+			RECT rect;
+			GetClientRect(hwnd, &rect);
+			TransparentBlt(hdc, 0, 0, bitmap.bmWidth, bitmap.bmHeight, hdcMem, 0, 0, bitmap.bmWidth, bitmap.bmHeight, RGB(0, 0, 0));
 
 			SelectObject(hdcMem, oldBitmap);
 			DeleteDC(hdcMem);
@@ -277,9 +272,13 @@ int main(int argc, char** argv)
 	using LoadImageSignature = image(const char* filename);
 	const auto libpic = LoadLibrary(L"libpic.dll");
 	auto procAddress = (LoadImageSignature*)GetProcAddress(libpic, "load_image");
-	const auto winApiImage = R"(C:\Users\korot\Downloads\winapi.png)";
-	const auto wallpaperImage = R"(C:\Users\korot\OneDrive\Pictures\Wallpapers\Uplay.png)"; 
-	img = procAddress(wallpaperImage);
+	const auto assetsPath = R"(C:\Projects\WinApiPractice\Assets\)";
+#define ASSET_PATH(path) ("C:\\Projects\\WinApiPractice\\Assets\\" path)
+	const auto crossPath = ASSET_PATH("Cross.png");
+	const auto circlePath = ASSET_PATH("Circle.png");
+	const auto icon = ASSET_PATH("Icon.png");
+	const auto RGBImage = ASSET_PATH("TEST RGB.png");
+	crossImage = procAddress(RGBImage);
 	// ===============================
 
 	const UINT len = GRID_DIMENSION * GRID_DIMENSION;

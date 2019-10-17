@@ -6,6 +6,7 @@
 // Libs
 #include "png.h"
 #include "jpeglib.h"
+#include <tuple>
 
 image read_png_file(const char* filename)
 {
@@ -85,6 +86,13 @@ image read_png_file(const char* filename)
 
 	png_destroy_read_struct(&png, &info, NULL);
 
+	// ====================
+	// Swap R and B values.
+	for (auto i = 0u; i < img.height * img.width * 4; i += 4)
+	{
+		std::swap(img.buffer[i + 0], img.buffer[i + 2]);
+	}
+	// ====================
 	return img;
 }
 
