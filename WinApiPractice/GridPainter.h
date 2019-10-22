@@ -10,7 +10,7 @@ public:
 	explicit GridPainter(HWND& window, int dimension);
 
 	void DrawImage(WindowArea area, image& img) const;
-	void DrawImageWhere(unsigned int value, const unsigned* circles, image& img);
+	void DrawImageWhere(int value, const unsigned* circles, image& img) const;
 	void DrawGrid(COLORREF gridColor) const;
 	void DrawIconsOnGrid(const unsigned* circles) const;
 	void DrawCircle(WindowArea area) const;

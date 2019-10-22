@@ -9,22 +9,16 @@ GridPainter::GridPainter(HWND& window, const int dimension) : window(window), di
 void GridPainter::DrawImage(const WindowArea area, image& img) const
 {
 	const auto hBitmap = CreateBitmap(img.width, img.height, 1, img.bit_depth, img.buffer);
-	BITMAP bitmap;
-	GetObject(hBitmap, sizeof(BITMAP), &bitmap);
-
 	const auto hdcMem = CreateCompatibleDC(hdc);
-	const auto oldBitmap = SelectObject(hdcMem, hBitmap);
 
-	RECT rect;
-	GetClientRect(window, &rect);
-	TransparentBlt(hdc, 0, 0, bitmap.bmWidth, bitmap.bmHeight, hdcMem, 0, 0, bitmap.bmWidth, bitmap.bmHeight, RGB(0, 0, 0));
+	SelectObject(hdcMem, hBitmap);
+	TransparentBlt(hdc, 0, 0, img.width, img.height, hdcMem, 0, 0, img.width, img.height, RGB(0, 0, 0));
 
-	SelectObject(hdcMem, oldBitmap);
 	DeleteDC(hdcMem);
 	DeleteObject(hBitmap);
 }
 
-void GridPainter::DrawImageWhere(unsigned value, const unsigned* circles, image& img)
+void GridPainter::DrawImageWhere(int value, const unsigned* circles, image& img) const
 {
 	const auto callback = [this, value, &img](auto index, auto val)
 	{
