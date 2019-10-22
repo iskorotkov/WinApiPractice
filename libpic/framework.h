@@ -1,26 +1,32 @@
 #pragma once
 
-#define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
-// Windows Header Files
-#include <windows.h>
+#ifdef LIBPIC_EXPORTS
+#define LIBPIC_API _declspec(dllexport)
+#else
+#define LIBPIC_API _declspec(dllimport)
+#endif
 
-using image_byte = unsigned char;
-using image_buffer = image_byte*;
-using image_height = unsigned int;
-using image_width = unsigned int;
-using image_dimension = unsigned int;
-using image_color_type = unsigned char;
-using image_bit_depth = unsigned char;
+#define WIN32_LEAN_AND_MEAN
 
-struct image
+extern "C" LIBPIC_API using image_byte = unsigned char;
+extern "C" LIBPIC_API using image_buffer = image_byte*;
+extern "C" LIBPIC_API using image_height = unsigned int;
+extern "C" LIBPIC_API using image_width = unsigned int;
+extern "C" LIBPIC_API using image_dimension = unsigned int;
+extern "C" LIBPIC_API using image_color_type = unsigned char;
+extern "C" LIBPIC_API using image_bit_depth = unsigned char;
+
+extern "C" struct LIBPIC_API image
 {
 	image_width width;
 	image_height height;
 
 	image_color_type color_type;
 	image_bit_depth bit_depth;
-	
+
 	image_buffer buffer;
 };
 
-extern "C" __declspec(dllexport) image load_image(const char* filename);
+extern "C" LIBPIC_API image load_image(const char* filename);
+
+#undef WIN32_LEAN_AND_MEAN
