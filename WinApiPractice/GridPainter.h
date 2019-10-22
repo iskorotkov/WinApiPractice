@@ -10,9 +10,9 @@ public:
 
 	void DrawImage(int row, int column, image& img) const;
 	void DrawGrid(COLORREF gridColor) const;
-	void DrawIconsOnGrid(const unsigned* circles);
-	void DrawCircle(UINT radius, UINT centerX, UINT centerY);
-	void DrawCross(UINT radius, UINT centerX, UINT centerY);
+	void DrawIconsOnGrid(const unsigned* circles) const;
+	void DrawCircle(WindowArea area) const;
+	void DrawCross(WindowArea area) const;
 
 	HDC& GetHDC();
 

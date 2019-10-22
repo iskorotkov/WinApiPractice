@@ -7,7 +7,7 @@ GridPainter::GridPainter(HWND& window, const int dimension) : window(window), di
 
 void GridPainter::DrawImage(int row, int column, image& img) const
 {
-	const HBITMAP hBitmap = CreateBitmap(img.width, img.height, 1, img.bit_depth, img.buffer);
+	const auto hBitmap = CreateBitmap(img.width, img.height, 1, img.bit_depth, img.buffer);
 	BITMAP bitmap;
 	GetObject(hBitmap, sizeof(BITMAP), &bitmap);
 
@@ -50,25 +50,39 @@ GridPainter::~GridPainter()
 	EndPaint(window, &ps);
 }
 
-void GridPainter::DrawCircle(UINT radius, UINT centerX, UINT centerY)
+void GridPainter::DrawCircle(const WindowArea area) const
 {
 	const auto hBrush = CreateSolidBrush(RGB(255, 255, 255));
 	const auto prevBrush = SelectObject(hdc, hBrush);
 
-	Ellipse(hdc, centerX - radius, centerY - radius, centerX + radius, centerY + radius);
+	Ellipse(hdc,
+		area.centerX - area.radius,
+		area.centerY - area.radius,
+		area.centerX + area.radius,
+		area.centerY + area.radius);
 
 	SelectObject(hdc, prevBrush);
 	DeleteObject(hBrush);
 }
 
-void GridPainter::DrawCross(UINT radius, UINT centerX, UINT centerY)
+void GridPainter::DrawCross(const WindowArea area) const
 {
 	// Draws '\'
-	MoveToEx(hdc, centerX - radius, centerY - radius, nullptr);
-	LineTo(hdc, centerX + radius, centerY + radius);
+	MoveToEx(hdc,
+		area.centerX - area.radius,
+		area.centerY - area.radius,
+		nullptr);
+	LineTo(hdc,
+		area.centerX + area.radius,
+		area.centerY + area.radius);
 	// Draws '/'
-	MoveToEx(hdc, centerX + radius, centerY - radius, nullptr);
-	LineTo(hdc, centerX - radius, centerY + radius);
+	MoveToEx(hdc,
+		area.centerX + area.radius,
+		area.centerY - area.radius,
+		nullptr);
+	LineTo(hdc,
+		area.centerX - area.radius,
+		area.centerY + area.radius);
 }
 
 HDC& GridPainter::GetHDC()
@@ -91,7 +105,7 @@ WindowArea GridPainter::CalculateIconDimensions(const UINT index) const
 	return area;
 }
 
-void GridPainter::DrawIconsOnGrid(const unsigned* circles)
+void GridPainter::DrawIconsOnGrid(const unsigned* circles) const
 {
 	for (UINT i = 0u, len = dimension * dimension; i < len; ++i)
 	{
@@ -102,12 +116,12 @@ void GridPainter::DrawIconsOnGrid(const unsigned* circles)
 			{
 				case 1:
 				{
-					DrawCircle(area.radius, area.centerX, area.centerY);
+					DrawCircle(area);
 					break;
 				}
 				case 2:
 				{
-					DrawCross(area.radius, area.centerX, area.centerY);
+					DrawCross(area);
 					break;
 				}
 			}
