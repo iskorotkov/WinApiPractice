@@ -125,11 +125,14 @@ Image ReadJpegImage(const char* filename)
 	*/
 
 	// ================================================
+	const auto sourceChannels = cinfo.num_components;
+	const auto destChannels = 4;
+	
 	Image img{};
 	img.Width = cinfo.output_width;
 	img.Height = cinfo.output_height;
 	img.ColorType = cinfo.jpeg_color_space;
-	img.BitDepth = cinfo.data_precision * (cinfo.num_components + 1);
+	img.BitDepth = cinfo.data_precision * destChannels;
 	img.Buffer = new ImageByte[CalcBufferSize(img)];
 	// ================================================
 
@@ -144,11 +147,11 @@ Image ReadJpegImage(const char* filename)
 		// put_scanline_someplace(buffer[0], row_stride);
 
 		// ===========================================
-		const auto imgBuffer = &img.Buffer[4 * row_stride * (cinfo.output_scanline - 1) / 3];
-		for (auto i = 0; i < row_stride / 3; ++i)
+		const auto imgBuffer = &img.Buffer[destChannels * row_stride * (cinfo.output_scanline - 1) / sourceChannels];
+		for (auto i = 0; i < cinfo.output_width; ++i)
 		{
-			const auto dest = &imgBuffer[i * 4];
-			const auto source = &buffer[0][i * 3];
+			const auto dest = &imgBuffer[i * destChannels];
+			const auto source = &buffer[0][i * sourceChannels];
 			dest[0] = source[2];
 			dest[1] = source[1];
 			dest[2] = source[0];
