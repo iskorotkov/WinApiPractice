@@ -1,20 +1,116 @@
 ﻿#include "GridPainter.h"
 
-GridPainter::GridPainter(const HWND window)
+GridPainter::GridPainter(HWND& window, const int dimension) : window(window), dimension(dimension)
 {
-	this->window = window;
 	hdc = BeginPaint(window, &ps);
 }
 
-void GridPainter::Draw(int row, int column, image& img)
+void GridPainter::DrawImage(int row, int column, image& img) const
 {
+	const HBITMAP hBitmap = CreateBitmap(img.width, img.height, 1, img.bit_depth, img.buffer);
+	BITMAP bitmap;
+	GetObject(hBitmap, sizeof(BITMAP), &bitmap);
+
+	const auto hdcMem = CreateCompatibleDC(hdc);
+	const auto oldBitmap = SelectObject(hdcMem, hBitmap);
+
+	RECT rect;
+	GetClientRect(window, &rect);
+	TransparentBlt(hdc, 0, 0, bitmap.bmWidth, bitmap.bmHeight, hdcMem, 0, 0, bitmap.bmWidth, bitmap.bmHeight, RGB(0, 0, 0));
+
+	SelectObject(hdcMem, oldBitmap);
+	DeleteDC(hdcMem);
+	DeleteObject(hBitmap);
 }
 
-void GridPainter::DrawGrid()
+void GridPainter::DrawGrid(COLORREF gridColor) const
 {
+	RECT rect;
+	GetClientRect(window, &rect);
+	const HPEN pen = CreatePen(0, 2, gridColor);
+	const HGDIOBJ prevBrush = SelectObject(hdc, pen);
+
+	for (UINT i = 1u; i < dimension; ++i)
+	{
+		const UINT x = rect.right * i / dimension;
+		MoveToEx(hdc, x, 0, nullptr);
+		LineTo(hdc, x, rect.bottom);
+
+		const UINT y = rect.bottom * i / dimension;
+		MoveToEx(hdc, 0, y, nullptr);
+		LineTo(hdc, rect.right, y);
+	}
+
+	SelectObject(hdc, prevBrush);
+	DeleteObject(pen);
 }
 
 GridPainter::~GridPainter()
 {
 	EndPaint(window, &ps);
+}
+
+void GridPainter::DrawCircle(UINT radius, UINT centerX, UINT centerY)
+{
+	const auto hBrush = CreateSolidBrush(RGB(255, 255, 255));
+	const auto prevBrush = SelectObject(hdc, hBrush);
+
+	Ellipse(hdc, centerX - radius, centerY - radius, centerX + radius, centerY + radius);
+
+	SelectObject(hdc, prevBrush);
+	DeleteObject(hBrush);
+}
+
+void GridPainter::DrawCross(UINT radius, UINT centerX, UINT centerY)
+{
+	// Draws '\'
+	MoveToEx(hdc, centerX - radius, centerY - radius, nullptr);
+	LineTo(hdc, centerX + radius, centerY + radius);
+	// Draws '/'
+	MoveToEx(hdc, centerX + radius, centerY - radius, nullptr);
+	LineTo(hdc, centerX - radius, centerY + radius);
+}
+
+HDC& GridPainter::GetHDC()
+{
+	return hdc;
+}
+
+WindowArea GridPainter::CalculateIconDimensions(const UINT index) const
+{
+	const auto row = index % dimension;
+	const auto col = index / dimension;
+	RECT rect;
+	GetClientRect(window, &rect);
+	const UINT height = rect.bottom;
+	const UINT width = rect.right;
+	WindowArea area;
+	area.radius = min(height/dimension, width/dimension) / 3;
+	area.centerX = width * (2 * row + 1) / (2 * dimension);
+	area.centerY = height * (2 * col + 1) / (2 * dimension);
+	return area;
+}
+
+void GridPainter::DrawIconsOnGrid(const unsigned* circles)
+{
+	for (UINT i = 0u, len = dimension * dimension; i < len; ++i)
+	{
+		if (circles[i])
+		{
+			const auto area = CalculateIconDimensions(i);
+			switch (circles[i])
+			{
+				case 1:
+				{
+					DrawCircle(area.radius, area.centerX, area.centerY);
+					break;
+				}
+				case 2:
+				{
+					DrawCross(area.radius, area.centerX, area.centerY);
+					break;
+				}
+			}
+		}
+	}
 }

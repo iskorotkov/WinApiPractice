@@ -60,6 +60,9 @@
     <ClCompile Include="GridPainter.cpp">
       <Filter>Header Files\graphics</Filter>
     </ClCompile>
+    <ClCompile Include="WindowArea.cpp">
+      <Filter>Header Files\graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="filemapping.h">
@@ -84,6 +87,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GridPainter.h">
+      <Filter>Source Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowArea.h">
       <Filter>Source Files\graphics</Filter>
     </ClInclude>
   </ItemGroup>

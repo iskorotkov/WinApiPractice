@@ -170,6 +170,7 @@
     <ClCompile Include="variables.cpp" />
     <ClCompile Include="winapi.cpp" />
     <ClCompile Include="WinApiPractice.cpp" />
+    <ClCompile Include="WindowArea.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="commandline.h" />
@@ -180,6 +181,7 @@
     <ClInclude Include="preferences.h" />
     <ClInclude Include="variables.h" />
     <ClInclude Include="winapi.h" />
+    <ClInclude Include="WindowArea.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="config.ini" />
