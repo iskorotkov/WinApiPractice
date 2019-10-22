@@ -24,10 +24,10 @@ HBRUSH hCurrentBrush;
 int* values;
 
 Preferences* prefs;
-image crossImage;
-image circleImage;
-image icon;
-image cursor;
+Image crossImage;
+Image circleImage;
+Image icon;
+Image cursor;
 
 UINT GetDimension()
 {
@@ -152,14 +152,27 @@ int main(int argc, char** argv)
 		return -1;
 	}
 
-	// ===============================
-	using LoadImageFunc = decltype(load_image);
-	const auto libpic = LoadLibrary(L"libpic.dll");
-	const auto procAddress = (LoadImageFunc*)GetProcAddress(libpic, "load_image");
+	const auto lib = LoadLibrary(L"libpic.dll");
+	if (!lib)
+	{
+		wprintf_s(L"Unable to load DLL. Try again.");
+	}
 
-	crossImage = procAddress(crossPath);
-	circleImage = procAddress(circlePath);
-	// ===============================
+	const auto loadPicAddress = reinterpret_cast<decltype(LoadPic)*>(GetProcAddress(lib, "LoadPic"));
+	if (!loadPicAddress)
+	{
+		wprintf_s(L"Unable to find a method in a DLL.");
+	}
+
+	try
+	{
+		crossImage = loadPicAddress(crossPath);
+		circleImage = loadPicAddress(circlePath);
+	}
+	catch (std::exception& e)
+	{
+		wprintf_s(L"Can't load one of the images. Error: %hs", e.what());
+	}
 
 	const UINT len = GRID_DIMENSION * GRID_DIMENSION;
 	values = new int[len];

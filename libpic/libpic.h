@@ -9,25 +9,25 @@
 #define WIN32_LEAN_AND_MEAN
 #include "Windows.h"
 
-extern "C" LIBPIC_API typedef unsigned char image_byte;
-extern "C" LIBPIC_API typedef image_byte* image_buffer;
-extern "C" LIBPIC_API typedef unsigned int image_height;
-extern "C" LIBPIC_API typedef unsigned int image_width;
-extern "C" LIBPIC_API typedef unsigned int image_dimension;
-extern "C" LIBPIC_API typedef unsigned char image_color_type;
-extern "C" LIBPIC_API typedef unsigned char image_bit_depth;
+extern "C" LIBPIC_API typedef unsigned char ImageByte;
+extern "C" LIBPIC_API typedef ImageByte* ImageBuffer;
+extern "C" LIBPIC_API typedef unsigned int ImageHeight;
+extern "C" LIBPIC_API typedef unsigned int ImageWidth;
+extern "C" LIBPIC_API typedef unsigned int ImageDimension;
+extern "C" LIBPIC_API typedef unsigned char ImageColorType;
+extern "C" LIBPIC_API typedef unsigned char ImageBitDepth;
 
-extern "C" struct LIBPIC_API image
+extern "C" struct LIBPIC_API Image
 {
-	image_width width;
-	image_height height;
+	ImageWidth Width;
+	ImageHeight Height;
 
-	image_color_type color_type;
-	image_bit_depth bit_depth;
+	ImageColorType ColorType;
+	ImageBitDepth BitDepth;
 
-	image_buffer buffer;
+	ImageBuffer Buffer;
 };
 
-extern "C" LIBPIC_API image load_image(const char* filename);
+extern "C" LIBPIC_API Image LoadPic(const char* filename);
 
 #undef WIN32_LEAN_AND_MEAN

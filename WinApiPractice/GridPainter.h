@@ -9,13 +9,14 @@ class GridPainter
 public:
 	explicit GridPainter(HWND& window, int dimension);
 
-	void DrawImage(WindowArea area, image& img) const;
-	void DrawImageWhere(int value, const int* values, image& img) const;
+	void DrawImage(WindowArea area, Image& img) const;
+	void DrawImageWhere(int value, const int* values, Image& img) const;
 	void DrawGrid(COLORREF gridColor) const;
 	void DrawIconsOnGrid(const int* values) const;
 	void DrawCircle(WindowArea area) const;
 	void DrawCross(WindowArea area) const;
 
+	// ReSharper disable once CppInconsistentNaming
 	HDC& GetHDC();
 
 	GridPainter(const GridPainter& other) = delete;
