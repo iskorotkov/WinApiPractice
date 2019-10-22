@@ -89,7 +89,7 @@ image read_png_file(const char* filename)
 	// Swap R and B values.
 	for (auto i = 0u; i < img.height * img.width * 4; i += 4)
 	{
-		auto swap = [](auto a, auto b) { auto c = a; a = b; b = c; };
+		auto swap = [](auto& a, auto& b) { auto c = a; a = b; b = c; };
 		swap(img.buffer[i + 0], img.buffer[i + 2]);
 	}
 	// ====================
