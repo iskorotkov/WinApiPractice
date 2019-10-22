@@ -25,6 +25,12 @@
     <Filter Include="Source Files\cli">
       <UniqueIdentifier>{f6d50498-dbd3-4411-8fb3-075f11e1a615}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\graphics">
+      <UniqueIdentifier>{2664cc50-7571-4089-b61e-bb9ed06a6c19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\graphics">
+      <UniqueIdentifier>{0ed2a7b9-ccd5-4336-83b5-90ec6d57abb5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApiPractice.cpp">
@@ -51,6 +57,12 @@
     <ClCompile Include="preferences.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GridPainter.cpp">
+      <Filter>Header Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowArea.cpp">
+      <Filter>Header Files\graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="filemapping.h">
@@ -73,6 +85,12 @@
     </ClInclude>
     <ClInclude Include="preferences.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GridPainter.h">
+      <Filter>Source Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowArea.h">
+      <Filter>Source Files\graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
