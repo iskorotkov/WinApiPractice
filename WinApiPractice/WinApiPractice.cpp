@@ -17,8 +17,8 @@
 const TCHAR CZ_WIN_CLASS[] = _T("MyClassName");
 const TCHAR CZ_WIN_NAME[] = _T("MyWindowName");
 
-const auto crossPath = ASSET_PATH("Cross.png");
-const auto circlePath = ASSET_PATH("Circle.png");
+const auto crossPath = ASSET_PATH("Cross.jpg");
+const auto circlePath = ASSET_PATH("Circle.jpeg");
 
 HBRUSH hCurrentBrush;
 int* values;

@@ -30,4 +30,10 @@ extern "C" struct LIBPIC_API Image
 
 extern "C" LIBPIC_API Image LoadPic(const char* filename);
 
+extern "C" LIBPIC_API bool IsValid(Image& img);
+
+extern "C" LIBPIC_API int CalcBufferSize(Image& img);
+
+extern "C" LIBPIC_API int CalcRowSize(Image& img);
+
 #undef WIN32_LEAN_AND_MEAN
