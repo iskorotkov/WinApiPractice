@@ -2,6 +2,7 @@
 #include "Windows.h"
 #include "libpic.h"
 #include "WindowArea.h"
+#include <functional>
 
 class GridPainter
 {
@@ -9,6 +10,7 @@ public:
 	explicit GridPainter(HWND& window, int dimension);
 
 	void DrawImage(WindowArea area, image& img) const;
+	void DrawImageWhere(unsigned int value, const unsigned* circles, image& img);
 	void DrawGrid(COLORREF gridColor) const;
 	void DrawIconsOnGrid(const unsigned* circles) const;
 	void DrawCircle(WindowArea area) const;
@@ -30,4 +32,8 @@ private:
 	int dimension;
 
 	[[nodiscard]] WindowArea CalculateIconDimensions(UINT index) const;
+
+	using CellIndex = int;
+	using CellValue = int;
+	void ForEachCell(const unsigned int* circles, const std::function<void(CellIndex, CellValue)>& callback, bool ignoreZero = true) const;
 };

@@ -24,6 +24,19 @@ void GridPainter::DrawImage(const WindowArea area, image& img) const
 	DeleteObject(hBitmap);
 }
 
+void GridPainter::DrawImageWhere(unsigned value, const unsigned* circles, image& img)
+{
+	const auto callback = [this, value, &img](auto index, auto val)
+	{
+		if (val == value)
+		{
+			const auto area = CalculateIconDimensions(index);
+			DrawImage(area, img);
+		}
+	};
+	ForEachCell(circles, callback);
+}
+
 void GridPainter::DrawGrid(COLORREF gridColor) const
 {
 	RECT rect;
@@ -106,28 +119,37 @@ WindowArea GridPainter::CalculateIconDimensions(const UINT index) const
 	return area;
 }
 
-void GridPainter::DrawIconsOnGrid(const unsigned* circles) const
+void GridPainter::ForEachCell(const unsigned* circles, const std::function<void(CellIndex, CellValue)>& callback, const bool ignoreZero) const
 {
 	for (UINT i = 0u, len = dimension * dimension; i < len; ++i)
 	{
-		if (circles[i])
+		if (circles[i] || !ignoreZero)
 		{
-			const auto area = CalculateIconDimensions(i);
-			switch (circles[i])
-			{
-				case 1:
-				{
-					DrawCircle(area);
-					break;
-				}
-				case 2:
-				{
-					DrawCross(area);
-					break;
-				}
-				default:
-					throw std::logic_error("Unknown grid value.");
-			}
+			callback(i, circles[i]);
 		}
 	}
+}
+
+void GridPainter::DrawIconsOnGrid(const unsigned* circles) const
+{
+	const auto callback = [this](auto index, auto val)
+	{
+		const auto area = CalculateIconDimensions(index);
+		switch (val)
+		{
+			case 1:
+			{
+				DrawCircle(area);
+				break;
+			}
+			case 2:
+			{
+				DrawCross(area);
+				break;
+			}
+			default:
+				throw std::logic_error("Unknown grid value.");
+		}
+	};
+	ForEachCell(circles, callback);
 }
