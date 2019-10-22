@@ -157,7 +157,16 @@ void DrawGrid(HWND hwnd, HDC hdc)
 	DeleteObject(pen);
 }
 
+HDC StretchImage(HDC source, int x, int y)
+{
+	const auto stretched = CreateCompatibleDC(source);
 
+	RECT rect;
+	GetBoundsRect(source, &rect, 0);
+	StretchBlt(stretched, 0, 0, x, y, source, 0, 0, rect.right, rect.bottom, COLORONCOLOR);
+
+	return stretched;
+}
 
 LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
