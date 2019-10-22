@@ -10,9 +10,9 @@ public:
 	explicit GridPainter(HWND& window, int dimension);
 
 	void DrawImage(WindowArea area, image& img) const;
-	void DrawImageWhere(int value, const unsigned* circles, image& img) const;
+	void DrawImageWhere(int value, const int* values, image& img) const;
 	void DrawGrid(COLORREF gridColor) const;
-	void DrawIconsOnGrid(const unsigned* circles) const;
+	void DrawIconsOnGrid(const int* values) const;
 	void DrawCircle(WindowArea area) const;
 	void DrawCross(WindowArea area) const;
 
@@ -35,5 +35,5 @@ private:
 
 	using CellIndex = int;
 	using CellValue = int;
-	void ForEachCell(const unsigned int* circles, const std::function<void(CellIndex, CellValue)>& callback, bool ignoreZero = true) const;
+	void ForEachCell(const int* values, const std::function<void(CellIndex, CellValue)>& callback, bool ignoreZero = true) const;
 };

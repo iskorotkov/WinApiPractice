@@ -12,12 +12,16 @@
 #include "GridPainter.h"
 
 #define ASSET_PATH(filename) ("C:\\Projects\\WinApiPractice\\Assets\\" filename)
+#define GRID_DIMENSION (GetDimension())
 
 const TCHAR CZ_WIN_CLASS[] = _T("MyClassName");
 const TCHAR CZ_WIN_NAME[] = _T("MyWindowName");
 
 const auto crossPath = ASSET_PATH("Cross.png");
 const auto circlePath = ASSET_PATH("Circle.png");
+
+HBRUSH hCurrentBrush;
+int* values;
 
 Preferences* prefs;
 image crossImage;
@@ -34,11 +38,6 @@ UINT GetDimension()
 	_tprintf(L"Error: preferences are NULL");
 	return 1;
 }
-
-#define GRID_DIMENSION (GetDimension())
-
-HBRUSH hCurrentBrush;
-UINT* circles;
 
 void RunNotepad()
 {
@@ -67,7 +66,7 @@ void OnClicked(const HWND hwnd, UINT x, UINT y, const UINT value)
 	x = x * GRID_DIMENSION / rect.right;
 	y = y * GRID_DIMENSION / rect.bottom;
 	const UINT index = y * GRID_DIMENSION + x;
-	circles[index] = value;
+	values[index] = value;
 
 	InvalidateRect(hwnd, nullptr, true);
 	UpdateWindow(hwnd);
@@ -121,8 +120,8 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		{
 			const GridPainter painter(hwnd, prefs->GridSize);
 			painter.DrawGrid(prefs->GridColor);
-			//painter.DrawIconsOnGrid(circles);
-			painter.DrawImageWhere(1, circles, crossImage);
+			painter.DrawImageWhere(1, values, crossImage);
+			painter.DrawImageWhere(2, values, circleImage);
 		}
 		break;
 		case WM_LBUTTONDOWN:
@@ -163,8 +162,8 @@ int main(int argc, char** argv)
 	// ===============================
 
 	const UINT len = GRID_DIMENSION * GRID_DIMENSION;
-	circles = new UINT[len];
-	ZeroMemory(circles, len * sizeof circles);
+	values = new int[len];
+	ZeroMemory(values, len * sizeof values);
 
 	const HINSTANCE hThisInstance = GetModuleHandle(nullptr);
 
@@ -225,6 +224,6 @@ int main(int argc, char** argv)
 
 	WriteConfigFile(method, prefs);
 	delete prefs;
-	delete circles;
+	delete values;
 	return 0;
 }

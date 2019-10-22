@@ -12,13 +12,27 @@ void GridPainter::DrawImage(const WindowArea area, image& img) const
 	const auto hdcMem = CreateCompatibleDC(hdc);
 
 	SelectObject(hdcMem, hBitmap);
-	TransparentBlt(hdc, 0, 0, img.width, img.height, hdcMem, 0, 0, img.width, img.height, RGB(0, 0, 0));
+	const auto width = img.width;
+	const auto height = img.height;
+	const auto x = area.centerX;
+	const auto y = area.centerY;
+	TransparentBlt(hdc,
+		x - width / 2,
+		y - height / 2,
+		width,
+		height,
+		hdcMem,
+		0,
+		0,
+		width,
+		height,
+		RGB(0, 0, 0));
 
 	DeleteDC(hdcMem);
 	DeleteObject(hBitmap);
 }
 
-void GridPainter::DrawImageWhere(int value, const unsigned* circles, image& img) const
+void GridPainter::DrawImageWhere(int value, const int* values, image& img) const
 {
 	const auto callback = [this, value, &img](auto index, auto val)
 	{
@@ -28,7 +42,7 @@ void GridPainter::DrawImageWhere(int value, const unsigned* circles, image& img)
 			DrawImage(area, img);
 		}
 	};
-	ForEachCell(circles, callback);
+	ForEachCell(values, callback);
 }
 
 void GridPainter::DrawGrid(COLORREF gridColor) const
@@ -113,18 +127,18 @@ WindowArea GridPainter::CalculateIconDimensions(const UINT index) const
 	return area;
 }
 
-void GridPainter::ForEachCell(const unsigned* circles, const std::function<void(CellIndex, CellValue)>& callback, const bool ignoreZero) const
+void GridPainter::ForEachCell(const int* values, const std::function<void(CellIndex, CellValue)>& callback, const bool ignoreZero) const
 {
 	for (UINT i = 0u, len = dimension * dimension; i < len; ++i)
 	{
-		if (circles[i] || !ignoreZero)
+		if (values[i] || !ignoreZero)
 		{
-			callback(i, circles[i]);
+			callback(i, values[i]);
 		}
 	}
 }
 
-void GridPainter::DrawIconsOnGrid(const unsigned* circles) const
+void GridPainter::DrawIconsOnGrid(const int* values) const
 {
 	const auto callback = [this](auto index, auto val)
 	{
@@ -145,5 +159,5 @@ void GridPainter::DrawIconsOnGrid(const unsigned* circles) const
 				throw std::logic_error("Unknown grid value.");
 		}
 	};
-	ForEachCell(circles, callback);
+	ForEachCell(values, callback);
 }
