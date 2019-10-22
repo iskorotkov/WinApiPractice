@@ -10,8 +10,13 @@
 #include <string>
 #include "libpic.h"
 
+#define ASSET_PATH(filename) ("C:\\Projects\\WinApiPractice\\Assets\\" filename)
+
 const TCHAR CZ_WIN_CLASS[] = _T("MyClassName");
 const TCHAR CZ_WIN_NAME[] = _T("MyWindowName");
+
+const auto crossPath = ASSET_PATH("Cross.png");
+const auto circlePath = ASSET_PATH("Circle.png");
 
 Preferences* prefs;
 image crossImage;
@@ -152,6 +157,8 @@ void DrawGrid(HWND hwnd, HDC hdc)
 	DeleteObject(pen);
 }
 
+
+
 LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
@@ -202,15 +209,13 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			const HDC hdc = BeginPaint(hwnd, &ps);
 			DrawGrid(hwnd, hdc);
 			// ============================
-			// TODO: Remove magic 4.
-			HBITMAP hBitmap = CreateBitmap(crossImage.width, crossImage.height, 1, crossImage.bit_depth * 4, crossImage.buffer);
+			HBITMAP hBitmap = CreateBitmap(crossImage.width, crossImage.height, 1, crossImage.bit_depth, crossImage.buffer);
 			BITMAP bitmap;
 			GetObject(hBitmap, sizeof(BITMAP), &bitmap);
 
 			auto hdcMem = CreateCompatibleDC(hdc);
 			auto oldBitmap = SelectObject(hdcMem, hBitmap);
 
-			// BitBlt(hdc, 0, 0, bitmap.bmWidth, bitmap.bmHeight, hdcMem, 0, 0, SRCCOPY);
 			RECT rect;
 			GetClientRect(hwnd, &rect);
 			TransparentBlt(hdc, 0, 0, bitmap.bmWidth, bitmap.bmHeight, hdcMem, 0, 0, bitmap.bmWidth, bitmap.bmHeight, RGB(0, 0, 0));
@@ -251,16 +256,12 @@ int main(int argc, char** argv)
 	}
 
 	// ===============================
-	using LoadImageSignature = image(const char* filename);
+	using LoadImageFunc = decltype(load_image);
 	const auto libpic = LoadLibrary(L"libpic.dll");
-	auto procAddress = (LoadImageSignature*)GetProcAddress(libpic, "load_image");
-	const auto assetsPath = R"(C:\Projects\WinApiPractice\Assets\)";
-#define ASSET_PATH(path) ("C:\\Projects\\WinApiPractice\\Assets\\" path)
-	const auto crossPath = ASSET_PATH("Cross.png");
-	const auto circlePath = ASSET_PATH("Circle.png");
-	const auto icon = ASSET_PATH("Icon.png");
-	const auto RGBImage = ASSET_PATH("TEST RGB.png");
-	crossImage = procAddress(RGBImage);
+	const auto procAddress = (LoadImageFunc*)GetProcAddress(libpic, "load_image");
+
+	crossImage = procAddress(crossPath);
+	circleImage = procAddress(circlePath);
 	// ===============================
 
 	const UINT len = GRID_DIMENSION * GRID_DIMENSION;
