@@ -119,7 +119,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		}
 		case WM_PAINT:
 		{
-			GridPainter painter(hwnd, prefs->GridSize);
+			const GridPainter painter(hwnd, prefs->GridSize);
 			painter.DrawGrid(prefs->GridColor);
 			painter.DrawIconsOnGrid(circles);
 		}

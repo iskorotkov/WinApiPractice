@@ -1,11 +1,12 @@
 ﻿#include "GridPainter.h"
+#include <stdexcept>
 
 GridPainter::GridPainter(HWND& window, const int dimension) : window(window), dimension(dimension)
 {
 	hdc = BeginPaint(window, &ps);
 }
 
-void GridPainter::DrawImage(int row, int column, image& img) const
+void GridPainter::DrawImage(const WindowArea area, image& img) const
 {
 	const auto hBitmap = CreateBitmap(img.width, img.height, 1, img.bit_depth, img.buffer);
 	BITMAP bitmap;
@@ -124,6 +125,8 @@ void GridPainter::DrawIconsOnGrid(const unsigned* circles) const
 					DrawCross(area);
 					break;
 				}
+				default:
+					throw std::logic_error("Unknown grid value.");
 			}
 		}
 	}
