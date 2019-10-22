@@ -28,7 +28,7 @@ image read_png_file(const char* filename)
 	img.width = png_get_image_width(png, info);
 	img.height = png_get_image_height(png, info);
 	img.color_type = png_get_color_type(png, info);
-	img.bit_depth = png_get_bit_depth(png, info);
+	img.bit_depth = png_get_bit_depth(png, info) * png_get_channels(png, info);;
 
 	// Read any color_type into 8bit depth, RGBA format.
 	// See http://www.libpng.org/pub/png/libpng-manual.txt
