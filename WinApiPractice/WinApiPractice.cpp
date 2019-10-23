@@ -11,14 +11,10 @@
 #include "libpic.h"
 #include "GridPainter.h"
 
-#define ASSET_PATH(filename) ("C:\\Projects\\WinApiPractice\\Assets\\" filename)
-#define GRID_DIMENSION (GetDimension())
+#define GRID_DIMENSION (prefs->GridSize)
 
 const TCHAR CZ_WIN_CLASS[] = _T("MyClassName");
 const TCHAR CZ_WIN_NAME[] = _T("MyWindowName");
-
-const auto crossPath = ASSET_PATH("Cross.jpg");
-const auto circlePath = ASSET_PATH("Circle.jpeg");
 
 HBRUSH hCurrentBrush;
 int* values;
@@ -28,16 +24,6 @@ Image crossImage;
 Image circleImage;
 Image icon;
 Image cursor;
-
-UINT GetDimension()
-{
-	if (prefs)
-	{
-		return prefs->GridSize;
-	}
-	_tprintf(L"Error: preferences are NULL");
-	return 1;
-}
 
 void RunNotepad()
 {
@@ -158,7 +144,7 @@ int main(int argc, char** argv)
 		wprintf_s(L"Unable to load DLL. Try again.");
 	}
 
-	const auto loadPicAddress = reinterpret_cast<decltype(LoadPic)*>(GetProcAddress(lib, "LoadPic"));
+	const auto loadPicAddress = reinterpret_cast<decltype(LoadPicW)*>(GetProcAddress(lib, "LoadPicW"));
 	if (!loadPicAddress)
 	{
 		wprintf_s(L"Unable to find a method in a DLL.");
@@ -166,8 +152,8 @@ int main(int argc, char** argv)
 
 	try
 	{
-		crossImage = loadPicAddress(crossPath);
-		circleImage = loadPicAddress(circlePath);
+		crossImage = loadPicAddress(prefs->IconFile);
+		circleImage = loadPicAddress(prefs->CursorFile);
 	}
 	catch (std::exception& e)
 	{
