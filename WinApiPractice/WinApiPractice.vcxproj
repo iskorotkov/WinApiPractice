@@ -166,6 +166,7 @@
     <ClCompile Include="files.cpp" />
     <ClCompile Include="filestream.cpp" />
     <ClCompile Include="GridPainter.cpp" />
+    <ClCompile Include="LibraryHandle.cpp" />
     <ClCompile Include="preferences.cpp" />
     <ClCompile Include="variables.cpp" />
     <ClCompile Include="winapi.cpp" />
@@ -178,6 +179,7 @@
     <ClInclude Include="files.h" />
     <ClInclude Include="filestream.h" />
     <ClInclude Include="GridPainter.h" />
+    <ClInclude Include="LibraryHandle.h" />
     <ClInclude Include="preferences.h" />
     <ClInclude Include="variables.h" />
     <ClInclude Include="winapi.h" />

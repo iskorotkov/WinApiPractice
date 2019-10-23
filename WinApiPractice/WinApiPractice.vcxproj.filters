@@ -13,23 +13,29 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\io">
-      <UniqueIdentifier>{c65bba0f-2887-484b-9d4c-cf64103a1473}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\io">
-      <UniqueIdentifier>{448dbbdf-f04e-4f3e-b0e0-022152683870}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\cli">
-      <UniqueIdentifier>{bc0a04ab-4c1e-4eea-aea8-fc7f23cbfa6f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\cli">
+    <Filter Include="Source Files\CommandLine">
       <UniqueIdentifier>{f6d50498-dbd3-4411-8fb3-075f11e1a615}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\graphics">
+    <Filter Include="Source Files\Graphics">
       <UniqueIdentifier>{2664cc50-7571-4089-b61e-bb9ed06a6c19}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\graphics">
+    <Filter Include="Source Files\IO">
+      <UniqueIdentifier>{448dbbdf-f04e-4f3e-b0e0-022152683870}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Resources">
+      <UniqueIdentifier>{0d4f127e-a2e0-442b-83d9-003c20dc952f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\CommandLine">
+      <UniqueIdentifier>{bc0a04ab-4c1e-4eea-aea8-fc7f23cbfa6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Graphics">
       <UniqueIdentifier>{0ed2a7b9-ccd5-4336-83b5-90ec6d57abb5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\IO">
+      <UniqueIdentifier>{c65bba0f-2887-484b-9d4c-cf64103a1473}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Resources">
+      <UniqueIdentifier>{69ae7c9f-959c-44f4-8c60-a0762bfbb6d3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -37,60 +43,66 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="filemapping.cpp">
-      <Filter>Source Files\io</Filter>
+      <Filter>Source Files\IO</Filter>
     </ClCompile>
     <ClCompile Include="files.cpp">
-      <Filter>Source Files\io</Filter>
+      <Filter>Source Files\IO</Filter>
     </ClCompile>
     <ClCompile Include="filestream.cpp">
-      <Filter>Source Files\io</Filter>
+      <Filter>Source Files\IO</Filter>
     </ClCompile>
     <ClCompile Include="variables.cpp">
-      <Filter>Source Files\io</Filter>
+      <Filter>Source Files\IO</Filter>
     </ClCompile>
     <ClCompile Include="winapi.cpp">
-      <Filter>Source Files\io</Filter>
+      <Filter>Source Files\IO</Filter>
     </ClCompile>
     <ClCompile Include="commandline.cpp">
-      <Filter>Source Files\cli</Filter>
+      <Filter>Source Files\CommandLine</Filter>
     </ClCompile>
     <ClCompile Include="preferences.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GridPainter.cpp">
-      <Filter>Header Files\graphics</Filter>
+      <Filter>Header Files\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="WindowArea.cpp">
-      <Filter>Header Files\graphics</Filter>
+      <Filter>Header Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="LibraryHandle.cpp">
+      <Filter>Source Files\Resources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="filemapping.h">
-      <Filter>Header Files\io</Filter>
+      <Filter>Header Files\IO</Filter>
     </ClInclude>
     <ClInclude Include="files.h">
-      <Filter>Header Files\io</Filter>
+      <Filter>Header Files\IO</Filter>
     </ClInclude>
     <ClInclude Include="filestream.h">
-      <Filter>Header Files\io</Filter>
+      <Filter>Header Files\IO</Filter>
     </ClInclude>
     <ClInclude Include="variables.h">
-      <Filter>Header Files\io</Filter>
+      <Filter>Header Files\IO</Filter>
     </ClInclude>
     <ClInclude Include="winapi.h">
-      <Filter>Header Files\io</Filter>
+      <Filter>Header Files\IO</Filter>
     </ClInclude>
     <ClInclude Include="commandline.h">
-      <Filter>Header Files\cli</Filter>
+      <Filter>Header Files\CommandLine</Filter>
     </ClInclude>
     <ClInclude Include="preferences.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GridPainter.h">
-      <Filter>Source Files\graphics</Filter>
+      <Filter>Source Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="WindowArea.h">
-      <Filter>Source Files\graphics</Filter>
+      <Filter>Source Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="LibraryHandle.h">
+      <Filter>Header Files\Resources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

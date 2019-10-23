@@ -10,6 +10,7 @@
 #include <string>
 #include "libpic.h"
 #include "GridPainter.h"
+#include "LibraryHandle.h"
 
 #define GRID_DIMENSION (prefs->GridSize)
 
@@ -138,28 +139,20 @@ int main(int argc, char** argv)
 		return -1;
 	}
 
-	const auto lib = LoadLibrary(L"libpic.dll");
-	if (!lib)
-	{
-		wprintf_s(L"Unable to load DLL. Try again.");
-		return -1;
-	}
-
-	const auto loadPicAddress = reinterpret_cast<decltype(LoadPicW)*>(GetProcAddress(lib, "LoadPicW"));
-	if (!loadPicAddress)
-	{
-		wprintf_s(L"Unable to find a method in a DLL.");
-		return -1;
-	}
-
 	try
 	{
+		const LibraryHandle lib(L"libpic.dll");
+		const auto loadPicAddress = reinterpret_cast<decltype(LoadPicW)*>(lib.GetMethod(L"LoadPicW"));
+		if (!loadPicAddress)
+		{
+			throw std::exception("Unable to find function.");
+		}
 		crossImage = loadPicAddress(prefs->IconFile);
 		circleImage = loadPicAddress(prefs->CursorFile);
 	}
 	catch (std::exception& e)
 	{
-		wprintf_s(L"Can't load one of the images. Error: %hs", e.what());
+		printf_s("An error happened when tried to use DLL. Error info: %s", e.what());
 		return -1;
 	}
 
