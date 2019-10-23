@@ -142,12 +142,14 @@ int main(int argc, char** argv)
 	if (!lib)
 	{
 		wprintf_s(L"Unable to load DLL. Try again.");
+		return -1;
 	}
 
 	const auto loadPicAddress = reinterpret_cast<decltype(LoadPicW)*>(GetProcAddress(lib, "LoadPicW"));
 	if (!loadPicAddress)
 	{
 		wprintf_s(L"Unable to find a method in a DLL.");
+		return -1;
 	}
 
 	try
@@ -158,6 +160,7 @@ int main(int argc, char** argv)
 	catch (std::exception& e)
 	{
 		wprintf_s(L"Can't load one of the images. Error: %hs", e.what());
+		return -1;
 	}
 
 	const UINT len = GRID_DIMENSION * GRID_DIMENSION;
