@@ -3,6 +3,7 @@
 #include <filesystem>
 #include "PngWrapper.h"
 #include "JpegWrapper.h"
+#include <string>
 
 Image LoadPic(const char* filename)
 {
@@ -23,6 +24,13 @@ Image LoadPic(const char* filename)
 	}
 	// TODO: Add error handling.
 	return Image();
+}
+
+Image LoadPicW(const wchar_t* filename)
+{
+	const std::wstring ws(filename);
+	const std::string s(ws.cbegin(), ws.cend());
+	return LoadPic(s.c_str());
 }
 
 bool IsValid(Image& img)

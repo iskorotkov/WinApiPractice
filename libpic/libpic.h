@@ -29,6 +29,7 @@ extern "C" struct LIBPIC_API Image
 };
 
 extern "C" LIBPIC_API Image LoadPic(const char* filename);
+extern "C" LIBPIC_API Image LoadPicW(const wchar_t* filename);
 
 extern "C" LIBPIC_API bool IsValid(Image& img);
 
