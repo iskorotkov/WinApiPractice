@@ -8,8 +8,8 @@ public:
 	explicit LibraryHandle(const wchar_t* name);
 	explicit LibraryHandle(const std::wstring& name);
 
-	[[nodiscard]] FARPROC GetMethod(const wchar_t* name) const;
-	[[nodiscard]] FARPROC GetMethod(const std::wstring& name) const;
+	[[nodiscard]] FARPROC GetMethod(const char* name) const;
+	[[nodiscard]] FARPROC GetMethod(const std::string& name) const;
 
 	[[nodiscard]] bool IsValid() const;
 

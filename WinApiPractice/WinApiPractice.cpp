@@ -142,13 +142,20 @@ int main(int argc, char** argv)
 	try
 	{
 		const LibraryHandle lib(L"libpic.dll");
-		const auto loadPicAddress = reinterpret_cast<decltype(LoadPicW)*>(lib.GetMethod(L"LoadPicW"));
-		if (!loadPicAddress)
+		const auto loadPicFunc = reinterpret_cast<decltype(LoadPicW)*>(lib.GetMethod("LoadPicW"));
+		const auto isValidFunc = reinterpret_cast<decltype(IsValid)*>(lib.GetMethod("IsValid"));
+
+		const auto loadPicWrapper = [loadPicFunc, isValidFunc](Image& img, const wchar_t* name)
 		{
-			throw std::exception("Unable to find function.");
-		}
-		crossImage = loadPicAddress(prefs->IconFile);
-		circleImage = loadPicAddress(prefs->CursorFile);
+			img = loadPicFunc(name);
+			if (!isValidFunc(img))
+			{
+				throw std::exception("Unable to load a picture.");
+			}
+		};
+		
+		loadPicWrapper(crossImage, prefs->IconFile);
+		loadPicWrapper(circleImage, prefs->CursorFile);
 	}
 	catch (std::exception& e)
 	{
