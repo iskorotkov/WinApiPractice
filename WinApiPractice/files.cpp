@@ -7,7 +7,7 @@
 #include "winapi.h"
 #include "variables.h"
 
-const TCHAR* configFile = _T("C:\\Projects\\WinApiPractice\\WinApiPractice\\config.ini");
+const TCHAR* configFile = _T("C:\\Projects\\WinApiPractice\\Config\\config.ini");
 
 void WriteConfigFile(const ReadingMethod method, Preferences* prefs)
 {
