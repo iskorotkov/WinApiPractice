@@ -159,12 +159,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Constants.h" />
+    <ClInclude Include="Conversions.h" />
     <ClInclude Include="JpegWrapper.h" />
     <ClInclude Include="libpic.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PngWrapper.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Constants.cpp" />
+    <ClCompile Include="Conversions.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="JpegWrapper.cpp" />
     <ClCompile Include="libpic.cpp" />

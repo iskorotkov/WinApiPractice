@@ -65,6 +65,7 @@ Image ReadPngFile(const char* filename)
 		rowPointers[i] = img.Buffer + png_get_rowbytes(png, info) * i;
 	}
 
+	// TODO: Can cause problems in number of channels differs from 4.
 	png_read_image(png, rowPointers);
 
 	fclose(fp);

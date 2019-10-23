@@ -4,6 +4,8 @@
 #include <cstdio>
 #include "jpeglib.h"
 #include <csetjmp>
+#include "Constants.h"
+#include "Conversions.h"
 
 struct my_error_mgr
 {
@@ -94,10 +96,6 @@ Image ReadJpegImage(const char* filename)
 	* jpeg_read_header(), so we do nothing here.
 	*/
 
-	// ================================================
-	//cinfo.jpeg_color_space = JCS_RGB;
-	// ================================================
-
 	/* Step 5: Start decompressor */
 
 	(void)jpeg_start_decompress(&cinfo);
@@ -124,17 +122,17 @@ Image ReadJpegImage(const char* filename)
 	* loop counter, so that we don't have to keep track ourselves.
 	*/
 
-	// ================================================
+	// Fetch info about channels number
 	const auto sourceChannels = cinfo.num_components;
-	const auto destChannels = 4;
-	
+	const auto destChannels = TargetBytesPerPixel();
+
+	// Prepare image struct
 	Image img{};
 	img.Width = cinfo.output_width;
 	img.Height = cinfo.output_height;
 	img.ColorType = cinfo.jpeg_color_space;
 	img.BitDepth = cinfo.data_precision * destChannels;
 	img.Buffer = new ImageByte[CalcBufferSize(img)];
-	// ================================================
 
 	while (cinfo.output_scanline < cinfo.output_height)
 	{
@@ -143,21 +141,22 @@ Image ReadJpegImage(const char* filename)
 		* more than one scanline at a time if that's more convenient.
 		*/
 		(void)jpeg_read_scanlines(&cinfo, buffer, 1);
-		/* Assume put_scanline_someplace wants a pointer and sample count. */
-		// put_scanline_someplace(buffer[0], row_stride);
 
-		// ===========================================
+		// Read to the buffer
+		// A. Find a spot in buffer
 		const auto imgBuffer = &img.Buffer[destChannels * row_stride * (cinfo.output_scanline - 1) / sourceChannels];
 		for (auto i = 0; i < cinfo.output_width; ++i)
 		{
+			// B. Calculate offsets
 			const auto dest = &imgBuffer[i * destChannels];
 			const auto source = &buffer[0][i * sourceChannels];
-			dest[0] = source[2];
-			dest[1] = source[1];
-			dest[2] = source[0];
-			dest[4] = 0;
+
+			// C. Copy pixel info with respect to number of channels
+			Change::ChannelsNumber(reinterpret_cast<std::byte*>(source),
+				reinterpret_cast<std::byte*>(dest),
+				sourceChannels,
+				destChannels);
 		}
-		// ===========================================
 	}
 
 	/* Step 7: Finish decompression */
