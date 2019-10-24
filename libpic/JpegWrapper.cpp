@@ -111,6 +111,7 @@ Image ReadJpegImage(const char* filename)
 	*/
 	/* JSAMPLEs per row in output buffer */
 	row_stride = cinfo.output_width * cinfo.output_components;
+	
 	/* Make a one-row-high sample array that will go away when done with image */
 	buffer = (*cinfo.mem->alloc_sarray)
 	((j_common_ptr)&cinfo, JPOOL_IMAGE, row_stride, 1);
@@ -144,7 +145,7 @@ Image ReadJpegImage(const char* filename)
 
 		// Read to the buffer
 		// A. Find a spot in buffer
-		const auto imgBuffer = &img.Buffer[destChannels * row_stride * (cinfo.output_scanline - 1) / sourceChannels];
+		const auto imgBuffer = &img.Buffer[destChannels * cinfo.output_width * (cinfo.output_scanline - 1)];
 		for (auto i = 0; i < cinfo.output_width; ++i)
 		{
 			// B. Calculate offsets
