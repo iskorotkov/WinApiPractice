@@ -12,7 +12,6 @@
 #include "LibraryHandle.h"
 #include "SharedStorage.h"
 #include <iostream>
-#include "Notificator.h"
 #include <string>
 
 #define GRID_DIMENSION (prefs->GridSize)
@@ -25,6 +24,8 @@ const std::wstring onClickMessagePrefix = L"OnClick message ";
 HBRUSH hCurrentBrush;
 int* values;
 
+unsigned WM_GRIDUPDATE = 0;
+
 Preferences* prefs;
 Image crossImage;
 Image circleImage;
@@ -32,7 +33,6 @@ Image icon;
 Image cursor;
 
 SharedStorage storage;
-Notificator notificator;
 
 void RunNotepad()
 {
@@ -63,8 +63,7 @@ void OnClicked(const HWND hwnd, UINT x, UINT y, const UINT value)
 	const UINT index = y * GRID_DIMENSION + x;
 	values[index] = value;
 
-	std::wstring ws;
-	notificator.Send(onClickMessagePrefix + std::to_wstring(value));
+	SendMessage(HWND_BROADCAST, WM_GRIDUPDATE, 0, 0);
 
 	InvalidateRect(hwnd, nullptr, true);
 	UpdateWindow(hwnd);
@@ -72,6 +71,12 @@ void OnClicked(const HWND hwnd, UINT x, UINT y, const UINT value)
 
 LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+	if (uMsg == WM_GRIDUPDATE)
+	{
+		InvalidateRect(hwnd, nullptr, true);
+		UpdateWindow(hwnd);
+		return 0;
+	}
 	switch (uMsg)
 	{
 		case WM_KEYDOWN:
@@ -140,6 +145,11 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
+void RegisterUserMessages()
+{
+	WM_GRIDUPDATE = RegisterWindowMessage(L"WM_GRIDUPDATE");
+}
+
 int main(int argc, char** argv)
 {
 	const ReadingMethod method = GetReadingMethod(argc, argv);
@@ -149,6 +159,8 @@ int main(int argc, char** argv)
 		MessageBox(nullptr, L"Failed to read config file!", L"Error", MB_OK | MB_ICONERROR);
 		return -1;
 	}
+
+	RegisterUserMessages();
 
 	try
 	{
@@ -228,28 +240,12 @@ int main(int argc, char** argv)
 
 	BOOL bMessageOk;
 	MSG message;
-	notificator.Create(L"GridPipe");
 	while ((bMessageOk = GetMessage(&message, nullptr, 0, 0)) != 0)
 	{
 		if (bMessageOk < 0)
 		{
 			puts("Suddenly, GetMessage failed!");
 			break;
-		}
-
-		try
-		{
-			const auto notification = notificator.Receive();
-			if (!notification.empty())
-			{
-				std::wcout << notification;
-				// TODO
-			}
-		}
-		catch (std::exception& e)
-		{
-			std::cout << e.what();
-			return -1;
 		}
 
 		TranslateMessage(&message);
