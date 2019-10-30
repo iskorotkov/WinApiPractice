@@ -1,4 +1,5 @@
 ﻿#include "Notificator.h"
+#include <iostream>
 
 void Notificator::Create(const std::wstring&& pipeName)
 {
@@ -7,7 +8,7 @@ void Notificator::Create(const std::wstring&& pipeName)
 		return;
 	}
 
-	const auto fullName = LR"(\\.\pipe\)" + pipeName;
+	const auto fullName = LR"(\\.\mailslot\)" + pipeName;
 	handle = CreateFile(
 		fullName.c_str(),
 		GENERIC_READ | GENERIC_WRITE,
@@ -20,22 +21,39 @@ void Notificator::Create(const std::wstring&& pipeName)
 
 	if (!handle || handle == INVALID_HANDLE_VALUE)
 	{
-		// TODO: Never executed code!
-		handle = CreateNamedPipe(
+		//handle = CreateNamedPipe(
+		//	fullName.c_str(),
+		//	PIPE_ACCESS_DUPLEX,
+		//	PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT,
+		//	PIPE_UNLIMITED_INSTANCES,
+		//	1024,
+		//	1024,
+		//	10,
+		//	nullptr
+		//);
+		handle = CreateMailslot(
 			fullName.c_str(),
-			PIPE_ACCESS_DUPLEX,
-			PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT,
-			PIPE_UNLIMITED_INSTANCES,
 			0,
-			0,
+			MAILSLOT_WAIT_FOREVER,
+			nullptr
+		);
+		isServer = true;
+
+		const auto secondHandle = CreateFile(
+			fullName.c_str(),
+			GENERIC_READ | GENERIC_WRITE,
+			FILE_SHARE_READ | FILE_SHARE_WRITE,
+			nullptr,
+			OPEN_EXISTING,
 			0,
 			nullptr
 		);
 
-		if (!handle)
+		if (!handle || handle == INVALID_HANDLE_VALUE)
 		{
 			// TODO
 		}
+		std::cout << handle << '\n' << secondHandle;
 	}
 	isCreated = true;
 }
@@ -47,13 +65,16 @@ void Notificator::Send(const std::wstring&& message) const
 		// TODO:
 	}
 
+	auto bytesWritten = 0ul;
 	WriteFile(
 		handle,
 		message.c_str(),
-		message.length() * sizeof(wchar_t),
-		nullptr,
+		(message.length() + 1) * sizeof(wchar_t),
+		&bytesWritten,
 		nullptr
 	);
+	std::cout << "Bytes written: " << bytesWritten << '\n';
+	std::wcout << "Written message: " << message << '\n';
 }
 
 std::wstring Notificator::Receive() const
@@ -63,17 +84,44 @@ std::wstring Notificator::Receive() const
 		// TODO:
 	}
 
-	const auto allocated = 512;
-	const auto buffer = new wchar_t[allocated];
-	auto bytesRead = 0ul;
+	auto messageSize = 0ul;
+	auto messages = 0ul;
+	const auto result = GetMailslotInfo(
+		handle,
+		0,
+		&messageSize,
+		&messages,
+		nullptr
+	);
 
+	//const auto result = GetNamedPipeInfo(
+	//	handle,
+	//	nullptr,
+	//	&messageSize,
+	//	nullptr,
+	//	nullptr
+	//);
+
+	if (!result)
+	{
+		// TODO
+	}
+
+	if (messageSize == MAILSLOT_NO_MESSAGE || messageSize <= 0)
+	{
+		return {};
+	}
+
+	const auto buffer = new wchar_t[messageSize];
+	auto bytesRead = 0ul;
 	ReadFile(
 		handle,
 		buffer,
-		allocated,
+		messageSize,
 		&bytesRead,
 		nullptr
 	);
+	std::cout << "Bytes read: " << bytesRead << '\n';
 
 	const std::wstring ws(buffer, bytesRead);
 	delete[] buffer;
@@ -87,10 +135,12 @@ void Notificator::Close()
 		return;
 	}
 
-
 	// TODO: Should I flush file buffers here?
-	FlushFileBuffers(handle);
-	
+	if (isServer)
+	{
+		FlushFileBuffers(handle);
+	}
+
 	CloseHandle(handle);
 
 	isCreated = false;

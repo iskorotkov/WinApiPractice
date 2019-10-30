@@ -14,4 +14,5 @@ public:
 private:
 	HANDLE handle = nullptr;
 	bool isCreated = false;
+	bool isServer = false;
 };
