@@ -81,6 +81,9 @@
     <ClCompile Include="SharedStorage.cpp">
       <Filter>Header Files\Communication</Filter>
     </ClCompile>
+    <ClCompile Include="Notificator.cpp">
+      <Filter>Header Files\Communication</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="filemapping.h">
@@ -114,6 +117,9 @@
       <Filter>Header Files\Resources</Filter>
     </ClInclude>
     <ClInclude Include="SharedStorage.h">
+      <Filter>Source Files\Communication</Filter>
+    </ClInclude>
+    <ClInclude Include="Notificator.h">
       <Filter>Source Files\Communication</Filter>
     </ClInclude>
   </ItemGroup>

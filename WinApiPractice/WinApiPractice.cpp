@@ -7,17 +7,20 @@
 #include "files.h"
 #include "commandline.h"
 #include "preferences.h"
-#include <string>
 #include "libpic.h"
 #include "GridPainter.h"
 #include "LibraryHandle.h"
 #include "SharedStorage.h"
 #include <iostream>
+#include "Notificator.h"
+#include <string>
 
 #define GRID_DIMENSION (prefs->GridSize)
 
 const TCHAR CZ_WIN_CLASS[] = _T("MyClassName");
 const TCHAR CZ_WIN_NAME[] = _T("MyWindowName");
+
+const std::wstring onClickMessagePrefix = L"OnClick message ";
 
 HBRUSH hCurrentBrush;
 int* values;
@@ -27,6 +30,9 @@ Image crossImage;
 Image circleImage;
 Image icon;
 Image cursor;
+
+SharedStorage storage;
+Notificator notificator;
 
 void RunNotepad()
 {
@@ -56,6 +62,9 @@ void OnClicked(const HWND hwnd, UINT x, UINT y, const UINT value)
 	y = y * GRID_DIMENSION / rect.bottom;
 	const UINT index = y * GRID_DIMENSION + x;
 	values[index] = value;
+
+	std::wstring ws;
+	notificator.Send(onClickMessagePrefix + std::to_wstring(value));
 
 	InvalidateRect(hwnd, nullptr, true);
 	UpdateWindow(hwnd);
@@ -155,7 +164,7 @@ int main(int argc, char** argv)
 				throw std::exception("Unable to load a picture.");
 			}
 		};
-		
+
 		loadPicWrapper(crossImage, prefs->IconFile);
 		loadPicWrapper(circleImage, prefs->CursorFile);
 	}
@@ -167,7 +176,6 @@ int main(int argc, char** argv)
 
 	try
 	{
-		SharedStorage storage;
 		const auto len = GRID_DIMENSION * GRID_DIMENSION;
 		storage.Open(L"GameGrid", len * sizeof(int));
 		values = reinterpret_cast<int*>(storage.GetStorage());
@@ -175,6 +183,7 @@ int main(int argc, char** argv)
 	catch (std::exception& e)
 	{
 		std::cout << "An error happened during shared storage opening. " << '\n' << e.what();
+		return -1;
 	}
 
 	const HINSTANCE hThisInstance = GetModuleHandle(nullptr);
@@ -219,6 +228,7 @@ int main(int argc, char** argv)
 
 	BOOL bMessageOk;
 	MSG message;
+	notificator.Create(L"GridPipe");
 	while ((bMessageOk = GetMessage(&message, nullptr, 0, 0)) != 0)
 	{
 		if (bMessageOk < 0)
@@ -226,6 +236,21 @@ int main(int argc, char** argv)
 			puts("Suddenly, GetMessage failed!");
 			break;
 		}
+
+		try
+		{
+			const auto notification = notificator.Receive();
+			if (!notification.empty())
+			{
+				// TODO
+			}
+		}
+		catch (std::exception& e)
+		{
+			std::cout << e.what();
+			return -1;
+		}
+
 		TranslateMessage(&message);
 		DispatchMessage(&message);
 	}
@@ -236,6 +261,5 @@ int main(int argc, char** argv)
 
 	WriteConfigFile(method, prefs);
 	delete prefs;
-	delete values;
 	return 0;
 }
