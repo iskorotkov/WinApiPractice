@@ -168,6 +168,7 @@
     <ClCompile Include="GridPainter.cpp" />
     <ClCompile Include="LibraryHandle.cpp" />
     <ClCompile Include="preferences.cpp" />
+    <ClCompile Include="SharedStorage.cpp" />
     <ClCompile Include="variables.cpp" />
     <ClCompile Include="winapi.cpp" />
     <ClCompile Include="WinApiPractice.cpp" />
@@ -181,6 +182,7 @@
     <ClInclude Include="GridPainter.h" />
     <ClInclude Include="LibraryHandle.h" />
     <ClInclude Include="preferences.h" />
+    <ClInclude Include="SharedStorage.h" />
     <ClInclude Include="variables.h" />
     <ClInclude Include="winapi.h" />
     <ClInclude Include="WindowArea.h" />

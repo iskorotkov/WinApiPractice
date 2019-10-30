@@ -37,6 +37,12 @@
     <Filter Include="Header Files\Resources">
       <UniqueIdentifier>{69ae7c9f-959c-44f4-8c60-a0762bfbb6d3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Communication">
+      <UniqueIdentifier>{eeab0b65-c7a7-479f-8490-63ad902459a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Communication">
+      <UniqueIdentifier>{29c9f32d-ec99-4a28-868c-8b9983fe9aa9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApiPractice.cpp">
@@ -72,6 +78,9 @@
     <ClCompile Include="LibraryHandle.cpp">
       <Filter>Source Files\Resources</Filter>
     </ClCompile>
+    <ClCompile Include="SharedStorage.cpp">
+      <Filter>Header Files\Communication</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="filemapping.h">
@@ -103,6 +112,9 @@
     </ClInclude>
     <ClInclude Include="LibraryHandle.h">
       <Filter>Header Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedStorage.h">
+      <Filter>Source Files\Communication</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

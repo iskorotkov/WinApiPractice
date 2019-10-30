@@ -11,6 +11,8 @@
 #include "libpic.h"
 #include "GridPainter.h"
 #include "LibraryHandle.h"
+#include "SharedStorage.h"
+#include <iostream>
 
 #define GRID_DIMENSION (prefs->GridSize)
 
@@ -163,9 +165,17 @@ int main(int argc, char** argv)
 		return -1;
 	}
 
-	const UINT len = GRID_DIMENSION * GRID_DIMENSION;
-	values = new int[len];
-	ZeroMemory(values, len * sizeof values);
+	try
+	{
+		SharedStorage storage;
+		const auto len = GRID_DIMENSION * GRID_DIMENSION;
+		storage.Open(L"GameGrid", len * sizeof(int));
+		values = reinterpret_cast<int*>(storage.GetStorage());
+	}
+	catch (std::exception& e)
+	{
+		std::cout << "An error happened during shared storage opening. " << '\n' << e.what();
+	}
 
 	const HINSTANCE hThisInstance = GetModuleHandle(nullptr);
 
