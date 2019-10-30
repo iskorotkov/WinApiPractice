@@ -18,7 +18,7 @@ void Notificator::Create(const std::wstring&& pipeName)
 		nullptr
 	);
 
-	if (!handle)
+	if (!handle || handle == INVALID_HANDLE_VALUE)
 	{
 		// TODO: Never executed code!
 		handle = CreateNamedPipe(
@@ -66,7 +66,7 @@ std::wstring Notificator::Receive() const
 	const auto allocated = 512;
 	const auto buffer = new wchar_t[allocated];
 	auto bytesRead = 0ul;
-	
+
 	ReadFile(
 		handle,
 		buffer,
