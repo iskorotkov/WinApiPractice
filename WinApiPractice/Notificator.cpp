@@ -37,7 +37,6 @@ void Notificator::Create(const std::wstring&& pipeName)
 			MAILSLOT_WAIT_FOREVER,
 			nullptr
 		);
-		isServer = true;
 
 		const auto secondHandle = CreateFile(
 			fullName.c_str(),
@@ -136,10 +135,7 @@ void Notificator::Close()
 	}
 
 	// TODO: Should I flush file buffers here?
-	if (isServer)
-	{
-		FlushFileBuffers(handle);
-	}
+	// FlushFileBuffers(handle);
 
 	CloseHandle(handle);
 

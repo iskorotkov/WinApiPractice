@@ -2,7 +2,7 @@
 #include <Windows.h>
 #include <string>
 
-class Notificator
+class [[deprecated("Unused class. I was wrong for creating and spending too much time on it. The solution was simpler.")]] Notificator
 {
 public:
 	void Create(const std::wstring&& pipeName);
@@ -14,5 +14,4 @@ public:
 private:
 	HANDLE handle = nullptr;
 	bool isCreated = false;
-	bool isServer = false;
 };
