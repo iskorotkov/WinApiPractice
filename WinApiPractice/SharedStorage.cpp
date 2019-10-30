@@ -1,4 +1,5 @@
 ﻿#include "SharedStorage.h"
+#include <iostream>
 
 SharedStorage::~SharedStorage()
 {
@@ -14,8 +15,7 @@ void SharedStorage::Open(const std::wstring&& name, const int size)
 
 	if (size <= 0)
 	{
-		// TODO
-		return;
+		throw std::exception("Can't open shared storage with non-positive size.");
 	}
 
 	const auto fileMapSize = size;
@@ -28,7 +28,7 @@ void SharedStorage::Open(const std::wstring&& name, const int size)
 
 	if (!mappingHandle)
 	{
-		// TODO
+		throw std::exception("Unable to create file mapping.");
 	}
 
 	mappingAddress = MapViewOfFile(mappingHandle,
@@ -39,7 +39,7 @@ void SharedStorage::Open(const std::wstring&& name, const int size)
 
 	if (!mappingAddress)
 	{
-		// TODO
+		throw std::exception("Unable to retrieve mapping address.");
 	}
 
 	isOpened = true;
@@ -60,9 +60,14 @@ void SharedStorage::Close()
 
 std::byte* SharedStorage::GetStorage() const
 {
+	if (!isOpened)
+	{
+		throw std::exception("Trying to get storage content before creating the file mapping.");
+	}
+	
 	if (!mappingAddress)
 	{
-		// TODO
+		throw std::exception("Unable to retrieve mapping address.");
 	}
 
 	return static_cast<std::byte*>(mappingAddress);
