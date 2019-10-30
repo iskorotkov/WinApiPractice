@@ -242,6 +242,7 @@ int main(int argc, char** argv)
 			const auto notification = notificator.Receive();
 			if (!notification.empty())
 			{
+				std::wcout << notification;
 				// TODO
 			}
 		}

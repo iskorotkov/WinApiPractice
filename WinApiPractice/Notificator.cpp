@@ -37,7 +37,6 @@ void Notificator::Create(const std::wstring&& pipeName)
 			// TODO
 		}
 	}
-
 	isCreated = true;
 }
 
