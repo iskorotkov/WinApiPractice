@@ -165,6 +165,7 @@
     <ClCompile Include="filemapping.cpp" />
     <ClCompile Include="files.cpp" />
     <ClCompile Include="filestream.cpp" />
+    <ClCompile Include="GraphicsThread.cpp" />
     <ClCompile Include="GridPainter.cpp" />
     <ClCompile Include="LibraryHandle.cpp" />
     <ClCompile Include="Notificator.cpp" />
@@ -180,6 +181,7 @@
     <ClInclude Include="filemapping.h" />
     <ClInclude Include="files.h" />
     <ClInclude Include="filestream.h" />
+    <ClInclude Include="GraphicsThread.h" />
     <ClInclude Include="GridPainter.h" />
     <ClInclude Include="LibraryHandle.h" />
     <ClInclude Include="Notificator.h" />

@@ -13,6 +13,7 @@
 #include "SharedStorage.h"
 #include <iostream>
 #include <string>
+#include "GraphicsThread.h"
 
 #define GRID_DIMENSION (prefs->GridSize)
 
@@ -198,6 +199,7 @@ int main(int argc, char** argv)
 		return -1;
 	}
 
+
 	const HINSTANCE hThisInstance = GetModuleHandle(nullptr);
 
 	WNDCLASSEX wc = { 0 };
@@ -220,7 +222,7 @@ int main(int argc, char** argv)
 		return error;
 	}
 
-	const HWND hwnd = CreateWindowEx(
+	HWND hwnd = CreateWindowEx(
 		0,
 		CZ_WIN_CLASS,
 		CZ_WIN_NAME,

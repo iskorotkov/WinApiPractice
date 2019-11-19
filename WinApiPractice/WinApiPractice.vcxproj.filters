@@ -43,6 +43,12 @@
     <Filter Include="Header Files\Communication">
       <UniqueIdentifier>{29c9f32d-ec99-4a28-868c-8b9983fe9aa9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Gameplay">
+      <UniqueIdentifier>{d5af4e52-96d5-49cd-9818-f58fffc9341b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Gameplay">
+      <UniqueIdentifier>{d5d347ce-005e-48f1-94e7-01cbb068ae95}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApiPractice.cpp">
@@ -84,6 +90,9 @@
     <ClCompile Include="Notificator.cpp">
       <Filter>Header Files\Communication</Filter>
     </ClCompile>
+    <ClCompile Include="GraphicsThread.cpp">
+      <Filter>Header Files\Communication</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="filemapping.h">
@@ -121,6 +130,9 @@
     </ClInclude>
     <ClInclude Include="Notificator.h">
       <Filter>Source Files\Communication</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsThread.h">
+      <Filter>Source Files\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
