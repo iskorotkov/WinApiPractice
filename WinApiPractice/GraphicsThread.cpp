@@ -1,5 +1,7 @@
 ﻿#include "GraphicsThread.h"
 #include <iostream>
+#include "Windows.h"
+#include <processthreadsapi.h>
 
 GraphicsThread::GraphicsThread(HWND& window, const Preferences& prefs) :
 	painter(window, prefs.GridSize),
@@ -12,33 +14,31 @@ void GraphicsThread::Launch()
 	workerThread = std::thread(&GraphicsThread::Run, std::ref(context));
 }
 
-void GraphicsThread::Pause()
+void GraphicsThread::Suspend()
 {
-	context.paused.store(true, std::memory_order_relaxed);
+	SuspendThread(workerThread.native_handle());
 }
 
 void GraphicsThread::Resume()
 {
-	context.paused.store(false, std::memory_order_relaxed);
+	ResumeThread(workerThread.native_handle());
 }
 
 void GraphicsThread::Stop()
 {
-	context.stopped.store(true, std::memory_order_relaxed);
-	if (workerThread.joinable())
-	{
-		workerThread.join();
-	}
+	TerminateThread(workerThread.native_handle(), 0);
+	workerThread.join();
 }
 
-void GraphicsThread::SetThreadPriority(int priority)
+void GraphicsThread::SetPriority(const int priority)
 {
-	// TODO: Set thread priority of graphics thread.
+	SetThreadPriority(workerThread.native_handle(), priority);
 }
 
 GraphicsThread::~GraphicsThread()
 {
 	Stop();
+	
 }
 
 GraphicsThread::Context::Context(const int size) : size(size)
@@ -55,17 +55,6 @@ void GraphicsThread::Run(Context& context)
 	{
 		for (;;)
 		{
-			while (context.paused.load(std::memory_order_relaxed))
-			{
-				// TODO: Spinlock.
-				std::this_thread::sleep_for(deltaSeconds);
-			}
-
-			if (context.stopped.load(std::memory_order_relaxed))
-			{
-				return;
-			}
-
 			std::cout << "window redraw\n";
 			std::this_thread::sleep_for(deltaSeconds);
 		}

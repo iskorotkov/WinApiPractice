@@ -3,7 +3,6 @@
 #include "GridPainter.h"
 #include "preferences.h"
 #include <thread>
-#include <atomic>
 
 class GraphicsThread
 {
@@ -16,10 +15,10 @@ public:
 	GraphicsThread& operator=(GraphicsThread&& other) noexcept = delete;
 
 	void Launch();
-	void Pause();
+	void Suspend();
 	void Resume();
 	void Stop();
-	void SetThreadPriority(int priority);
+	void SetPriority(int priority);
 
 	~GraphicsThread();
 
@@ -29,9 +28,6 @@ private:
 		explicit Context(int size);
 
 		int size;
-
-		std::atomic<bool> paused{};
-		std::atomic<bool> stopped{};
 	};
 
 	GridPainter painter;

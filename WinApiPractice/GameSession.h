@@ -4,6 +4,7 @@
 #include "files.h"
 
 struct Preferences;
+class GraphicsThread;
 
 class GameSession
 {
@@ -15,8 +16,11 @@ public:
 	GameSession& operator=(const GameSession& other) = delete;
 	GameSession& operator=(GameSession&& other) noexcept = delete;
 
+	void Start(HWND window);
+
 	[[nodiscard]] GameState* GetGameState() const;
 	[[nodiscard]] Preferences* GetPreferences() const;
+	[[nodiscard]] GraphicsThread* GetGraphicsThread() const;
 	
 	~GameSession();
 
@@ -25,4 +29,5 @@ private:
 	ReadingMethod method;
 	std::unique_ptr<GameState> state;
 	std::unique_ptr<Preferences> preferences;
+	std::unique_ptr<GraphicsThread> graphicsThread;
 };

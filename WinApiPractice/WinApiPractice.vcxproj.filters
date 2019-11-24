@@ -90,14 +90,14 @@
     <ClCompile Include="Notificator.cpp">
       <Filter>Header Files\Communication</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsThread.cpp">
-      <Filter>Header Files\Communication</Filter>
-    </ClCompile>
     <ClCompile Include="GameState.cpp">
       <Filter>Header Files\Gameplay</Filter>
     </ClCompile>
     <ClCompile Include="GameSession.cpp">
       <Filter>Header Files\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsThread.cpp">
+      <Filter>Header Files\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -5,6 +5,7 @@
 #include <iostream>
 #include <memory>
 #include "preferences.h"
+#include "GraphicsThread.h"
 
 GameSession::GameSession(const int argc, char** argv)
 {
@@ -31,6 +32,13 @@ GameSession::GameSession(const int argc, char** argv)
 	state = std::make_unique<GameState>(storage.GetStorage(), dimension);
 }
 
+void GameSession::Start(HWND window)
+{
+	// TODO: Double initialization.
+	graphicsThread = std::make_unique<GraphicsThread>(window, *GetPreferences());
+	graphicsThread->Launch();
+}
+
 GameState* GameSession::GetGameState() const
 {
 	return state.get();
@@ -39,6 +47,11 @@ GameState* GameSession::GetGameState() const
 Preferences* GameSession::GetPreferences() const
 {
 	return preferences.get();
+}
+
+GraphicsThread* GameSession::GetGraphicsThread() const
+{
+	return graphicsThread.get();
 }
 
 GameSession::~GameSession()
