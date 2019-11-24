@@ -12,7 +12,7 @@ public:
 	[[nodiscard]] int GetAt(int line, int column) const;
 
 private:
-	std::vector<int> values;
+	int* values;
 	int dimension;
 
 	[[nodiscard]] int Index(int line, int column) const;

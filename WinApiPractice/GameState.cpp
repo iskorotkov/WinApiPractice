@@ -1,9 +1,9 @@
 ﻿#include "GameState.h"
 
 GameState::GameState(std::byte* data, const int dimension) :
+	values(reinterpret_cast<int*>(data)),
 	dimension(dimension)
 {
-	values = std::vector<int>(reinterpret_cast<int*>(data), reinterpret_cast<int*>(data) + dimension * dimension);
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
