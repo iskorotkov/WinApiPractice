@@ -31,6 +31,11 @@ void GraphicsThread::Stop()
 	}
 }
 
+void GraphicsThread::SetThreadPriority(int priority)
+{
+	// TODO: Set thread priority of graphics thread.
+}
+
 GraphicsThread::~GraphicsThread()
 {
 	Stop();
@@ -46,9 +51,27 @@ void GraphicsThread::Run(Context& context)
 
 	const auto deltaSeconds = 1s / 60;
 
-	for (;;)
+	try
 	{
-		std::cout << "window redraw\n";
-		std::this_thread::sleep_for(deltaSeconds);
+		for (;;)
+		{
+			while (context.paused.load(std::memory_order_relaxed))
+			{
+				// TODO: Spinlock.
+				std::this_thread::sleep_for(deltaSeconds);
+			}
+
+			if (context.stopped.load(std::memory_order_relaxed))
+			{
+				return;
+			}
+
+			std::cout << "window redraw\n";
+			std::this_thread::sleep_for(deltaSeconds);
+		}
+	}
+	catch (std::exception& e)
+	{
+		std::cout << "Exception thrown in graphics thread: " << e.what() << std::endl;
 	}
 }

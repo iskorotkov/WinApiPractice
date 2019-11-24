@@ -4,18 +4,14 @@
 #include <cstdlib>
 #include <windowsx.h>
 #include <WinUser.h>
-#include "files.h"
-#include "commandline.h"
-#include "preferences.h"
 #include "libpic.h"
 #include "GridPainter.h"
 #include "LibraryHandle.h"
-#include "SharedStorage.h"
 #include <iostream>
 #include <string>
-#include "GraphicsThread.h"
-
-#define GRID_DIMENSION (prefs->GridSize)
+#include "GameSession.h"
+#include <memory>
+#include "preferences.h"
 
 const TCHAR CZ_WIN_CLASS[] = _T("MyClassName");
 const TCHAR CZ_WIN_NAME[] = _T("MyWindowName");
@@ -23,17 +19,16 @@ const TCHAR CZ_WIN_NAME[] = _T("MyWindowName");
 const std::wstring onClickMessagePrefix = L"OnClick message ";
 
 HBRUSH hCurrentBrush;
-int* values;
 
+// ReSharper disable once IdentifierTypo
 unsigned WM_GRIDUPDATE = 0;
 
-Preferences* prefs;
 Image crossImage;
 Image circleImage;
 Image icon;
 Image cursor;
 
-SharedStorage storage;
+std::unique_ptr<GameSession> gameSession;
 
 void RunNotepad()
 {
@@ -57,12 +52,12 @@ COLORREF GetRandomColor()
 
 void OnClicked(const HWND hwnd, UINT x, UINT y, const UINT value)
 {
+	const auto dimension = gameSession->GetPreferences()->GridSize;
 	RECT rect;
 	GetClientRect(hwnd, &rect);
-	x = x * GRID_DIMENSION / rect.right;
-	y = y * GRID_DIMENSION / rect.bottom;
-	const UINT index = y * GRID_DIMENSION + x;
-	values[index] = value;
+	x = x * dimension / rect.right;
+	y = y * dimension / rect.bottom;
+	gameSession->GetGameState()->SetAt(y, x, value);
 
 	SendMessage(HWND_BROADCAST, WM_GRIDUPDATE, 0, 0);
 
@@ -78,6 +73,8 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		UpdateWindow(hwnd);
 		return 0;
 	}
+
+	const auto prefs = gameSession->GetPreferences();
 	switch (uMsg)
 	{
 		case WM_KEYDOWN:
@@ -93,12 +90,12 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			}
 			else if (wParam == VK_RETURN)
 			{
-				const COLORREF NewColor = GetRandomColor();
+				const auto newColor = GetRandomColor();
 				if (prefs)
 				{
-					prefs->BackgroundColor = NewColor;
+					prefs->BackgroundColor = newColor;
 				}
-				HBRUSH hBrush = CreateSolidBrush(NewColor);
+				HBRUSH hBrush = CreateSolidBrush(newColor);
 				SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG_PTR)hBrush);
 				DeleteObject(hCurrentBrush);
 				hCurrentBrush = hBrush;
@@ -124,8 +121,10 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		{
 			const GridPainter painter(hwnd, prefs->GridSize);
 			painter.DrawGrid(prefs->GridColor);
-			painter.DrawImageWhere(1, values, crossImage);
-			painter.DrawImageWhere(2, values, circleImage);
+
+			const auto gameState = gameSession->GetGameState();
+			painter.DrawImageWhere(1, gameState, crossImage);
+			painter.DrawImageWhere(2, gameState, circleImage);
 		}
 		break;
 		case WM_LBUTTONDOWN:
@@ -142,6 +141,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			OnClicked(hwnd, x, y, 2);
 			break;
 		}
+		default: break;
 	}
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
@@ -153,15 +153,10 @@ void RegisterUserMessages()
 
 int main(int argc, char** argv)
 {
-	const ReadingMethod method = GetReadingMethod(argc, argv);
-	prefs = ReadConfigFile(method);
-	if (prefs == nullptr)
-	{
-		MessageBox(nullptr, L"Failed to read config file!", L"Error", MB_OK | MB_ICONERROR);
-		return -1;
-	}
-
 	RegisterUserMessages();
+
+	gameSession = std::make_unique<GameSession>(argc, argv);
+	const auto prefs = gameSession->GetPreferences();
 
 	try
 	{
@@ -186,19 +181,6 @@ int main(int argc, char** argv)
 		printf_s("An error happened when tried to use DLL. Error info: %s", e.what());
 		return -1;
 	}
-
-	try
-	{
-		const auto len = GRID_DIMENSION * GRID_DIMENSION;
-		storage.Open(L"GameGrid", len * sizeof(int));
-		values = reinterpret_cast<int*>(storage.GetStorage());
-	}
-	catch (std::exception& e)
-	{
-		std::cout << "An error happened during shared storage opening. " << '\n' << e.what();
-		return -1;
-	}
-
 
 	const HINSTANCE hThisInstance = GetModuleHandle(nullptr);
 
@@ -258,7 +240,5 @@ int main(int argc, char** argv)
 	DestroyWindow(hwnd);
 	UnregisterClass(CZ_WIN_CLASS, hThisInstance);
 
-	WriteConfigFile(method, prefs);
-	delete prefs;
 	return 0;
 }

@@ -1,5 +1,6 @@
 ﻿#include "GridPainter.h"
 #include <stdexcept>
+#include "GameState.h"
 
 GridPainter::GridPainter(HWND& window, const int dimension) : window(window), dimension(dimension)
 {
@@ -43,6 +44,20 @@ void GridPainter::DrawImageWhere(int value, const int* values, Image& img) const
 		}
 	};
 	ForEachCell(values, callback);
+}
+
+void GridPainter::DrawImageWhere(int value, GameState* gameState, Image& img) const
+{
+	// TODO: Remove duplicated code.
+	const auto callback = [this, value, &img](auto line, auto column, auto val)
+	{
+		if (val == value)
+		{
+			const auto area = CalculateIconDimensions(line, column);
+			DrawImage(area, img);
+		}
+	};
+	ForEachCell(gameState, callback);
 }
 
 void GridPainter::DrawGrid(COLORREF gridColor) const
@@ -114,16 +129,21 @@ HDC& GridPainter::GetHDC()
 
 WindowArea GridPainter::CalculateIconDimensions(const UINT index) const
 {
-	const auto row = index % dimension;
-	const auto col = index / dimension;
+	const auto column = index % dimension;
+	const auto line = index / dimension;
+	return CalculateIconDimensions(line, column);
+}
+
+WindowArea GridPainter::CalculateIconDimensions(const int line, const int column) const
+{
 	RECT rect;
 	GetClientRect(window, &rect);
 	const UINT height = rect.bottom;
 	const UINT width = rect.right;
 	WindowArea area;
 	area.Radius = min(height/dimension, width/dimension) / 3;
-	area.CenterX = width * (2 * row + 1) / (2 * dimension);
-	area.CenterY = height * (2 * col + 1) / (2 * dimension);
+	area.CenterX = width * (2 * column + 1) / (2 * dimension);
+	area.CenterY = height * (2 * line + 1) / (2 * dimension);
 	return area;
 }
 
@@ -134,6 +154,21 @@ void GridPainter::ForEachCell(const int* values, const std::function<void(CellIn
 		if (values[i] || !ignoreZero)
 		{
 			callback(i, values[i]);
+		}
+	}
+}
+
+void GridPainter::ForEachCell(GameState* gameState, const std::function<void(CellIndex, CellIndex, CellValue)>& callback, bool ignoreZero) const
+{
+	for (auto i = 0; i < dimension; ++i)
+	{
+		for (auto j = 0; j < dimension; ++j)
+		{
+			const auto value = gameState->GetAt(i, j);
+			if (value || !ignoreZero)
+			{
+				callback(i, j, value);
+			}
 		}
 	}
 }
@@ -160,4 +195,29 @@ void GridPainter::DrawIconsOnGrid(const int* values) const
 		}
 	};
 	ForEachCell(values, callback);
+}
+
+void GridPainter::DrawIconsOnGrid(GameState* gameState) const
+{
+	// TODO: Duplicated lambda function.
+	const auto callback = [this](auto line, int column, auto val)
+	{
+		const auto area = CalculateIconDimensions(line, column);
+		switch (val)
+		{
+			case 1:
+			{
+				DrawCircle(area);
+				break;
+			}
+			case 2:
+			{
+				DrawCross(area);
+				break;
+			}
+			default:
+				throw std::logic_error("Unknown grid value.");
+		}
+	};
+	ForEachCell(gameState, callback);
 }

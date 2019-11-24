@@ -93,6 +93,12 @@
     <ClCompile Include="GraphicsThread.cpp">
       <Filter>Header Files\Communication</Filter>
     </ClCompile>
+    <ClCompile Include="GameState.cpp">
+      <Filter>Header Files\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="GameSession.cpp">
+      <Filter>Header Files\Gameplay</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="filemapping.h">
@@ -133,6 +139,12 @@
     </ClInclude>
     <ClInclude Include="GraphicsThread.h">
       <Filter>Source Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState.h">
+      <Filter>Source Files\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="GameSession.h">
+      <Filter>Source Files\Gameplay</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

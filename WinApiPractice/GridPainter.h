@@ -4,6 +4,8 @@
 #include "WindowArea.h"
 #include <functional>
 
+class GameState;
+
 class GridPainter
 {
 public:
@@ -11,8 +13,12 @@ public:
 
 	void DrawImage(WindowArea area, Image& img) const;
 	void DrawImageWhere(int value, const int* values, Image& img) const;
+	void DrawImageWhere(int value, GameState* gameState, Image& img) const;
+	
 	void DrawGrid(COLORREF gridColor) const;
 	void DrawIconsOnGrid(const int* values) const;
+	void DrawIconsOnGrid(GameState* gameState) const;
+	
 	void DrawCircle(WindowArea area) const;
 	void DrawCross(WindowArea area) const;
 
@@ -33,8 +39,10 @@ private:
 	int dimension;
 
 	[[nodiscard]] WindowArea CalculateIconDimensions(UINT index) const;
+	[[nodiscard]] WindowArea CalculateIconDimensions(int line, int column) const;
 
 	using CellIndex = int;
 	using CellValue = int;
 	void ForEachCell(const int* values, const std::function<void(CellIndex, CellValue)>& callback, bool ignoreZero = true) const;
+	void ForEachCell(GameState* gameState, const std::function<void(CellIndex, CellIndex, CellValue)>& callback, bool ignoreZero = true) const;
 };

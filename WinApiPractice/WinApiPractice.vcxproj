@@ -165,6 +165,8 @@
     <ClCompile Include="filemapping.cpp" />
     <ClCompile Include="files.cpp" />
     <ClCompile Include="filestream.cpp" />
+    <ClCompile Include="GameSession.cpp" />
+    <ClCompile Include="GameState.cpp" />
     <ClCompile Include="GraphicsThread.cpp" />
     <ClCompile Include="GridPainter.cpp" />
     <ClCompile Include="LibraryHandle.cpp" />
@@ -181,6 +183,8 @@
     <ClInclude Include="filemapping.h" />
     <ClInclude Include="files.h" />
     <ClInclude Include="filestream.h" />
+    <ClInclude Include="GameSession.h" />
+    <ClInclude Include="GameState.h" />
     <ClInclude Include="GraphicsThread.h" />
     <ClInclude Include="GridPainter.h" />
     <ClInclude Include="LibraryHandle.h" />

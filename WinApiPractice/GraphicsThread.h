@@ -19,6 +19,7 @@ public:
 	void Pause();
 	void Resume();
 	void Stop();
+	void SetThreadPriority(int priority);
 
 	~GraphicsThread();
 
