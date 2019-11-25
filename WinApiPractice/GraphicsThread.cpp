@@ -11,8 +11,8 @@ GraphicsThread::GraphicsThread(HWND& window, const GameSession* game)
 {
 	context.window = window;
 	context.game = game;
-	
-	// TODO: Extract methods.
+
+	// TODO: Extract methods. Use AssetManager class for image loading.
 	try
 	{
 		const LibraryHandle lib(L"libpic.dll");
@@ -90,16 +90,14 @@ GraphicsThread::~GraphicsThread()
 void GraphicsThread::Run(Context& context)
 {
 	using namespace std::chrono_literals;
-
 	const auto deltaSeconds = 1s / 60;
-
 	try
 	{
 		const auto preferences = context.game->GetPreferences();
 		const auto state = context.game->GetGameState();
+		const GridPainter painter(context.window, preferences->GridSize);
 		for (;;)
 		{
-			const GridPainter painter(context.window, preferences->GridSize);
 			painter.DrawGrid(preferences->GridColor);
 
 			painter.DrawImageWhere(1, state, context.crossImage);
