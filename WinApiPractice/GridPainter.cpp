@@ -4,7 +4,7 @@
 
 GridPainter::GridPainter(HWND& window, const int dimension) : window(window), dimension(dimension)
 {
-	hdc = BeginPaint(window, &ps);
+	hdc = GetDC(window);
 }
 
 void GridPainter::DrawImage(const WindowArea area, Image& img) const
@@ -84,7 +84,7 @@ void GridPainter::DrawGrid(COLORREF gridColor) const
 
 GridPainter::~GridPainter()
 {
-	EndPaint(window, &ps);
+	ReleaseDC(window, hdc);
 }
 
 void GridPainter::DrawCircle(const WindowArea area) const
