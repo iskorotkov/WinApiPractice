@@ -5,8 +5,6 @@
 #include <windowsx.h>
 #include <WinUser.h>
 #include "libpic.h"
-#include "GridPainter.h"
-#include "LibraryHandle.h"
 #include <iostream>
 #include <string>
 #include "GameSession.h"
@@ -24,8 +22,6 @@ HBRUSH hCurrentBrush;
 // ReSharper disable once IdentifierTypo
 unsigned WM_GRIDUPDATE = 0;
 
-Image crossImage;
-Image circleImage;
 Image icon;
 Image cursor;
 
@@ -56,6 +52,12 @@ void OnClicked(const HWND hwnd, UINT x, UINT y, const UINT value)
 	const auto dimension = gameSession->GetPreferences()->GridSize;
 	RECT rect;
 	GetClientRect(hwnd, &rect);
+
+	if (x > rect.right || y > rect.bottom)
+	{
+		return;
+	}
+
 	x = x * dimension / rect.right;
 	y = y * dimension / rect.bottom;
 	gameSession->GetGameState()->SetAt(y, x, value);
@@ -130,16 +132,6 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 				prefs->WindowHeight = rect.bottom;
 			}
 		}
-		case WM_PAINT:
-		{
-			const GridPainter painter(hwnd, prefs->GridSize);
-			painter.DrawGrid(prefs->GridColor);
-
-			const auto gameState = gameSession->GetGameState();
-			painter.DrawImageWhere(1, gameState, crossImage);
-			painter.DrawImageWhere(2, gameState, circleImage);
-		}
-		break;
 		case WM_LBUTTONDOWN:
 		{
 			const UINT x = GET_X_LPARAM(lParam);
@@ -170,30 +162,6 @@ int main(int argc, char** argv)
 
 	gameSession = std::make_unique<GameSession>(argc, argv);
 	const auto prefs = gameSession->GetPreferences();
-
-	try
-	{
-		const LibraryHandle lib(L"libpic.dll");
-		const auto loadPicFunc = reinterpret_cast<decltype(LoadPicW)*>(lib.GetMethod("LoadPicW"));
-		const auto isValidFunc = reinterpret_cast<decltype(IsValid)*>(lib.GetMethod("IsValid"));
-
-		const auto loadPicWrapper = [loadPicFunc, isValidFunc](Image& img, const wchar_t* name)
-		{
-			img = loadPicFunc(name);
-			if (!isValidFunc(img))
-			{
-				throw std::exception("Unable to load a picture.");
-			}
-		};
-
-		loadPicWrapper(crossImage, prefs->IconFile);
-		loadPicWrapper(circleImage, prefs->CursorFile);
-	}
-	catch (std::exception& e)
-	{
-		printf_s("An error happened when tried to use DLL. Error info: %s", e.what());
-		return -1;
-	}
 
 	const HINSTANCE hThisInstance = GetModuleHandle(nullptr);
 
