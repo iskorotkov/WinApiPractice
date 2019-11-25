@@ -99,6 +99,7 @@ void GraphicsThread::Run(Context& context)
 		for (;;)
 		{
 			painter.DrawGrid(preferences->GridColor);
+			painter.DrawGradient(preferences->BackgroundColor);
 
 			painter.DrawImageWhere(1, state, context.crossImage);
 			painter.DrawImageWhere(2, state, context.circleImage);

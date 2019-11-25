@@ -102,13 +102,6 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 				{
 					prefs->BackgroundColor = newColor;
 				}
-				HBRUSH hBrush = CreateSolidBrush(newColor);
-				SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG_PTR)hBrush);
-				DeleteObject(hCurrentBrush);
-				hCurrentBrush = hBrush;
-
-				InvalidateRect(hwnd, nullptr, true);
-				UpdateWindow(hwnd);
 			}
 			else if (wParam == VK_SPACE)
 			{

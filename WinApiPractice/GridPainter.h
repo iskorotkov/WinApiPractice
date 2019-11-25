@@ -22,6 +22,8 @@ public:
 	void DrawCircle(WindowArea area) const;
 	void DrawCross(WindowArea area) const;
 
+	void DrawGradient(COLORREF color) const;
+
 	// ReSharper disable once CppInconsistentNaming
 	HDC& GetHDC();
 

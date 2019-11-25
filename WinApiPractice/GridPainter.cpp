@@ -122,6 +122,38 @@ void GridPainter::DrawCross(const WindowArea area) const
 		area.CenterY + area.Radius);
 }
 
+void GridPainter::DrawGradient(const COLORREF color) const
+{
+	const auto size = 2;
+	TRIVERTEX vertices[size];
+	GRADIENT_RECT gradientRect;
+	gradientRect.UpperLeft = 0;
+	gradientRect.LowerRight = 1;
+
+	const auto colorValue = [](auto color) { return color << 8; };
+
+	auto index = 0;
+	vertices[index].Red = colorValue(GetRValue(color));
+	vertices[index].Green = colorValue(GetGValue(color));
+	vertices[index].Blue = colorValue(GetBValue(color));
+	vertices[index].Alpha = colorValue(255);
+	vertices[index].x = 0;
+	vertices[index].y = 0;
+
+	++index;
+	// TODO: Use random color for second vertex.
+	vertices[index].Red = colorValue(255);
+	vertices[index].Green = colorValue(255);
+	vertices[index].Blue = colorValue(255);
+	vertices[index].Alpha = colorValue(255);
+	RECT rect;
+	GetClientRect(window, &rect);
+	vertices[index].x = rect.right;
+	vertices[index].y = rect.bottom;
+
+	GradientFill(hdc, vertices, size, &gradientRect, 1, GRADIENT_FILL_RECT_H);
+}
+
 HDC& GridPainter::GetHDC()
 {
 	return hdc;
