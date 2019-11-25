@@ -139,6 +139,9 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			OnClicked(hwnd, x, y, 2);
 			break;
 		}
+		case WM_PAINT:
+		case WM_ERASEBKGND:
+			return 0;
 		default: break;
 	}
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
