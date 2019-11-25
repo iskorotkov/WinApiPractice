@@ -1,13 +1,14 @@
 ﻿#pragma once
 #include "Windows.h"
-#include "GridPainter.h"
-#include "preferences.h"
 #include <thread>
+#include "libpic.h"
+
+class GameSession;
 
 class GraphicsThread
 {
 public:
-	explicit GraphicsThread(HWND& window, const Preferences& prefs);
+	explicit GraphicsThread(HWND& window, const GameSession* game);
 
 	GraphicsThread(const GraphicsThread& other) = delete;
 	GraphicsThread(GraphicsThread&& other) noexcept = delete;
@@ -26,12 +27,12 @@ public:
 private:
 	struct Context
 	{
-		explicit Context(int size);
-
-		int size;
+		const GameSession* game;
+		HWND window;
+		Image crossImage;
+		Image circleImage;
 	};
 
-	GridPainter painter;
 	std::thread workerThread;
 	Context context;
 	bool isSuspended = false;

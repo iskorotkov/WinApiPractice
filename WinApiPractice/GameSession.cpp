@@ -35,7 +35,7 @@ GameSession::GameSession(const int argc, char** argv)
 void GameSession::Start(HWND window)
 {
 	// TODO: Double initialization.
-	graphicsThread = std::make_unique<GraphicsThread>(window, *GetPreferences());
+	graphicsThread = std::make_unique<GraphicsThread>(window, this);
 	graphicsThread->Launch();
 }
 

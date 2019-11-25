@@ -2,11 +2,41 @@
 #include <iostream>
 #include "Windows.h"
 #include <processthreadsapi.h>
+#include "GameSession.h"
+#include "GridPainter.h"
+#include "preferences.h"
+#include "LibraryHandle.h"
 
-GraphicsThread::GraphicsThread(HWND& window, const Preferences& prefs) :
-	painter(window, prefs.GridSize),
-	context(prefs.GridSize)
+GraphicsThread::GraphicsThread(HWND& window, const GameSession* game)
 {
+	context.window = window;
+	context.game = game;
+	
+	// TODO: Extract methods.
+	try
+	{
+		const LibraryHandle lib(L"libpic.dll");
+		const auto loadPicFunc = reinterpret_cast<decltype(LoadPicW)*>(lib.GetMethod("LoadPicW"));
+		const auto isValidFunc = reinterpret_cast<decltype(IsValid)*>(lib.GetMethod("IsValid"));
+
+		const auto loadPicWrapper = [loadPicFunc, isValidFunc](Image& img, const wchar_t* name)
+		{
+			img = loadPicFunc(name);
+			if (!isValidFunc(img))
+			{
+				throw std::exception("Unable to load a picture.");
+			}
+		};
+
+		const auto prefs = game->GetPreferences();
+		loadPicWrapper(context.crossImage, prefs->IconFile);
+		loadPicWrapper(context.circleImage, prefs->CursorFile);
+	}
+	catch (std::exception& e)
+	{
+		printf_s("An error happened when tried to use DLL. Error info: %s", e.what());
+		throw;
+	}
 }
 
 void GraphicsThread::Launch()
@@ -57,10 +87,6 @@ GraphicsThread::~GraphicsThread()
 	Stop();
 }
 
-GraphicsThread::Context::Context(const int size) : size(size)
-{
-}
-
 void GraphicsThread::Run(Context& context)
 {
 	using namespace std::chrono_literals;
@@ -69,9 +95,15 @@ void GraphicsThread::Run(Context& context)
 
 	try
 	{
+		const auto preferences = context.game->GetPreferences();
+		const auto state = context.game->GetGameState();
 		for (;;)
 		{
-			std::cout << "window redraw\n";
+			const GridPainter painter(context.window, preferences->GridSize);
+			painter.DrawGrid(preferences->GridColor);
+
+			painter.DrawImageWhere(1, state, context.crossImage);
+			painter.DrawImageWhere(2, state, context.circleImage);
 			std::this_thread::sleep_for(deltaSeconds);
 		}
 	}
