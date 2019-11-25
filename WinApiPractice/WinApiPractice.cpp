@@ -12,6 +12,7 @@
 #include "GameSession.h"
 #include <memory>
 #include "preferences.h"
+#include "GraphicsThread.h"
 
 const TCHAR CZ_WIN_CLASS[] = _T("MyClassName");
 const TCHAR CZ_WIN_NAME[] = _T("MyWindowName");
@@ -75,6 +76,10 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	}
 
 	const auto prefs = gameSession->GetPreferences();
+
+	// TODO: Find better names.
+	const auto firstKey = 0x31;
+	const auto lastKey = 0x37;
 	switch (uMsg)
 	{
 		case WM_KEYDOWN:
@@ -102,6 +107,14 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
 				InvalidateRect(hwnd, nullptr, true);
 				UpdateWindow(hwnd);
+			}
+			else if (wParam == VK_SPACE)
+			{
+				gameSession->GetGraphicsThread()->ToggleSuspended();
+			}
+			else if (wParam >= firstKey && wParam <= lastKey)
+			{
+				gameSession->GetGraphicsThread()->SetPriority(wParam - firstKey);
 			}
 			break;
 		case WM_DESTROY:

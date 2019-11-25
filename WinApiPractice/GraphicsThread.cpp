@@ -16,11 +16,13 @@ void GraphicsThread::Launch()
 
 void GraphicsThread::Suspend()
 {
+	isSuspended = true;
 	SuspendThread(workerThread.native_handle());
 }
 
 void GraphicsThread::Resume()
 {
+	isSuspended = false;
 	ResumeThread(workerThread.native_handle());
 }
 
@@ -30,15 +32,29 @@ void GraphicsThread::Stop()
 	workerThread.join();
 }
 
-void GraphicsThread::SetPriority(const int priority)
+void GraphicsThread::SetPriority(int priority)
 {
+	const int values[] = { -15, -2, -1, 0, 1, 2, 15 };
+	priority = values[priority];
+	std::cout << "Priority has been set: " << priority;
 	SetThreadPriority(workerThread.native_handle(), priority);
+}
+
+void GraphicsThread::ToggleSuspended()
+{
+	if (isSuspended)
+	{
+		Resume();
+	}
+	else
+	{
+		Suspend();
+	}
 }
 
 GraphicsThread::~GraphicsThread()
 {
 	Stop();
-	
 }
 
 GraphicsThread::Context::Context(const int size) : size(size)

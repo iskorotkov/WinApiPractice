@@ -19,6 +19,7 @@ public:
 	void Resume();
 	void Stop();
 	void SetPriority(int priority);
+	void ToggleSuspended();
 
 	~GraphicsThread();
 
@@ -33,6 +34,7 @@ private:
 	GridPainter painter;
 	std::thread workerThread;
 	Context context;
+	bool isSuspended = false;
 
 	static void Run(Context& context);
 };
