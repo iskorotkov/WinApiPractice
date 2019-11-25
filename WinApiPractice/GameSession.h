@@ -16,7 +16,7 @@ public:
 	GameSession& operator=(const GameSession& other) = delete;
 	GameSession& operator=(GameSession&& other) noexcept = delete;
 
-	void Start(HWND window);
+	void StartRendering(HWND window);
 
 	[[nodiscard]] GameState* GetGameState() const;
 	[[nodiscard]] Preferences* GetPreferences() const;

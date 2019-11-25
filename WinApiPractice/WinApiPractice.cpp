@@ -200,7 +200,7 @@ int main(int argc, char** argv)
 		nullptr
 	);
 
-	gameSession->Start(hwnd);
+	gameSession->StartRendering(hwnd);
 
 	const UINT nCmdShow = SW_SHOW;
 	ShowWindow(hwnd, nCmdShow);

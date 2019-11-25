@@ -32,7 +32,7 @@ GameSession::GameSession(const int argc, char** argv)
 	state = std::make_unique<GameState>(storage.GetStorage(), dimension);
 }
 
-void GameSession::Start(HWND window)
+void GameSession::StartRendering(HWND window)
 {
 	// TODO: Double initialization.
 	graphicsThread = std::make_unique<GraphicsThread>(window, this);
