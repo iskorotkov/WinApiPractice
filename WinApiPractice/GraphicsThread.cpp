@@ -90,19 +90,21 @@ GraphicsThread::~GraphicsThread()
 void GraphicsThread::Run(Context& context)
 {
 	using namespace std::chrono_literals;
-	const auto deltaSeconds = 1s / 60;
+	const auto deltaSeconds = 20ms;
 	try
 	{
 		const auto preferences = context.game->GetPreferences();
 		const auto state = context.game->GetGameState();
-		const GridPainter painter(context.window, preferences->GridSize);
 		for (;;)
 		{
-			painter.DrawGrid(preferences->GridColor);
+			GridPainter painter(context.window, preferences->GridSize);
+
 			painter.DrawGradient(preferences->BackgroundColor);
+			painter.DrawGrid(preferences->GridColor);
 
 			painter.DrawImageWhere(1, state, context.crossImage);
 			painter.DrawImageWhere(2, state, context.circleImage);
+
 			std::this_thread::sleep_for(deltaSeconds);
 		}
 	}
