@@ -66,7 +66,7 @@ void GraphicsThread::SetPriority(int priority)
 {
 	const int values[] = { -15, -2, -1, 0, 1, 2, 15 };
 	priority = values[priority];
-	std::cout << "Priority has been set: " << priority;
+	std::cout << "Priority has been set: " << priority << std::endl;
 	SetThreadPriority(workerThread.native_handle(), priority);
 }
 
