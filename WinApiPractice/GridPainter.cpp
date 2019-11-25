@@ -4,20 +4,20 @@
 
 GridPainter::GridPainter(HWND& window, const int dimension) : window(window), dimension(dimension)
 {
-	hdc = GetDC(window);
+	StartDrawing();
 }
 
 void GridPainter::DrawImage(const WindowArea area, Image& img) const
 {
 	const auto hBitmap = CreateBitmap(img.Width, img.Height, 1, img.BitDepth, img.Buffer);
-	const auto hdcMem = CreateCompatibleDC(hdc);
+	const auto hdcMem = CreateCompatibleDC(tempHdc);
 
 	SelectObject(hdcMem, hBitmap);
 	const auto width = img.Width;
 	const auto height = img.Height;
 	const auto x = area.CenterX;
 	const auto y = area.CenterY;
-	TransparentBlt(hdc,
+	TransparentBlt(tempHdc,
 		x - width / 2,
 		y - height / 2,
 		width,
@@ -65,59 +65,59 @@ void GridPainter::DrawGrid(COLORREF gridColor) const
 	RECT rect;
 	GetClientRect(window, &rect);
 	const auto pen = CreatePen(0, 2, gridColor);
-	const auto prevBrush = SelectObject(hdc, pen);
+	const auto prevBrush = SelectObject(tempHdc, pen);
 
 	for (auto i = 1u; i < dimension; ++i)
 	{
 		const UINT x = rect.right * i / dimension;
-		MoveToEx(hdc, x, 0, nullptr);
-		LineTo(hdc, x, rect.bottom);
+		MoveToEx(tempHdc, x, 0, nullptr);
+		LineTo(tempHdc, x, rect.bottom);
 
 		const UINT y = rect.bottom * i / dimension;
-		MoveToEx(hdc, 0, y, nullptr);
-		LineTo(hdc, rect.right, y);
+		MoveToEx(tempHdc, 0, y, nullptr);
+		LineTo(tempHdc, rect.right, y);
 	}
 
-	SelectObject(hdc, prevBrush);
+	SelectObject(tempHdc, prevBrush);
 	DeleteObject(pen);
 }
 
 GridPainter::~GridPainter()
 {
-	ReleaseDC(window, hdc);
+	FinishDrawing();
 }
 
 void GridPainter::DrawCircle(const WindowArea area) const
 {
 	const auto hBrush = CreateSolidBrush(RGB(255, 255, 255));
-	const auto prevBrush = SelectObject(hdc, hBrush);
+	const auto prevBrush = SelectObject(tempHdc, hBrush);
 
-	Ellipse(hdc,
+	Ellipse(tempHdc,
 		area.CenterX - area.Radius,
 		area.CenterY - area.Radius,
 		area.CenterX + area.Radius,
 		area.CenterY + area.Radius);
 
-	SelectObject(hdc, prevBrush);
+	SelectObject(tempHdc, prevBrush);
 	DeleteObject(hBrush);
 }
 
 void GridPainter::DrawCross(const WindowArea area) const
 {
 	// Draws '\'
-	MoveToEx(hdc,
+	MoveToEx(tempHdc,
 		area.CenterX - area.Radius,
 		area.CenterY - area.Radius,
 		nullptr);
-	LineTo(hdc,
+	LineTo(tempHdc,
 		area.CenterX + area.Radius,
 		area.CenterY + area.Radius);
 	// Draws '/'
-	MoveToEx(hdc,
+	MoveToEx(tempHdc,
 		area.CenterX + area.Radius,
 		area.CenterY - area.Radius,
 		nullptr);
-	LineTo(hdc,
+	LineTo(tempHdc,
 		area.CenterX - area.Radius,
 		area.CenterY + area.Radius);
 }
@@ -151,12 +151,36 @@ void GridPainter::DrawGradient(const COLORREF color) const
 	vertices[index].x = rect.right;
 	vertices[index].y = rect.bottom;
 
-	GradientFill(hdc, vertices, size, &gradientRect, 1, GRADIENT_FILL_RECT_H);
+	GradientFill(tempHdc, vertices, size, &gradientRect, 1, GRADIENT_FILL_RECT_H);
 }
 
+void GridPainter::StartDrawing()
+{
+	originalHdc = GetDC(window);
+	tempHdc = CreateCompatibleDC(originalHdc);
+	RECT rect;
+	GetClientRect(window, &rect);
+	const auto bitmap = CreateCompatibleBitmap(originalHdc, rect.right, rect.bottom);
+	oldBitmap = SelectObject(tempHdc, bitmap);
+	DeleteObject(oldBitmap);
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst
+void GridPainter::FinishDrawing()
+{
+	RECT rect;
+	GetClientRect(window, &rect);
+	BitBlt(originalHdc, 0, 0, rect.right, rect.bottom, tempHdc, 0, 0, SRCCOPY);
+	const auto bitmap = SelectObject(tempHdc, oldBitmap);
+	DeleteObject(bitmap);
+	DeleteDC(tempHdc);
+	ReleaseDC(window, originalHdc);
+}
+
+// ReSharper disable once CppInconsistentNaming
 HDC& GridPainter::GetHDC()
 {
-	return hdc;
+	return tempHdc;
 }
 
 WindowArea GridPainter::CalculateIconDimensions(const UINT index) const

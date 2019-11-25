@@ -14,11 +14,11 @@ public:
 	void DrawImage(WindowArea area, Image& img) const;
 	void DrawImageWhere(int value, const int* values, Image& img) const;
 	void DrawImageWhere(int value, GameState* gameState, Image& img) const;
-	
+
 	void DrawGrid(COLORREF gridColor) const;
 	void DrawIconsOnGrid(const int* values) const;
 	void DrawIconsOnGrid(GameState* gameState) const;
-	
+
 	void DrawCircle(WindowArea area) const;
 	void DrawCross(WindowArea area) const;
 
@@ -35,13 +35,18 @@ public:
 	~GridPainter();
 
 private:
-	HDC hdc;
+	HDC tempHdc;
+	HDC originalHdc;
+	HGDIOBJ oldBitmap;
 	PAINTSTRUCT ps{};
 	HWND& window;
 	int dimension;
 
 	[[nodiscard]] WindowArea CalculateIconDimensions(UINT index) const;
 	[[nodiscard]] WindowArea CalculateIconDimensions(int line, int column) const;
+
+	void StartDrawing();
+	void FinishDrawing();
 
 	using CellIndex = int;
 	using CellValue = int;
