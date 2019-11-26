@@ -6,6 +6,7 @@
 #include "GridPainter.h"
 #include "preferences.h"
 #include "LibraryHandle.h"
+#include "DynamicColor.h"
 
 GraphicsThread::GraphicsThread(HWND& window, const GameSession* game)
 {
@@ -95,11 +96,16 @@ void GraphicsThread::Run(Context& context)
 	{
 		const auto preferences = context.game->GetPreferences();
 		const auto state = context.game->GetGameState();
+
+		const std::vector<Color> gradientColors = { Color::Red(), Color::Green(), Color::Blue() };
+		DynamicColor color(gradientColors);
+
 		for (;;)
 		{
 			GridPainter painter(context.window, preferences->GridSize);
 
-			painter.DrawGradient(preferences->BackgroundColor);
+			painter.DrawDynamicGradient(preferences->BackgroundColor, color.CurrentColor().AsColorRef());
+			color.Change();
 			painter.DrawGrid(preferences->GridColor);
 
 			painter.DrawImageWhere(1, state, context.crossImage);
