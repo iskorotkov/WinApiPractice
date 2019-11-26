@@ -81,29 +81,8 @@
     <ClCompile Include="preferences.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GridPainter.cpp">
-      <Filter>Header Files\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="WindowArea.cpp">
-      <Filter>Header Files\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="LibraryHandle.cpp">
       <Filter>Source Files\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="SharedStorage.cpp">
-      <Filter>Header Files\Communication</Filter>
-    </ClCompile>
-    <ClCompile Include="Notificator.cpp">
-      <Filter>Header Files\Communication</Filter>
-    </ClCompile>
-    <ClCompile Include="GameState.cpp">
-      <Filter>Header Files\Gameplay</Filter>
-    </ClCompile>
-    <ClCompile Include="GameSession.cpp">
-      <Filter>Header Files\Gameplay</Filter>
-    </ClCompile>
-    <ClCompile Include="GraphicsThread.cpp">
-      <Filter>Header Files\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Math.cpp">
       <Filter>Source Files\Lib</Filter>
@@ -113,6 +92,30 @@
     </ClCompile>
     <ClCompile Include="Color.cpp">
       <Filter>Source Files\Lib</Filter>
+    </ClCompile>
+    <ClCompile Include="GameRules.cpp">
+      <Filter>Source Files\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="GameSession.cpp">
+      <Filter>Source Files\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="GameState.cpp">
+      <Filter>Source Files\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="Notificator.cpp">
+      <Filter>Source Files\Communication</Filter>
+    </ClCompile>
+    <ClCompile Include="SharedStorage.cpp">
+      <Filter>Source Files\Communication</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsThread.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowArea.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="GridPainter.cpp">
+      <Filter>Source Files\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -137,29 +140,8 @@
     <ClInclude Include="preferences.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GridPainter.h">
-      <Filter>Source Files\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="WindowArea.h">
-      <Filter>Source Files\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="LibraryHandle.h">
       <Filter>Header Files\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="SharedStorage.h">
-      <Filter>Source Files\Communication</Filter>
-    </ClInclude>
-    <ClInclude Include="Notificator.h">
-      <Filter>Source Files\Communication</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicsThread.h">
-      <Filter>Source Files\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="GameState.h">
-      <Filter>Source Files\Gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="GameSession.h">
-      <Filter>Source Files\Gameplay</Filter>
     </ClInclude>
     <ClInclude Include="Math.h">
       <Filter>Header Files\Lib</Filter>
@@ -169,6 +151,30 @@
     </ClInclude>
     <ClInclude Include="Color.h">
       <Filter>Header Files\Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="GameRules.h">
+      <Filter>Header Files\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="GameSession.h">
+      <Filter>Header Files\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState.h">
+      <Filter>Header Files\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="Notificator.h">
+      <Filter>Header Files\Communication</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedStorage.h">
+      <Filter>Header Files\Communication</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsThread.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="GridPainter.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowArea.h">
+      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
