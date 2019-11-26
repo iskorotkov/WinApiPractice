@@ -23,6 +23,7 @@ public:
 	void DrawCross(WindowArea area) const;
 
 	void DrawGradient(COLORREF color) const;
+	void DrawDynamicGradient(COLORREF primary, COLORREF secondary) const;
 
 	// ReSharper disable once CppInconsistentNaming
 	HDC& GetHDC();

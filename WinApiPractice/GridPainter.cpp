@@ -154,6 +154,38 @@ void GridPainter::DrawGradient(const COLORREF color) const
 	GradientFill(tempHdc, vertices, size, &gradientRect, 1, GRADIENT_FILL_RECT_H);
 }
 
+void GridPainter::DrawDynamicGradient(const COLORREF primary, const COLORREF secondary) const
+{
+	const auto size = 2;
+	TRIVERTEX vertices[size];
+	GRADIENT_RECT gradientRect;
+	gradientRect.UpperLeft = 0;
+	gradientRect.LowerRight = 1;
+
+	const auto colorValue = [](auto color) { return color << 8; };
+
+	auto index = 0;
+	vertices[index].Red = colorValue(GetRValue(primary));
+	vertices[index].Green = colorValue(GetGValue(primary));
+	vertices[index].Blue = colorValue(GetBValue(primary));
+	vertices[index].Alpha = colorValue(255);
+	vertices[index].x = 0;
+	vertices[index].y = 0;
+
+	++index;
+	// TODO: Use random color for second vertex.
+	vertices[index].Red = colorValue(GetRValue(secondary));
+	vertices[index].Green = colorValue(GetGValue(secondary));
+	vertices[index].Blue = colorValue(GetBValue(secondary));
+	vertices[index].Alpha = colorValue(255);
+	RECT rect;
+	GetClientRect(window, &rect);
+	vertices[index].x = rect.right;
+	vertices[index].y = rect.bottom;
+
+	GradientFill(tempHdc, vertices, size, &gradientRect, 1, GRADIENT_FILL_RECT_H);
+}
+
 void GridPainter::StartDrawing()
 {
 	originalHdc = GetDC(window);
