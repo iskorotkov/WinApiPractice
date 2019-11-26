@@ -49,6 +49,12 @@
     <Filter Include="Header Files\Gameplay">
       <UniqueIdentifier>{d5d347ce-005e-48f1-94e7-01cbb068ae95}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Lib">
+      <UniqueIdentifier>{415e2d6d-1225-45f2-b79f-66b93eaf8cad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Lib">
+      <UniqueIdentifier>{aaf831a7-eadd-43f6-8813-741957a74ff4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApiPractice.cpp">
@@ -99,6 +105,15 @@
     <ClCompile Include="GraphicsThread.cpp">
       <Filter>Header Files\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="Math.cpp">
+      <Filter>Source Files\Lib</Filter>
+    </ClCompile>
+    <ClCompile Include="DynamicColor.cpp">
+      <Filter>Source Files\Lib</Filter>
+    </ClCompile>
+    <ClCompile Include="Color.cpp">
+      <Filter>Source Files\Lib</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="filemapping.h">
@@ -145,6 +160,15 @@
     </ClInclude>
     <ClInclude Include="GameSession.h">
       <Filter>Source Files\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="Math.h">
+      <Filter>Header Files\Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="DynamicColor.h">
+      <Filter>Header Files\Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="Color.h">
+      <Filter>Header Files\Lib</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

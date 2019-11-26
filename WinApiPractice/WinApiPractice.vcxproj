@@ -161,7 +161,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Color.cpp" />
     <ClCompile Include="commandline.cpp" />
+    <ClCompile Include="DynamicColor.cpp" />
     <ClCompile Include="filemapping.cpp" />
     <ClCompile Include="files.cpp" />
     <ClCompile Include="filestream.cpp" />
@@ -170,6 +172,7 @@
     <ClCompile Include="GraphicsThread.cpp" />
     <ClCompile Include="GridPainter.cpp" />
     <ClCompile Include="LibraryHandle.cpp" />
+    <ClCompile Include="Math.cpp" />
     <ClCompile Include="Notificator.cpp" />
     <ClCompile Include="preferences.cpp" />
     <ClCompile Include="SharedStorage.cpp" />
@@ -179,7 +182,9 @@
     <ClCompile Include="WindowArea.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Color.h" />
     <ClInclude Include="commandline.h" />
+    <ClInclude Include="DynamicColor.h" />
     <ClInclude Include="filemapping.h" />
     <ClInclude Include="files.h" />
     <ClInclude Include="filestream.h" />
@@ -188,6 +193,7 @@
     <ClInclude Include="GraphicsThread.h" />
     <ClInclude Include="GridPainter.h" />
     <ClInclude Include="LibraryHandle.h" />
+    <ClInclude Include="Math.h" />
     <ClInclude Include="Notificator.h" />
     <ClInclude Include="preferences.h" />
     <ClInclude Include="SharedStorage.h" />
