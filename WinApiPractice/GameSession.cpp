@@ -32,17 +32,19 @@ GameSession::GameSession(const int argc, char** argv)
 	}
 
 	state = std::make_unique<GameState>(storage.GetStorage(), dimension);
-	gameRules = std::make_unique<GameRules>(this);
+	rules = std::make_unique<GameRules>(this);
 }
 
-void GameSession::StartRendering(HWND window)
+void GameSession::Start(HWND window)
 {
 	// TODO: Double initialization.
 	graphicsThread = std::make_unique<GraphicsThread>(window, this);
 	graphicsThread->Launch();
+
+	isStarted = true;
 }
 
-GameState* GameSession::GetGameState() const
+GameState* GameSession::GetState() const
 {
 	return state.get();
 }
@@ -57,9 +59,14 @@ GraphicsThread* GameSession::GetGraphicsThread() const
 	return graphicsThread.get();
 }
 
-GameRules* GameSession::GetGameRules() const
+GameRules* GameSession::GetRules() const
 {
-	return gameRules.get();
+	return rules.get();
+}
+
+bool GameSession::IsStarted() const
+{
+	return isStarted;
 }
 
 GameSession::~GameSession()

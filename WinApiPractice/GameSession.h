@@ -18,12 +18,13 @@ public:
 	GameSession& operator=(const GameSession& other) = delete;
 	GameSession& operator=(GameSession&& other) noexcept = delete;
 
-	void StartRendering(HWND window);
+	void Start(HWND window);
 
-	[[nodiscard]] GameState* GetGameState() const;
+	[[nodiscard]] GameState* GetState() const;
 	[[nodiscard]] Preferences* GetPreferences() const;
 	[[nodiscard]] GraphicsThread* GetGraphicsThread() const;
-	[[nodiscard]] GameRules* GetGameRules() const;
+	[[nodiscard]] GameRules* GetRules() const;
+	[[nodiscard]] bool IsStarted() const;
 
 	~GameSession();
 
@@ -33,5 +34,6 @@ private:
 	std::unique_ptr<GameState> state;
 	std::unique_ptr<Preferences> preferences;
 	std::unique_ptr<GraphicsThread> graphicsThread;
-	std::unique_ptr<GameRules> gameRules;
+	std::unique_ptr<GameRules> rules;
+	bool isStarted = false;
 };
