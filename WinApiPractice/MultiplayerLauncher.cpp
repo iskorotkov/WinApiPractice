@@ -1,6 +1,17 @@
 ﻿#include "MultiplayerLauncher.h"
 #include "Windows.h"
-#include <string>
+
+MultiplayerLauncher::MultiplayerLauncher()
+{
+	storage.Open(L"ClientsCounter", sizeof(ClientsCounter));
+	counter = reinterpret_cast<ClientsCounter*>(storage.GetStorage());
+
+	if (counter->clients >= 2)
+	{
+		throw std::exception("There are already two instances launched.\nFinish old games before starting new ones.");
+	}
+	++counter->clients;
+}
 
 void MultiplayerLauncher::LaunchClient() const
 {

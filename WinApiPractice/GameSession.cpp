@@ -53,11 +53,21 @@ GameSession::GameSession(const int argc, char** argv)
 
 	state = std::make_unique<GameState>(storage.GetStorage(), dimension);
 	CreateRules(argc, argv);
-	multiplayer = std::make_unique<MultiplayerLauncher>();
-	if (!IsClient(argc, argv))
+
+	try
 	{
-		// TODO: Maybe we can analyze whether the instance is client only one time and save the result?
-		multiplayer->LaunchClient();
+		multiplayer = std::make_unique<MultiplayerLauncher>();
+		if (!IsClient(argc, argv))
+		{
+			// TODO: Maybe we can analyze whether the instance is client only one time and save the result?
+			multiplayer->LaunchClient();
+		}
+	}
+	catch (std::exception& e)
+	{
+		const std::string s(e.what());
+		const std::wstring ws(s.cbegin(), s.cend());
+		GameError(ws);
 	}
 }
 
@@ -73,16 +83,19 @@ void GameSession::Start(HWND window)
 void GameSession::GameWon() const
 {
 	MessageBox(nullptr, L"You have WON the game", L"Win!", MB_OK | MB_ICONASTERISK);
+	PostQuitMessage(0);
 }
 
 void GameSession::GameLost() const
 {
 	MessageBox(nullptr, L"You have LOST the game", L"Lose!", MB_OK | MB_ICONASTERISK);
+	PostQuitMessage(0);
 }
 
 void GameSession::GameError(const std::wstring& errorMessage) const
 {
 	MessageBox(nullptr, errorMessage.c_str(), L"Error occured!", MB_OK | MB_ICONERROR);
+	PostQuitMessage(0);
 }
 
 void GameSession::PlayerMistake(const std::wstring& mistakeMessage) const

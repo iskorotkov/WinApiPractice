@@ -14,7 +14,7 @@ public:
 
 	~SharedStorage();
 
-	void Open(const std::wstring&& name, int size);
+	void Open(const std::wstring& name, int size);
 	void Close();
 
 	[[nodiscard]] std::byte* GetStorage() const;
