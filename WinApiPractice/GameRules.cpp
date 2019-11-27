@@ -5,6 +5,7 @@
 
 GameRules::GameRules(GameSession* game) : game(game)
 {
+	SetupGame();
 }
 
 GameRules::Status GameRules::Status::Win()
@@ -22,14 +23,19 @@ GameRules::Status GameRules::Status::InProgress()
 	return { false, false };
 }
 
-void GameRules::RespondToTurnMessage(WPARAM wParam, LPARAM lParam)
+void GameRules::RespondToTurnMessage(const WPARAM wParam, const LPARAM)
 {
 	// Check if it's our turn
+	if (wParam == GetCurrentProcessId())
+	{
+		isOurTurn = true;
+	}
 }
 
 void GameRules::SetupGame()
 {
 	// Register message
+	turnMessageCode = RegisterWindowMessage(L"WM_TURNMADE");
 }
 
 void GameRules::TurnMade()
@@ -141,9 +147,15 @@ bool GameRules::IsOurTurn() const
 	return isOurTurn;
 }
 
-void GameRules::NotifyOthersAboutTurn()
+bool GameRules::GetTurnMessageCode() const
+{
+	return turnMessageCode;
+}
+
+void GameRules::NotifyOthersAboutTurn() const
 {
 	// Broadcast message
+	SendMessage(HWND_BROADCAST, turnMessageCode, GetCurrentProcessId(), 0);
 }
 
 bool GameRules::IsOurSign(const int value) const

@@ -30,21 +30,22 @@ public:
 	};
 
 	void RespondToTurnMessage(WPARAM wParam, LPARAM lParam);
-	void SetupGame();
 	void TurnMade();
 	void StartOutTurn();
 
 	[[nodiscard]] Status GetStatus() const;
 	[[nodiscard]] bool IsOurTurn() const;
+	[[nodiscard]] bool GetTurnMessageCode() const;
 
 private:
 	bool isOurTurn = false;
+	unsigned turnMessageCode = 0;
 	GameSession* game;
-
-	// TODO: How to determine whether it's our sign or not?
 	int ourSign;
 
-	void NotifyOthersAboutTurn();
+	void SetupGame();
+
+	void NotifyOthersAboutTurn() const;
 
 	[[nodiscard]] bool IsOurSign(int value) const;
 	[[nodiscard]] bool IsOpponentSign(int value) const;
