@@ -6,7 +6,7 @@ class GameSession;
 class GameRules
 {
 public:
-	explicit GameRules(GameSession* game);
+	explicit GameRules(GameSession* game, int sign = 1);
 
 	class Status
 	{
@@ -30,15 +30,15 @@ public:
 	};
 
 	void RespondToTurnMessage(WPARAM wParam, LPARAM lParam);
-	void TurnMade();
-	void StartOutTurn();
+	void FinishTurn();
+	void StartTurn();
 
 	[[nodiscard]] Status GetStatus() const;
 	[[nodiscard]] bool IsOurTurn() const;
-	[[nodiscard]] bool GetTurnMessageCode() const;
+	[[nodiscard]] unsigned GetTurnMessageCode() const;
 
 private:
-	bool isOurTurn = false;
+	bool isOurTurn = true;
 	unsigned turnMessageCode = 0;
 	GameSession* game;
 	int ourSign;

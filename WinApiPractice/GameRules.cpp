@@ -3,7 +3,7 @@
 #include "GameSession.h"
 #include "GameState.h"
 
-GameRules::GameRules(GameSession* game) : game(game)
+GameRules::GameRules(GameSession* game, int sign) : game(game)
 {
 	SetupGame();
 }
@@ -26,7 +26,7 @@ GameRules::Status GameRules::Status::InProgress()
 void GameRules::RespondToTurnMessage(const WPARAM wParam, const LPARAM)
 {
 	// Check if it's our turn
-	if (wParam == GetCurrentProcessId())
+	if (wParam != GetCurrentProcessId())
 	{
 		isOurTurn = true;
 	}
@@ -38,28 +38,24 @@ void GameRules::SetupGame()
 	turnMessageCode = RegisterWindowMessage(L"WM_TURNMADE");
 }
 
-void GameRules::TurnMade()
+void GameRules::FinishTurn()
 {
-	if (!IsOurTurn())
-	{
-		throw std::logic_error("Can't make turn if its opponents turn now.");
-	}
 	isOurTurn = false;
 	NotifyOthersAboutTurn();
 }
 
-void GameRules::StartOutTurn()
+// ReSharper disable once CppMemberFunctionMayBeConst
+void GameRules::StartTurn()
 {
-	if (IsOurTurn())
+	if (!IsOurTurn())
 	{
 		throw std::logic_error("Can't start our turn because it's already started.");
 	}
-	isOurTurn = true;
 }
 
 GameRules::Status GameRules::GetStatus() const
 {
-	const auto state = game->GetGameState();
+	const auto state = game->GetState();
 	const auto dimension = state->GetDimension();
 
 	const auto handleResult = [dimension](auto ours, auto opponents)
@@ -72,6 +68,7 @@ GameRules::Status GameRules::GetStatus() const
 		{
 			return Status::Lose();
 		}
+		return Status::InProgress();
 	};
 
 	// Rows
@@ -147,7 +144,7 @@ bool GameRules::IsOurTurn() const
 	return isOurTurn;
 }
 
-bool GameRules::GetTurnMessageCode() const
+unsigned GameRules::GetTurnMessageCode() const
 {
 	return turnMessageCode;
 }
