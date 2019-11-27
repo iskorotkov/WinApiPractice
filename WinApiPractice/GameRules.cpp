@@ -3,7 +3,7 @@
 #include "GameSession.h"
 #include "GameState.h"
 
-GameRules::GameRules(GameSession* game, int sign) : game(game)
+GameRules::GameRules(GameSession* game, const int sign) : game(game), ourSign(sign)
 {
 	SetupGame();
 }
@@ -147,6 +147,12 @@ bool GameRules::IsOurTurn() const
 unsigned GameRules::GetTurnMessageCode() const
 {
 	return turnMessageCode;
+}
+
+int GameRules::GetOurSign() const
+{
+	// TODO: Move GetSign() method somewhere else; it's not in the right place.
+	return ourSign;
 }
 
 void GameRules::NotifyOthersAboutTurn() const

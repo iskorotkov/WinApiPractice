@@ -49,7 +49,7 @@ COLORREF GetRandomColor()
 	return RGB(Random(255), Random(255), Random(255));
 }
 
-void OnClicked(const HWND hwnd, UINT x, UINT y, const UINT value)
+void OnClicked(const HWND hwnd, UINT x, UINT y)
 {
 	const auto dimension = gameSession->GetPreferences()->GridSize;
 	RECT rect;
@@ -63,7 +63,7 @@ void OnClicked(const HWND hwnd, UINT x, UINT y, const UINT value)
 	x = x * dimension / rect.right;
 	y = y * dimension / rect.bottom;
 	gameSession->GetRules()->StartTurn();
-	gameSession->GetState()->SetAt(y, x, value);
+	gameSession->GetState()->SetAt(y, x, gameSession->GetRules()->GetOurSign());
 	gameSession->GetRules()->FinishTurn();
 
 	SendMessage(HWND_BROADCAST, WM_GRIDUPDATE, 0, 0);
@@ -127,14 +127,14 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		{
 			const UINT x = GET_X_LPARAM(lParam);
 			const UINT y = GET_Y_LPARAM(lParam);
-			OnClicked(hwnd, x, y, 1);
+			OnClicked(hwnd, x, y);
 			break;
 		}
 		case WM_RBUTTONDOWN:
 		{
 			const UINT x = GET_X_LPARAM(lParam);
 			const UINT y = GET_Y_LPARAM(lParam);
-			OnClicked(hwnd, x, y, 2);
+			OnClicked(hwnd, x, y);
 			break;
 		}
 		case WM_PAINT:

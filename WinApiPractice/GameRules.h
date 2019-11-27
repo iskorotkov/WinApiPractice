@@ -6,7 +6,7 @@ class GameSession;
 class GameRules
 {
 public:
-	explicit GameRules(GameSession* game, int sign = 1);
+	explicit GameRules(GameSession* game, int sign);
 
 	class Status
 	{
@@ -36,6 +36,7 @@ public:
 	[[nodiscard]] Status GetStatus() const;
 	[[nodiscard]] bool IsOurTurn() const;
 	[[nodiscard]] unsigned GetTurnMessageCode() const;
+	[[nodiscard]] int GetOurSign() const;
 
 private:
 	bool isOurTurn = true;
