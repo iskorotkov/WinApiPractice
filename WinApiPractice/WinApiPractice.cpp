@@ -62,19 +62,18 @@ void OnClicked(const HWND hwnd, UINT x, UINT y, const UINT value)
 
 	x = x * dimension / rect.right;
 	y = y * dimension / rect.bottom;
-	gameSession->GetGameState()->SetAt(y, x, value);
+	gameSession->GetRules()->StartTurn();
+	gameSession->GetState()->SetAt(y, x, value);
+	gameSession->GetRules()->FinishTurn();
 
 	SendMessage(HWND_BROADCAST, WM_GRIDUPDATE, 0, 0);
-
-	InvalidateRect(hwnd, nullptr, true);
-	UpdateWindow(hwnd);
 }
 
 LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	if (uMsg == gameSession->GetGameRules()->GetTurnMessageCode())
+	if (gameSession->IsStarted() && uMsg == gameSession->GetRules()->GetTurnMessageCode())
 	{
-		gameSession->GetGameRules()->RespondToTurnMessage(wParam, lParam);
+		gameSession->GetRules()->RespondToTurnMessage(wParam, lParam);
 	}
 	const auto prefs = gameSession->GetPreferences();
 
@@ -198,7 +197,7 @@ int main(int argc, char** argv)
 	const UINT nCmdShow = SW_SHOW;
 	ShowWindow(hwnd, nCmdShow);
 
-	gameSession->StartRendering(hwnd);
+	gameSession->Start(hwnd);
 
 	BOOL bMessageOk;
 	MSG message;

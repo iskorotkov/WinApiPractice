@@ -95,7 +95,7 @@ void GraphicsThread::Run(Context& context)
 	try
 	{
 		const auto preferences = context.game->GetPreferences();
-		const auto state = context.game->GetGameState();
+		const auto state = context.game->GetState();
 
 		const std::vector<Color> gradientColors = { Color::Red(), Color::Green(), Color::Blue() };
 		DynamicColor color(gradientColors);
