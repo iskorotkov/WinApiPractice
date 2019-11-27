@@ -65,6 +65,7 @@ void GameRules::StartTurn()
 
 GameRules::Status GameRules::GetStatus() const
 {
+	// TODO: Refactor large method.
 	const auto state = game->GetState();
 	const auto dimension = state->GetDimension();
 
@@ -127,25 +128,60 @@ GameRules::Status GameRules::GetStatus() const
 		}
 	}
 
-	// Diagonals
-	auto ours = 0;
-	auto opponents = 0;
-	for (auto row = 0; row < dimension; ++row)
 	{
-		if (IsOurSign(state->GetAt(row, row)))
+		// Main diagonal
+		auto ours = 0;
+		auto opponents = 0;
+		for (auto row = 0; row < dimension; ++row)
 		{
-			++ours;
+			const auto column = row;
+			if (IsOurSign(state->GetAt(row, column)))
+			{
+				++ours;
+			}
+			else if (IsOpponentSign(state->GetAt(row, column)))
+			{
+				++opponents;
+			}
+			if (ours > 0 && opponents > 0)
+			{
+				return Status::InProgress();
+			}
 		}
-		else if (IsOpponentSign(state->GetAt(row, row)))
+		const auto result = handleResult(ours, opponents);
+		if (!result.IsInProgress())
 		{
-			++opponents;
-		}
-		if (ours > 0 && opponents > 0)
-		{
-			return Status::InProgress();
+			return result;
 		}
 	}
-	return handleResult(ours, opponents);
+
+	{
+		// Second diagonal
+		auto ours = 0;
+		auto opponents = 0;
+		for (auto row = 0; row < dimension; ++row)
+		{
+			const auto column = dimension - row - 1;
+			if (IsOurSign(state->GetAt(row, column)))
+			{
+				++ours;
+			}
+			else if (IsOpponentSign(state->GetAt(row, column)))
+			{
+				++opponents;
+			}
+			if (ours > 0 && opponents > 0)
+			{
+				return Status::InProgress();
+			}
+		}
+		const auto result = handleResult(ours, opponents);
+		if (!result.IsInProgress())
+		{
+			return result;
+		}
+	}
+	return Status::InProgress();
 }
 
 bool GameRules::IsOurTurn() const
