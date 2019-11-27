@@ -43,6 +43,24 @@
     <Filter Include="Header Files\Communication">
       <UniqueIdentifier>{29c9f32d-ec99-4a28-868c-8b9983fe9aa9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Gameplay">
+      <UniqueIdentifier>{d5af4e52-96d5-49cd-9818-f58fffc9341b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Gameplay">
+      <UniqueIdentifier>{d5d347ce-005e-48f1-94e7-01cbb068ae95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Lib">
+      <UniqueIdentifier>{415e2d6d-1225-45f2-b79f-66b93eaf8cad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Lib">
+      <UniqueIdentifier>{aaf831a7-eadd-43f6-8813-741957a74ff4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Multiplayer">
+      <UniqueIdentifier>{7dfedf51-ddd8-4e91-867a-df00d0b13281}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Multiplayer">
+      <UniqueIdentifier>{5a59968b-8ee7-43b7-a75f-3a6eb6629334}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApiPractice.cpp">
@@ -69,20 +87,44 @@
     <ClCompile Include="preferences.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GridPainter.cpp">
-      <Filter>Header Files\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="WindowArea.cpp">
-      <Filter>Header Files\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="LibraryHandle.cpp">
       <Filter>Source Files\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="SharedStorage.cpp">
-      <Filter>Header Files\Communication</Filter>
+    <ClCompile Include="Math.cpp">
+      <Filter>Source Files\Lib</Filter>
+    </ClCompile>
+    <ClCompile Include="DynamicColor.cpp">
+      <Filter>Source Files\Lib</Filter>
+    </ClCompile>
+    <ClCompile Include="Color.cpp">
+      <Filter>Source Files\Lib</Filter>
+    </ClCompile>
+    <ClCompile Include="GameRules.cpp">
+      <Filter>Source Files\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="GameSession.cpp">
+      <Filter>Source Files\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="GameState.cpp">
+      <Filter>Source Files\Gameplay</Filter>
     </ClCompile>
     <ClCompile Include="Notificator.cpp">
-      <Filter>Header Files\Communication</Filter>
+      <Filter>Source Files\Communication</Filter>
+    </ClCompile>
+    <ClCompile Include="SharedStorage.cpp">
+      <Filter>Source Files\Communication</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsThread.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowArea.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="GridPainter.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="MultiplayerLauncher.cpp">
+      <Filter>Source Files\Multiplayer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -107,20 +149,44 @@
     <ClInclude Include="preferences.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GridPainter.h">
-      <Filter>Source Files\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="WindowArea.h">
-      <Filter>Source Files\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="LibraryHandle.h">
       <Filter>Header Files\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="SharedStorage.h">
-      <Filter>Source Files\Communication</Filter>
+    <ClInclude Include="Math.h">
+      <Filter>Header Files\Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="DynamicColor.h">
+      <Filter>Header Files\Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="Color.h">
+      <Filter>Header Files\Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="GameRules.h">
+      <Filter>Header Files\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="GameSession.h">
+      <Filter>Header Files\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState.h">
+      <Filter>Header Files\Gameplay</Filter>
     </ClInclude>
     <ClInclude Include="Notificator.h">
-      <Filter>Source Files\Communication</Filter>
+      <Filter>Header Files\Communication</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedStorage.h">
+      <Filter>Header Files\Communication</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsThread.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="GridPainter.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowArea.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="MultiplayerLauncher.h">
+      <Filter>Header Files\Multiplayer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

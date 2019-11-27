@@ -6,7 +6,7 @@ SharedStorage::~SharedStorage()
 	Close();
 }
 
-void SharedStorage::Open(const std::wstring&& name, const int size)
+void SharedStorage::Open(const std::wstring& name, const int size)
 {
 	if (isOpened)
 	{

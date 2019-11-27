@@ -4,17 +4,15 @@
 #include <cstdlib>
 #include <windowsx.h>
 #include <WinUser.h>
-#include "files.h"
-#include "commandline.h"
-#include "preferences.h"
 #include "libpic.h"
-#include "GridPainter.h"
-#include "LibraryHandle.h"
-#include "SharedStorage.h"
 #include <iostream>
 #include <string>
-
-#define GRID_DIMENSION (prefs->GridSize)
+#include "GameSession.h"
+#include <memory>
+#include "preferences.h"
+#include "GraphicsThread.h"
+#include "GameState.h"
+#include "GameRules.h"
 
 const TCHAR CZ_WIN_CLASS[] = _T("MyClassName");
 const TCHAR CZ_WIN_NAME[] = _T("MyWindowName");
@@ -22,17 +20,14 @@ const TCHAR CZ_WIN_NAME[] = _T("MyWindowName");
 const std::wstring onClickMessagePrefix = L"OnClick message ";
 
 HBRUSH hCurrentBrush;
-int* values;
 
+// ReSharper disable once IdentifierTypo
 unsigned WM_GRIDUPDATE = 0;
 
-Preferences* prefs;
-Image crossImage;
-Image circleImage;
 Image icon;
 Image cursor;
 
-SharedStorage storage;
+std::unique_ptr<GameSession> gameSession;
 
 void RunNotepad()
 {
@@ -54,29 +49,48 @@ COLORREF GetRandomColor()
 	return RGB(Random(255), Random(255), Random(255));
 }
 
-void OnClicked(const HWND hwnd, UINT x, UINT y, const UINT value)
+void OnClicked(const HWND hwnd, UINT x, UINT y)
 {
+	const auto dimension = gameSession->GetPreferences()->GridSize;
 	RECT rect;
 	GetClientRect(hwnd, &rect);
-	x = x * GRID_DIMENSION / rect.right;
-	y = y * GRID_DIMENSION / rect.bottom;
-	const UINT index = y * GRID_DIMENSION + x;
-	values[index] = value;
+
+	if (x > rect.right || y > rect.bottom)
+	{
+		return;
+	}
+
+	x = x * dimension / rect.right;
+	y = y * dimension / rect.bottom;
+
+	try
+	{
+		const auto rules = gameSession->GetRules();
+		rules->StartTurn();
+		gameSession->GetState()->SetAt(y, x, rules->GetOurSign());
+		rules->FinishTurn();
+	}
+	catch (std::exception& e)
+	{
+		const std::string message(e.what());
+		const std::wstring wm(message.cbegin(), message.cend());;
+		gameSession->PlayerMistake(wm);
+	}
 
 	SendMessage(HWND_BROADCAST, WM_GRIDUPDATE, 0, 0);
-
-	InvalidateRect(hwnd, nullptr, true);
-	UpdateWindow(hwnd);
 }
 
 LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	if (uMsg == WM_GRIDUPDATE)
+	if (gameSession->IsStarted() && uMsg == gameSession->GetRules()->GetTurnMessageCode())
 	{
-		InvalidateRect(hwnd, nullptr, true);
-		UpdateWindow(hwnd);
-		return 0;
+		gameSession->GetRules()->RespondToTurnMessage(wParam, lParam);
 	}
+	const auto prefs = gameSession->GetPreferences();
+
+	// TODO: Find better names.
+	const auto firstKey = 0x31;
+	const auto lastKey = 0x37;
 	switch (uMsg)
 	{
 		case WM_KEYDOWN:
@@ -92,18 +106,19 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			}
 			else if (wParam == VK_RETURN)
 			{
-				const COLORREF NewColor = GetRandomColor();
+				const auto newColor = GetRandomColor();
 				if (prefs)
 				{
-					prefs->BackgroundColor = NewColor;
+					prefs->BackgroundColor = newColor;
 				}
-				HBRUSH hBrush = CreateSolidBrush(NewColor);
-				SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG_PTR)hBrush);
-				DeleteObject(hCurrentBrush);
-				hCurrentBrush = hBrush;
-
-				InvalidateRect(hwnd, nullptr, true);
-				UpdateWindow(hwnd);
+			}
+			else if (wParam == VK_SPACE)
+			{
+				gameSession->GetGraphicsThread()->ToggleSuspended();
+			}
+			else if (wParam >= firstKey && wParam <= lastKey)
+			{
+				gameSession->GetGraphicsThread()->SetPriority(wParam - firstKey);
 			}
 			break;
 		case WM_DESTROY:
@@ -119,28 +134,21 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 				prefs->WindowHeight = rect.bottom;
 			}
 		}
-		case WM_PAINT:
-		{
-			const GridPainter painter(hwnd, prefs->GridSize);
-			painter.DrawGrid(prefs->GridColor);
-			painter.DrawImageWhere(1, values, crossImage);
-			painter.DrawImageWhere(2, values, circleImage);
-		}
-		break;
 		case WM_LBUTTONDOWN:
 		{
 			const UINT x = GET_X_LPARAM(lParam);
 			const UINT y = GET_Y_LPARAM(lParam);
-			OnClicked(hwnd, x, y, 1);
+			OnClicked(hwnd, x, y);
 			break;
 		}
 		case WM_RBUTTONDOWN:
 		{
 			const UINT x = GET_X_LPARAM(lParam);
 			const UINT y = GET_Y_LPARAM(lParam);
-			OnClicked(hwnd, x, y, 2);
+			OnClicked(hwnd, x, y);
 			break;
 		}
+		default: break;
 	}
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
@@ -152,51 +160,10 @@ void RegisterUserMessages()
 
 int main(int argc, char** argv)
 {
-	const ReadingMethod method = GetReadingMethod(argc, argv);
-	prefs = ReadConfigFile(method);
-	if (prefs == nullptr)
-	{
-		MessageBox(nullptr, L"Failed to read config file!", L"Error", MB_OK | MB_ICONERROR);
-		return -1;
-	}
-
 	RegisterUserMessages();
 
-	try
-	{
-		const LibraryHandle lib(L"libpic.dll");
-		const auto loadPicFunc = reinterpret_cast<decltype(LoadPicW)*>(lib.GetMethod("LoadPicW"));
-		const auto isValidFunc = reinterpret_cast<decltype(IsValid)*>(lib.GetMethod("IsValid"));
-
-		const auto loadPicWrapper = [loadPicFunc, isValidFunc](Image& img, const wchar_t* name)
-		{
-			img = loadPicFunc(name);
-			if (!isValidFunc(img))
-			{
-				throw std::exception("Unable to load a picture.");
-			}
-		};
-
-		loadPicWrapper(crossImage, prefs->IconFile);
-		loadPicWrapper(circleImage, prefs->CursorFile);
-	}
-	catch (std::exception& e)
-	{
-		printf_s("An error happened when tried to use DLL. Error info: %s", e.what());
-		return -1;
-	}
-
-	try
-	{
-		const auto len = GRID_DIMENSION * GRID_DIMENSION;
-		storage.Open(L"GameGrid", len * sizeof(int));
-		values = reinterpret_cast<int*>(storage.GetStorage());
-	}
-	catch (std::exception& e)
-	{
-		std::cout << "An error happened during shared storage opening. " << '\n' << e.what();
-		return -1;
-	}
+	gameSession = std::make_unique<GameSession>(argc, argv);
+	const auto prefs = gameSession->GetPreferences();
 
 	const HINSTANCE hThisInstance = GetModuleHandle(nullptr);
 
@@ -220,7 +187,7 @@ int main(int argc, char** argv)
 		return error;
 	}
 
-	const HWND hwnd = CreateWindowEx(
+	HWND hwnd = CreateWindowEx(
 		0,
 		CZ_WIN_CLASS,
 		CZ_WIN_NAME,
@@ -237,6 +204,8 @@ int main(int argc, char** argv)
 
 	const UINT nCmdShow = SW_SHOW;
 	ShowWindow(hwnd, nCmdShow);
+
+	gameSession->Start(hwnd);
 
 	BOOL bMessageOk;
 	MSG message;
@@ -256,7 +225,5 @@ int main(int argc, char** argv)
 	DestroyWindow(hwnd);
 	UnregisterClass(CZ_WIN_CLASS, hThisInstance);
 
-	WriteConfigFile(method, prefs);
-	delete prefs;
 	return 0;
 }
