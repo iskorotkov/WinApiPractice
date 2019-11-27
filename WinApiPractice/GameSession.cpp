@@ -83,9 +83,14 @@ void GameSession::GameLost() const
 	ExitProcess(0);
 }
 
-void GameSession::GameCrashed(const std::wstring& errorMessage) const
+void GameSession::GameError(const std::wstring& errorMessage) const
 {
 	MessageBox(window, errorMessage.c_str(), L"Error occured!", MB_OK);
+}
+
+void GameSession::PlayerMistake(const std::wstring& mistakeMessage) const
+{
+	MessageBox(window, mistakeMessage.c_str(), L"Error occured!", MB_OK);
 }
 
 GameState* GameSession::GetState() const

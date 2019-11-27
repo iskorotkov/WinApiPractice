@@ -20,9 +20,12 @@ public:
 	GameSession& operator=(GameSession&& other) noexcept = delete;
 
 	void Start(HWND window);
+
+	// TODO: Add logger class.
 	void GameWon() const;
 	void GameLost() const;
-	void GameCrashed(const std::wstring& errorMessage) const;
+	void GameError(const std::wstring& errorMessage) const;
+	void PlayerMistake(const std::wstring& mistakeMessage) const;
 
 	[[nodiscard]] GameState* GetState() const;
 	[[nodiscard]] Preferences* GetPreferences() const;
