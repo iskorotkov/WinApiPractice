@@ -9,7 +9,12 @@ GameState::GameState(std::byte* data, const int dimension) :
 // ReSharper disable once CppMemberFunctionMayBeConst
 void GameState::SetAt(const int line, const int column, const int value)
 {
-	values[Index(line, column)] = value;
+	const auto index = Index(line, column);
+	if (values[index] != 0)
+	{
+		throw std::exception("Can't add a mark here. The cell is taken.");
+	}
+	values[index] = value;
 }
 
 int GameState::GetDimension() const
