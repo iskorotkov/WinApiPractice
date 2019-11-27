@@ -11,6 +11,8 @@
 #include <memory>
 #include "preferences.h"
 #include "GraphicsThread.h"
+#include "GameState.h"
+#include "GameRules.h"
 
 const TCHAR CZ_WIN_CLASS[] = _T("MyClassName");
 const TCHAR CZ_WIN_NAME[] = _T("MyWindowName");
@@ -70,13 +72,10 @@ void OnClicked(const HWND hwnd, UINT x, UINT y, const UINT value)
 
 LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	if (uMsg == WM_GRIDUPDATE)
+	if (uMsg == gameSession->GetGameRules()->GetTurnMessageCode())
 	{
-		InvalidateRect(hwnd, nullptr, true);
-		UpdateWindow(hwnd);
-		return 0;
+		gameSession->GetGameRules()->RespondToTurnMessage(wParam, lParam);
 	}
-
 	const auto prefs = gameSession->GetPreferences();
 
 	// TODO: Find better names.
