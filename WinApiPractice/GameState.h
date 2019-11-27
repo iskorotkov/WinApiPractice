@@ -8,6 +8,7 @@ public:
 
 	void SetAt(int line, int column, int value);
 
+	[[nodiscard]] int GetDimension() const;
 	[[nodiscard]] int GetAt(int line, int column) const;
 
 private:
