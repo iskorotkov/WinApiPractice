@@ -62,9 +62,20 @@ void OnClicked(const HWND hwnd, UINT x, UINT y)
 
 	x = x * dimension / rect.right;
 	y = y * dimension / rect.bottom;
-	gameSession->GetRules()->StartTurn();
-	gameSession->GetState()->SetAt(y, x, gameSession->GetRules()->GetOurSign());
-	gameSession->GetRules()->FinishTurn();
+
+	try
+	{
+		const auto rules = gameSession->GetRules();
+		rules->StartTurn();
+		gameSession->GetState()->SetAt(y, x, rules->GetOurSign());
+		rules->FinishTurn();
+	}
+	catch (std::exception& e)
+	{
+		const std::string message(e.what());
+		const std::wstring wm(message.cbegin(), message.cend());;
+		gameSession->PlayerMistake(wm);
+	}
 
 	SendMessage(HWND_BROADCAST, WM_GRIDUPDATE, 0, 0);
 }
@@ -137,9 +148,6 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			OnClicked(hwnd, x, y);
 			break;
 		}
-		case WM_PAINT:
-		case WM_ERASEBKGND:
-			return 0;
 		default: break;
 	}
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);

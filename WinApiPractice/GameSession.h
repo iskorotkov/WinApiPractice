@@ -46,7 +46,6 @@ private:
 	std::unique_ptr<GameRules> rules;
 	std::unique_ptr<MultiplayerLauncher> multiplayer;
 
-	HWND window;
 	bool isStarted = false;
 
 	static bool IsClient(int argc, char** argv);
