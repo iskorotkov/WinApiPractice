@@ -34,7 +34,7 @@ void GameRules::RespondToTurnMessage(const WPARAM wParam, const LPARAM)
 	{
 		game->GameLost();
 	}
-	
+
 	// Check if it's our turn
 	if (wParam != GetCurrentProcessId())
 	{
@@ -59,7 +59,7 @@ void GameRules::StartTurn()
 {
 	if (!IsOurTurn())
 	{
-		throw std::logic_error("Can't start our turn because it's already started.");
+		throw std::logic_error("Can't make turn.\nWait for opponent's turn.");
 	}
 }
 
@@ -96,11 +96,11 @@ GameRules::Status GameRules::GetStatus() const
 			{
 				++opponents;
 			}
-			const auto result = handleResult(ours, opponents);
-			if (!result.IsInProgress())
-			{
-				return result;
-			}
+		}
+		const auto result = handleResult(ours, opponents);
+		if (!result.IsInProgress())
+		{
+			return result;
 		}
 	}
 
@@ -119,34 +119,33 @@ GameRules::Status GameRules::GetStatus() const
 			{
 				++opponents;
 			}
-			const auto result = handleResult(ours, opponents);
-			if (!result.IsInProgress())
-			{
-				return result;
-			}
+		}
+		const auto result = handleResult(ours, opponents);
+		if (!result.IsInProgress())
+		{
+			return result;
 		}
 	}
 
 	// Diagonals
-	auto ours = false;
-	auto opponents = false;
+	auto ours = 0;
+	auto opponents = 0;
 	for (auto row = 0; row < dimension; ++row)
 	{
 		if (IsOurSign(state->GetAt(row, row)))
 		{
-			ours = true;
+			++ours;
 		}
 		else if (IsOpponentSign(state->GetAt(row, row)))
 		{
-			opponents = true;
+			++opponents;
 		}
-		if (ours && opponents)
+		if (ours > 0 && opponents > 0)
 		{
 			return Status::InProgress();
 		}
 	}
-
-	return Status::InProgress();
+	return handleResult(ours, opponents);
 }
 
 bool GameRules::IsOurTurn() const
@@ -178,5 +177,5 @@ bool GameRules::IsOurSign(const int value) const
 
 bool GameRules::IsOpponentSign(const int value) const
 {
-	return value != ourSign;
+	return value > 0 && value != ourSign;
 }
