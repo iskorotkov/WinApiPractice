@@ -55,6 +55,12 @@
     <Filter Include="Header Files\Lib">
       <UniqueIdentifier>{aaf831a7-eadd-43f6-8813-741957a74ff4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Multiplayer">
+      <UniqueIdentifier>{7dfedf51-ddd8-4e91-867a-df00d0b13281}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Multiplayer">
+      <UniqueIdentifier>{5a59968b-8ee7-43b7-a75f-3a6eb6629334}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApiPractice.cpp">
@@ -117,6 +123,9 @@
     <ClCompile Include="GridPainter.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="MultiplayerLauncher.cpp">
+      <Filter>Source Files\Multiplayer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="filemapping.h">
@@ -175,6 +184,9 @@
     </ClInclude>
     <ClInclude Include="WindowArea.h">
       <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="MultiplayerLauncher.h">
+      <Filter>Header Files\Multiplayer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -7,6 +7,7 @@ struct Preferences;
 class GraphicsThread;
 class GameState;
 class GameRules;
+class MultiplayerLauncher;
 
 class GameSession
 {
@@ -24,6 +25,8 @@ public:
 	[[nodiscard]] Preferences* GetPreferences() const;
 	[[nodiscard]] GraphicsThread* GetGraphicsThread() const;
 	[[nodiscard]] GameRules* GetRules() const;
+	[[nodiscard]] MultiplayerLauncher* GetMultiplayer() const;
+	
 	[[nodiscard]] bool IsStarted() const;
 
 	~GameSession();
@@ -35,5 +38,10 @@ private:
 	std::unique_ptr<Preferences> preferences;
 	std::unique_ptr<GraphicsThread> graphicsThread;
 	std::unique_ptr<GameRules> rules;
+	std::unique_ptr<MultiplayerLauncher> multiplayer;
+	
 	bool isStarted = false;
+
+	static bool IsClient(int argc, char** argv);
+	void CreateRules(int argc, char** argv);
 };

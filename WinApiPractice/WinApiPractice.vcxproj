@@ -174,6 +174,7 @@
     <ClCompile Include="GridPainter.cpp" />
     <ClCompile Include="LibraryHandle.cpp" />
     <ClCompile Include="Math.cpp" />
+    <ClCompile Include="MultiplayerLauncher.cpp" />
     <ClCompile Include="Notificator.cpp" />
     <ClCompile Include="preferences.cpp" />
     <ClCompile Include="SharedStorage.cpp" />
@@ -196,6 +197,7 @@
     <ClInclude Include="GridPainter.h" />
     <ClInclude Include="LibraryHandle.h" />
     <ClInclude Include="Math.h" />
+    <ClInclude Include="MultiplayerLauncher.h" />
     <ClInclude Include="Notificator.h" />
     <ClInclude Include="preferences.h" />
     <ClInclude Include="SharedStorage.h" />

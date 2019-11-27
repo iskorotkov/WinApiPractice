@@ -8,6 +8,26 @@
 #include "GraphicsThread.h"
 #include "GameState.h"
 #include "GameRules.h"
+#include "MultiplayerLauncher.h"
+
+bool GameSession::IsClient(const int argc, char** argv)
+{
+	if (argc >= 3)
+	{
+		const std::string appType(argv[2]);
+		if (appType == "-client")
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+void GameSession::CreateRules(const int argc, char** argv)
+{
+	const auto sign = IsClient(argc, argv) ? 2 : 1;
+	rules = std::make_unique<GameRules>(this, sign);
+}
 
 GameSession::GameSession(const int argc, char** argv)
 {
@@ -32,7 +52,13 @@ GameSession::GameSession(const int argc, char** argv)
 	}
 
 	state = std::make_unique<GameState>(storage.GetStorage(), dimension);
-	rules = std::make_unique<GameRules>(this);
+	CreateRules(argc, argv);
+	multiplayer = std::make_unique<MultiplayerLauncher>();
+	if (!IsClient(argc, argv))
+	{
+		// TODO: Maybe we can analyze whether the instance is client only one time and save the result?
+		multiplayer->LaunchClient();
+	}
 }
 
 void GameSession::Start(HWND window)
@@ -62,6 +88,11 @@ GraphicsThread* GameSession::GetGraphicsThread() const
 GameRules* GameSession::GetRules() const
 {
 	return rules.get();
+}
+
+MultiplayerLauncher* GameSession::GetMultiplayer() const
+{
+	return multiplayer.get();
 }
 
 bool GameSession::IsStarted() const
