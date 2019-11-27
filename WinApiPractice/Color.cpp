@@ -1,5 +1,6 @@
 ﻿#include "Color.h"
 #include "Math.h"
+#include <cmath>
 
 Color::Color(const int red, const int green, const int blue) : red(red), green(green), blue(blue)
 {
@@ -37,8 +38,8 @@ Color Color::operator+(const Color& other) const
 Color Color::operator*(const float multiplier) const
 {
 	Color c;
-	c.red = Math::Clamp(red * multiplier, BLACK, WHITE);     // NOLINT(bugprone-narrowing-conversions)
-	c.green = Math::Clamp(green * multiplier, BLACK, WHITE); // NOLINT(bugprone-narrowing-conversions)
-	c.blue = Math::Clamp(blue * multiplier, BLACK, WHITE);   // NOLINT(bugprone-narrowing-conversions)
+	c.red = Math::Clamp(round(red * multiplier), BLACK, WHITE);     // NOLINT(bugprone-narrowing-conversions)
+	c.green = Math::Clamp(round(green * multiplier), BLACK, WHITE); // NOLINT(bugprone-narrowing-conversions)
+	c.blue = Math::Clamp(round(blue * multiplier), BLACK, WHITE);   // NOLINT(bugprone-narrowing-conversions)
 	return c;
 }
