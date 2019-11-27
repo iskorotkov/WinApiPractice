@@ -6,6 +6,8 @@
 #include <memory>
 #include "preferences.h"
 #include "GraphicsThread.h"
+#include "GameState.h"
+#include "GameRules.h"
 
 GameSession::GameSession(const int argc, char** argv)
 {
@@ -30,6 +32,7 @@ GameSession::GameSession(const int argc, char** argv)
 	}
 
 	state = std::make_unique<GameState>(storage.GetStorage(), dimension);
+	gameRules = std::make_unique<GameRules>(this);
 }
 
 void GameSession::StartRendering(HWND window)
@@ -52,6 +55,11 @@ Preferences* GameSession::GetPreferences() const
 GraphicsThread* GameSession::GetGraphicsThread() const
 {
 	return graphicsThread.get();
+}
+
+GameRules* GameSession::GetGameRules() const
+{
+	return gameRules.get();
 }
 
 GameSession::~GameSession()

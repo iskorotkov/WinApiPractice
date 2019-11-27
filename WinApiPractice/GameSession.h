@@ -1,10 +1,12 @@
 ﻿#pragma once
-#include "GameState.h"
 #include "SharedStorage.h"
 #include "files.h"
+#include <memory>
 
 struct Preferences;
 class GraphicsThread;
+class GameState;
+class GameRules;
 
 class GameSession
 {
@@ -21,7 +23,8 @@ public:
 	[[nodiscard]] GameState* GetGameState() const;
 	[[nodiscard]] Preferences* GetPreferences() const;
 	[[nodiscard]] GraphicsThread* GetGraphicsThread() const;
-	
+	[[nodiscard]] GameRules* GetGameRules() const;
+
 	~GameSession();
 
 private:
@@ -30,4 +33,5 @@ private:
 	std::unique_ptr<GameState> state;
 	std::unique_ptr<Preferences> preferences;
 	std::unique_ptr<GraphicsThread> graphicsThread;
+	std::unique_ptr<GameRules> gameRules;
 };
