@@ -68,6 +68,24 @@ void GameSession::Start(HWND window)
 	graphicsThread->Launch();
 
 	isStarted = true;
+	this->window = window;
+}
+
+void GameSession::GameWon() const
+{
+	MessageBox(window, L"You have WON the game", L"Win!", MB_OK);
+	ExitProcess(0);
+}
+
+void GameSession::GameLost() const
+{
+	MessageBox(window, L"You have LOST the game", L"Lose!", MB_OK);
+	ExitProcess(0);
+}
+
+void GameSession::GameCrashed(const std::wstring& errorMessage) const
+{
+	MessageBox(window, errorMessage.c_str(), L"Error occured!", MB_OK);
 }
 
 GameState* GameSession::GetState() const

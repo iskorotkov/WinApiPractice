@@ -25,6 +25,16 @@ GameRules::Status GameRules::Status::InProgress()
 
 void GameRules::RespondToTurnMessage(const WPARAM wParam, const LPARAM)
 {
+	const auto status = GetStatus();
+	if (status.HasWon())
+	{
+		game->GameWon();
+	}
+	else if (status.HasLost())
+	{
+		game->GameLost();
+	}
+	
 	// Check if it's our turn
 	if (wParam != GetCurrentProcessId())
 	{

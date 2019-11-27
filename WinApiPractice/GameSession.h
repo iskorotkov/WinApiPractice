@@ -20,6 +20,9 @@ public:
 	GameSession& operator=(GameSession&& other) noexcept = delete;
 
 	void Start(HWND window);
+	void GameWon() const;
+	void GameLost() const;
+	void GameCrashed(const std::wstring& errorMessage) const;
 
 	[[nodiscard]] GameState* GetState() const;
 	[[nodiscard]] Preferences* GetPreferences() const;
@@ -39,7 +42,8 @@ private:
 	std::unique_ptr<GraphicsThread> graphicsThread;
 	std::unique_ptr<GameRules> rules;
 	std::unique_ptr<MultiplayerLauncher> multiplayer;
-	
+
+	HWND window;
 	bool isStarted = false;
 
 	static bool IsClient(int argc, char** argv);
