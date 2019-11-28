@@ -73,11 +73,11 @@ GameSession::GameSession(const int argc, char** argv)
 
 void GameSession::Start(HWND window)
 {
+	isStarted = true;
+	
 	// TODO: Double initialization.
 	graphicsThread = std::make_unique<GraphicsThread>(window, this);
 	graphicsThread->Launch();
-
-	isStarted = true;
 }
 
 void GameSession::GameWon() const

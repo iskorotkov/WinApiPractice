@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "memory"
+#include <mutex>
 
 class GameState
 {
@@ -14,6 +14,7 @@ public:
 private:
 	int* values;
 	int dimension;
+	mutable std::mutex m;
 
 	[[nodiscard]] int Index(int line, int column) const;
 };

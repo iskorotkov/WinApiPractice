@@ -42,7 +42,7 @@ GraphicsThread::GraphicsThread(HWND& window, const GameSession* game)
 
 void GraphicsThread::Launch()
 {
-	workerThread = std::thread(&GraphicsThread::Run, std::ref(context));
+	workerThread = std::thread(&GraphicsThread::Run, this, std::ref(context));
 }
 
 void GraphicsThread::Suspend()
@@ -83,6 +83,13 @@ void GraphicsThread::ToggleSuspended()
 	}
 }
 
+void GraphicsThread::Redraw()
+{
+	std::lock_guard lock(m);
+	needRedraw = true;
+	cv.notify_one();
+}
+
 GraphicsThread::~GraphicsThread()
 {
 	Stop();
@@ -90,28 +97,30 @@ GraphicsThread::~GraphicsThread()
 
 void GraphicsThread::Run(Context& context)
 {
-	using namespace std::chrono_literals;
-	const auto deltaSeconds = 20ms;
 	try
 	{
 		const auto preferences = context.game->GetPreferences();
 		const auto state = context.game->GetState();
 
 		const std::vector<Color> gradientColors = { Color::Red(), Color::Green(), Color::Blue() };
-		DynamicColor color(gradientColors);
+		DynamicColor color(gradientColors, 0.2f);
 
 		for (;;)
 		{
-			GridPainter painter(context.window, preferences->GridSize);
+			{
+				GridPainter painter(context.window, preferences->GridSize);
 
-			painter.DrawDynamicGradient(preferences->BackgroundColor, color.CurrentColor().AsColorRef());
-			color.Change();
-			painter.DrawGrid(preferences->GridColor);
+				painter.DrawDynamicGradient(preferences->BackgroundColor, color.CurrentColor().AsColorRef());
+				color.Change();
+				painter.DrawGrid(preferences->GridColor);
 
-			painter.DrawImageWhere(1, state, context.crossImage);
-			painter.DrawImageWhere(2, state, context.circleImage);
+				painter.DrawImageWhere(1, state, context.crossImage);
+				painter.DrawImageWhere(2, state, context.circleImage);
+			}
 
-			std::this_thread::sleep_for(deltaSeconds);
+			std::unique_lock lock(m);
+			needRedraw = false;
+			cv.wait(lock, [this] { return needRedraw; });
 		}
 	}
 	catch (std::exception& e)

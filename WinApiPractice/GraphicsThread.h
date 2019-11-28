@@ -2,6 +2,7 @@
 #include "Windows.h"
 #include <thread>
 #include "libpic.h"
+#include <condition_variable>
 
 class GameSession;
 
@@ -21,6 +22,7 @@ public:
 	void Stop();
 	void SetPriority(int priority);
 	void ToggleSuspended();
+	void Redraw();
 
 	~GraphicsThread();
 
@@ -36,6 +38,9 @@ private:
 	std::thread workerThread;
 	Context context;
 	bool isSuspended = false;
+	std::condition_variable cv;
+	std::mutex m;
+	bool needRedraw = true;
 
-	static void Run(Context& context);
+	void Run(Context& context);
 };

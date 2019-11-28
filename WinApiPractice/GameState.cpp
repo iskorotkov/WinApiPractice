@@ -10,6 +10,7 @@ GameState::GameState(std::byte* data, const int dimension) :
 void GameState::SetAt(const int line, const int column, const int value)
 {
 	const auto index = Index(line, column);
+	std::lock_guard lock(m);
 	if (values[index] != 0)
 	{
 		throw std::exception("Can't add a mark here. The cell is taken.");
@@ -24,7 +25,9 @@ int GameState::GetDimension() const
 
 int GameState::GetAt(const int line, const int column) const
 {
-	return values[Index(line, column)];
+	const auto index = Index(line, column);
+	std::lock_guard lock(m);
+	return values[index];
 }
 
 int GameState::Index(const int line, const int column) const

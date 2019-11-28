@@ -84,9 +84,11 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 {
 	if (gameSession->IsStarted() && uMsg == gameSession->GetRules()->GetTurnMessageCode())
 	{
+		gameSession->GetGraphicsThread()->Redraw();
 		gameSession->GetRules()->RespondToTurnMessage(wParam, lParam);
 		return 0;
 	}
+
 	const auto prefs = gameSession->GetPreferences();
 
 	// TODO: Find better names.
@@ -140,14 +142,14 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			const UINT x = GET_X_LPARAM(lParam);
 			const UINT y = GET_Y_LPARAM(lParam);
 			OnClicked(hwnd, x, y);
-			break;
+			return 0;
 		}
 		case WM_RBUTTONDOWN:
 		{
 			const UINT x = GET_X_LPARAM(lParam);
 			const UINT y = GET_Y_LPARAM(lParam);
 			OnClicked(hwnd, x, y);
-			break;
+			return 0;
 		}
 		default: break;
 	}
