@@ -85,6 +85,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	if (gameSession->IsStarted() && uMsg == gameSession->GetRules()->GetTurnMessageCode())
 	{
 		gameSession->GetRules()->RespondToTurnMessage(wParam, lParam);
+		return 0;
 	}
 	const auto prefs = gameSession->GetPreferences();
 

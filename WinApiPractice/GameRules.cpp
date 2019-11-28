@@ -203,7 +203,8 @@ int GameRules::GetOurSign() const
 void GameRules::NotifyOthersAboutTurn() const
 {
 	// Broadcast message
-	SendMessage(HWND_BROADCAST, turnMessageCode, GetCurrentProcessId(), 0);
+	// SendMessage(HWND_BROADCAST, turnMessageCode, GetCurrentProcessId(), 0);
+	PostMessage(HWND_BROADCAST, turnMessageCode, GetCurrentProcessId(), 0);
 }
 
 bool GameRules::IsOurSign(const int value) const
