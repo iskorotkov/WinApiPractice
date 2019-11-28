@@ -24,6 +24,7 @@ public:
 	// TODO: Add logger class.
 	void GameWon() const;
 	void GameLost() const;
+	void Draw() const;
 	void GameError(const std::wstring& errorMessage) const;
 	void PlayerMistake(const std::wstring& mistakeMessage) const;
 

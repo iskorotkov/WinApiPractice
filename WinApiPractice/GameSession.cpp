@@ -92,6 +92,12 @@ void GameSession::GameLost() const
 	PostQuitMessage(0);
 }
 
+void GameSession::Draw() const
+{
+	MessageBox(nullptr, L"DRAW with opponent", L"Draw!", MB_OK | MB_ICONASTERISK);
+	PostQuitMessage(0);
+}
+
 void GameSession::GameError(const std::wstring& errorMessage) const
 {
 	MessageBox(nullptr, errorMessage.c_str(), L"Error occured!", MB_OK | MB_ICONERROR);

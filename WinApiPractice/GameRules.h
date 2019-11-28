@@ -14,19 +14,22 @@ public:
 		static Status Win();
 		static Status Lose();
 		static Status InProgress();
+		static Status Draw();
 
 		[[nodiscard]] bool HasWon() const { return won; }
 		[[nodiscard]] bool HasLost() const { return lost; }
 		[[nodiscard]] bool IsInProgress() const { return !won && !lost; }
+		[[nodiscard]] bool IsDraw() const { return draw; }
 
 	protected:
-		Status(const bool won, const bool lost) : won(won), lost(lost)
+		Status(const bool won, const bool lost, const bool draw = false) : won(won), lost(lost), draw(draw)
 		{
 		}
 
 	private:
-		bool won = false;
-		bool lost = false;
+		bool won;
+		bool lost;
+		bool draw;
 	};
 
 	void RespondToTurnMessage(WPARAM wParam, LPARAM lParam);
@@ -50,4 +53,5 @@ private:
 
 	[[nodiscard]] bool IsOurSign(int value) const;
 	[[nodiscard]] bool IsOpponentSign(int value) const;
+	[[nodiscard]] bool IsTaken(int value) const;
 };

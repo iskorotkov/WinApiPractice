@@ -23,6 +23,11 @@ GameRules::Status GameRules::Status::InProgress()
 	return { false, false };
 }
 
+GameRules::Status GameRules::Status::Draw()
+{
+	return { false, false, true };
+}
+
 void GameRules::RespondToTurnMessage(const WPARAM wParam, const LPARAM)
 {
 	const auto status = GetStatus();
@@ -33,6 +38,10 @@ void GameRules::RespondToTurnMessage(const WPARAM wParam, const LPARAM)
 	else if (status.HasLost())
 	{
 		game->GameLost();
+	}
+	else if (status.IsDraw())
+	{
+		game->Draw();
 	}
 
 	// Check if it's our turn
@@ -143,10 +152,6 @@ GameRules::Status GameRules::GetStatus() const
 			{
 				++opponents;
 			}
-			if (ours > 0 && opponents > 0)
-			{
-				return Status::InProgress();
-			}
 		}
 		const auto result = handleResult(ours, opponents);
 		if (!result.IsInProgress())
@@ -170,16 +175,32 @@ GameRules::Status GameRules::GetStatus() const
 			{
 				++opponents;
 			}
-			if (ours > 0 && opponents > 0)
-			{
-				return Status::InProgress();
-			}
 		}
 		const auto result = handleResult(ours, opponents);
 		if (!result.IsInProgress())
 		{
 			return result;
 		}
+	}
+
+	// Everything is marked
+	auto counter = 0;
+	for (auto row = 0; row < dimension; ++row)
+
+	{
+		for (auto column = 0; column < dimension; ++column)
+
+		{
+			if (IsTaken(state->GetAt(row, column)))
+			{
+				++counter;
+			}
+		}
+		
+	}
+	if (counter == dimension * dimension)
+	{
+		return Status::Draw();
 	}
 	return Status::InProgress();
 }
@@ -203,7 +224,6 @@ int GameRules::GetOurSign() const
 void GameRules::NotifyOthersAboutTurn() const
 {
 	// Broadcast message
-	// SendMessage(HWND_BROADCAST, turnMessageCode, GetCurrentProcessId(), 0);
 	PostMessage(HWND_BROADCAST, turnMessageCode, GetCurrentProcessId(), 0);
 }
 
@@ -214,5 +234,10 @@ bool GameRules::IsOurSign(const int value) const
 
 bool GameRules::IsOpponentSign(const int value) const
 {
-	return value > 0 && value != ourSign;
+	return IsTaken(value) && value != ourSign;
+}
+
+bool GameRules::IsTaken(const int value) const
+{
+	return value > 0;
 }
